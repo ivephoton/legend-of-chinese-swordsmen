@@ -820,6 +820,8 @@ body{background:transparent}
 @media(max-width:520px){.udst{grid-template-columns:repeat(2,1fr)}.udname{font-size:22px}}
 .tab.resumet{background:linear-gradient(180deg,#fff0c0,#f0d080)!important;font-weight:900}
 
+.toast{position:fixed;left:50%;bottom:8%;transform:translateX(-50%);z-index:95;padding:8px 18px;font-family:var(--f-menu);letter-spacing:.2em;color:#ffe9a8;background:linear-gradient(160deg,rgba(18,14,44,.95),rgba(44,14,48,.95));border:12px solid transparent;border-image:var(--fr-gold) 18 stretch;background-clip:padding-box;animation:lfade .3s}
+.toast.out{animation:lout .4s forwards}
 .themebtn{position:fixed;right:10px;bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:30;border:1px solid var(--rule);background:var(--panel);width:34px;height:34px;border-radius:50%;cursor:pointer}
 </style>
 </head>
@@ -845,7 +847,7 @@ const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 function shuf(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(R()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 function seeded(s){return function(){s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
 const CN=(()=>{const d='零一二三四五六七八九十'.split('');const o=[];for(let n=0;n<=60;n++)o.push(n<=10?d[n]:n<20?'十'+d[n-10]:d[Math.floor(n/10)]+'十'+(n%10?d[n%10]:''));return o;})();
-const W=30,H=24,DIRS=[[1,0],[-1,0],[0,1],[0,-1]];
+const W=17,H=13,DIRS=[[1,0],[-1,0],[0,1],[0,-1]];
 const md=(a,b,c,d)=>Math.abs(a-c)+Math.abs(b-d);
 
 /* ================= 五行 ================= */
@@ -1017,7 +1019,7 @@ function genMap(style,seed){
   for(let k=0;k<2;k++)for(let y=0;y<H;y++)for(let x=0;x<W;x++)if(rng()<0.45){const [dx,dy]=DIRS[Math.floor(rng()*4)];const nx=x+dx,ny=y+dy;if(nx>=0&&ny>=0&&nx<W&&ny<H)m[y][x]=m[ny][nx];}
   carveRivers(m,style,rng);
   const cy=2+Math.floor(rng()*(H-4)),cy2=2+Math.floor(rng()*(H-4)),cy3=2+Math.floor(rng()*(H-4)),cy4=2+Math.floor(rng()*(H-4));
-  for(let y=0;y<H;y++)for(let x=0;x<W;x++){const zone=x<=2||x>=W-7;
+  for(let y=0;y<H;y++)for(let x=0;x<W;x++){const zone=x<=2||x>=W-5;
     if(zone&&(m[y][x]===4||m[y][x]===3))m[y][x]=0;
     if((y===cy||y===cy2||y===cy3||y===cy4)&&m[y][x]===4)m[y][x]=0;}
   return m;
@@ -1029,12 +1031,12 @@ function vnoise(seed,cells){const r=seeded(seed),gw=cells+2,gv=[];for(let i=0;i<
     const a=gv[y0*gw+x0],b=gv[y0*gw+x0+1],c=gv[(y0+1)*gw+x0],d=gv[(y0+1)*gw+x0+1];return a+(b-a)*s(fx)+(c-a)*s(fy)+(a-b-c+d)*s(fx)*s(fy);};}
 function carveRivers(m,style,rng){m.bridges=[];if(style==='cave'||style==='temple'){return;}
   for(let y=0;y<H;y++)for(let x=0;x<W;x++)if(m[y][x]===3)m[y][x]=0;
-  const nr=style==='water'?3:2,lo=5,hi=W-10;
+  const nr=style==='water'?2:1,lo=4,hi=W-5;
   for(let r=0;r<nr;r++){let x=lo+Math.floor(rng()*(hi-lo)),path=[];
     for(let y=0;y<H;y++){m[y][x]=3;path.push([x,y]);const d=rng();const nx=d<0.28&&x>lo?x-1:d>0.72&&x<hi?x+1:x;if(nx!==x){m[y][nx]=3;path.push([nx,y]);x=nx;}}
     const ys=shuf([...Array(H-4).keys()].map(i=>i+2)).slice(0,2);
     for(const by of ys){const row=path.filter(p=>p[1]===by);for(const [bx] of row){m[by][bx]=0;m.bridges.push([bx,by]);}}}}
-function heightMap(m,seed){const n=vnoise(seed,8),r=seeded(seed^0x77),hm=[];
+function heightMap(m,seed){const n=vnoise(seed,5),r=seeded(seed^0x77),hm=[];
   for(let y=0;y<H;y++){const row=[];for(let x=0;x<W;x++){const t=m[y][x];let h=0;
     if(t===2)h=1+(n(x/W,y/H)>0.55?1:0);else if(t===4)h=1;else if(t!==3&&n(x/W,y/H)>0.64&&!(m.bridges||[]).some(b=>b[0]===x&&b[1]===y))h=1;
     row.push(h);}hm.push(row);}
@@ -1173,16 +1175,16 @@ function startBattle(c,dep){
   const pc=[];for(let y=0;y<H;y++)for(const x of [2,1,0])pc.push([x,y]);
   for(let i=pc.length-1;i>=0;i--)if(pc[i][0]>1)pc.splice(i,1);
   pc.sort((a,b)=>Math.abs(a[1]-(H-1)/2)-Math.abs(b[1]-(H-1)/2)||b[0]-a[0]);
-  B.chests=[];{const cand=[];for(let y=1;y<H-1;y++)for(let x=5;x<W-9;x++)if(B.map[y][x]!==4)cand.push([x,y]);shuf(cand);
-    const nC=2+(R()<0.5?1:0);for(const [x,y] of cand){if(B.chests.length>=nC)break;if(B.chests.every(q=>md(q.x,q.y,x,y)>=5))B.chests.push({x,y,taken:false});}}
+  B.chests=[];{const cand=[];for(let y=1;y<H-1;y++)for(let x=3;x<W-3;x++)if(B.map[y][x]!==4)cand.push([x,y]);shuf(cand);
+    const nC=2+(R()<0.5?1:0);for(const [x,y] of cand){if(B.chests.length>=nC)break;if(B.chests.every(q=>md(q.x,q.y,x,y)>=4))B.chests.push({x,y,taken:false});}}
   B.cond=c===30?{win:'boss'}:(CONDS[c]||{});B.start={};dep.forEach(id=>{const h=S.heroes[id];B.start[id]={lv:h.lv,exp:h.exp,st:heroStats(id)};});
   dep.forEach((id,i)=>{const u=makeHeroUnit(id);[u.x,u.y]=pc[i];B.units.push(u);});
   const lv=elv(c)+(c===30?st*2:0);
-  const n=clamp(Math.round(dep.length*1.7)+Math.floor(c/6),6,20)+(c===30?st:0);
+  const n=clamp(Math.round(dep.length*1.1)+Math.floor(c/8),4,12)+(c===30?st:0);
   const used=new Set(),take=(x,y)=>{used.add(y*W+x);return [x,y];};
   const bc=[];for(let y=0;y<H;y++)bc.push([W-1,y]);bc.sort((a,b)=>Math.abs(a[1]-(H-1)/2)-Math.abs(b[1]-(H-1)/2));
   def.boss.forEach((bd,i)=>{const u=makeFoe(bd,lv+2,true);[u.x,u.y]=take(...bc[i]);B.units.push(u);});
-  const ec=[];for(let y=0;y<H;y++)for(let x=Math.floor(W*0.6);x<W;x++)if(!used.has(y*W+x))ec.push([x,y]);
+  const ec=[];for(let y=0;y<H;y++)for(let x=Math.floor(W*0.55);x<W;x++)if(!used.has(y*W+x))ec.push([x,y]);
   shuf(ec).sort((a,b)=>a[0]-b[0]);
   for(let i=0;i<n;i++){const u=makeFoe(def.foes[i%def.foes.length],Math.max(1,lv+rnd(-1,1)),false);[u.x,u.y]=take(...ec[i]);B.units.push(u);}
   B.seed=Math.floor(R()*1e9);B.hmap=heightMap(B.map,B.seed);try{B.paint=TH()?paintMap2(B.map,def.s,B.seed,B.hmap):paintMap(B.map,def.s,B.seed,true);}catch(e){console.error(e);B.paint=null;}
@@ -1231,7 +1233,7 @@ function gainExp(u,amt){
     logL(`${u.name} 修为精进，升至${s.lv}级${nw.length?'，领悟【'+nw.map(i=>SKILLS[i].name).join('、')+'】':''}`,'up');}}
 function kill(a,d){
   const x=d.x,y=d.y;d.hp=0;B.units=B.units.filter(u=>u!==d);
-  if(d.side==='e'){logL(`${d.name} 被击败`);if(a.side==='p'){rollDrop(d,x,y);addGold(Math.round((12+d.lv*3)*(d.boss?5:1)),x,y);}}
+  if(d.side==='e'){logL(`${d.name} 被击败`);if(a.side==='p'){rollDrop(d,x,y);addGold(Math.round((108+d.lv*27)*(d.boss?5:1)),x,y);}}
   else logL(`${d.name} 重伤退场`);}
 function rollDrop(d,x,y){
   if(R()>(d.boss?1:0.3))return;
@@ -2561,7 +2563,7 @@ function showLoot(u,kind,val){if(typeof document==='undefined'||FAST)return;
   document.body.appendChild(o);const close=e=>{if(e){e.stopPropagation();e.preventDefault();}o.classList.add('out');setTimeout(()=>o.remove(),300);};
   o.addEventListener('click',close);setTimeout(()=>{if(o.isConnected)close();},B&&B.phase==='e'||B&&B.autoAll?1800:4500);}
 function openChest(u){if(!B||!B.chests||u.side!=='p')return;const q=B.chests.find(q=>!q.taken&&q.x===u.x&&q.y===u.y);if(!q)return;q.taken=true;
-  if(R()<0.55){const g=80+B.c*25+rnd(0,40);addGold(g);float(u.x,u.y,'宝箱 +'+g+' 金','g');logL(`${u.name} 打开宝箱，获得 ${g} 金`,'drop');showLoot(u,'gold',g);}
+  if(R()<0.55){const g=720+B.c*225+rnd(0,360);addGold(g);float(u.x,u.y,'宝箱 +'+g+' 金','g');logL(`${u.name} 打开宝箱，获得 ${g} 金`,'drop');showLoot(u,'gold',g);}
   else{const T=Math.min(10,1+Math.floor((B.c-1)/3)),t=clamp(T+pick([0,0,1]),1,10);const pool=TREASURES.filter(z=>z.tier===t);let tr=pick(pool);const un=pool.filter(z=>!S.inv[z.id]);if(un.length&&R()<0.7)tr=pick(un);
     S.inv[tr.id]=(S.inv[tr.id]||0)+1;B.drops.push(tr.id);float(u.x,u.y,'宝箱 · '+tr.name,'g');logL(`${u.name} 打开宝箱，获得法宝【${tr.name}】`,'drop');showLoot(u,'item',tr.id);}
   sfx('drop');saveGame();const el=document.querySelector(`.spr.chest[data-cx="${q.x}"][data-cy="${q.y}"]`);if(el){el.classList.add('open');setTimeout(()=>el.remove(),700);}}
@@ -2728,15 +2730,15 @@ async function autoTurn(){
     await aiAct(u);if(checkEnd())return;}
   if(B.stopAuto){B.stopAuto=false;B.mode='idle';B.sel=null;logL('全自动已停止，本回合剩余由你指挥。');render();if(B.units.filter(o=>o.side==='p').every(o=>o.acted))await enemyPhase();return;}
   await enemyPhase();}
-function cancelSel(){const u=B.sel;if(u&&u.ox!=null){u.x=u.ox;u.y=u.oy;}B.sel=null;B.mode='idle';B.pend=null;B.center=null;B.skill=null;B.reach=null;}
+function cancelSel(){const u=B.sel;if(u&&u.ox!=null){u.x=u.ox;u.y=u.oy;}B.sel=null;B.mode='idle';B.pend=null;B.center=null;B.skill=null;B.reach=null;B.pchest=null;}
 async function runManual(fn){
-  const a=B.sel;B.mode='busy';render();await fn();a.acted=true;
+  const a=B.sel;B.mode='busy';render();if(B.pchest){B.pchest=null;openChest(a);}await fn();a.acted=true;
   B.sel=null;B.pend=null;B.center=null;B.skill=null;B.reach=null;
   if(checkEnd())return;B.mode='idle';render();saveBattle();
   if(B.units.filter(u=>u.side==='p').every(u=>u.acted))await enemyPhase();}
 function victory(){clearBattle();
   B.over=true;B.win=true;const c=B.c;B.joined=[];B.final=false;
-  B.goldClear=100+c*40;addGold(B.goldClear);
+  B.goldClear=900+c*360;addGold(B.goldClear);
   if(c===30){if(B.st<2)S.stage30=B.st+1;else{S.cleared[30]=true;S.stage30=0;S.ended=true;B.final=true;}}
   else{S.cleared[c]=true;S.unlocked=Math.max(S.unlocked,c+1);}
   B.nextJoin=HEROES.filter(h=>h.join===c+1&&!S.heroes[h.id]).length;
@@ -3016,7 +3018,7 @@ function syncHits(){const box=document.getElementById('hits');if(!box||!B||!B.sp
   box.className='hits'+(B.phase==='p'&&!B.over&&['idle','atk','skill'].includes(B.mode)?' on':'');}
 function chestSprites(){if(!B.chests)return '';const cc=chestCls();return B.chests.filter(q=>!q.taken).map(q=>`<div class="spr tr chest" data-cx="${q.x}" data-cy="${q.y}" style="--h:${hAt(q.x,q.y)};left:${(q.x+0.55)/W*100}%;top:${(q.y+0.55)/H*100}%;width:${100/W*0.9}%">${cc?`<i class="up ${cc}"></i>`:'<i class="up chestf">宝</i>'}</div>`).join('');}
 // 同一模型在一张地图上至多出现 3 次：每类按需生成新造型
-const TCAP=(typeof matchMedia!=='undefined'&&matchMedia('(pointer:coarse)').matches)?{tree:22,mount:10,rock:8,decor:10}:{tree:38,mount:18,rock:14,decor:20};
+const TCAP=(typeof matchMedia!=='undefined'&&matchMedia('(pointer:coarse)').matches)?{tree:14,mount:8,rock:6,decor:8}:{tree:20,mount:12,rock:10,decor:12};
 function terrSprites(){
   if(!TH())return '';const rng=seeded(B.seed^0x2545f491),st=B.def.s;let h='';const tw=100/W;
   const pools={};const take=k=>{const P=pools[k]||(pools[k]={ids:[],cnt:{}});const open=P.ids.filter(i=>P.cnt[i]<3);
@@ -3164,7 +3166,7 @@ function threat(u){const R0=reach(u),mv=new Set(),at=new Set();for(const [k] of 
 function cmdCancel(){if(!B||B.over||B.phase!=='p'||B.mode==='busy')return;
   if(B.mode==='idle'){B.sys=null;B.info=null;B.erange=null;}
   else if(B.mode==='move')cancelSel();
-  else if(B.mode==='menu'){if(B.moved&&B.sel){const u=B.sel;u.x=u.ox;u.y=u.oy;B.moved=false;B.mode='move';B.reach=reach(u);}else cancelSel();}
+  else if(B.mode==='menu'){if(B.moved&&B.sel){const u=B.sel;u.x=u.ox;u.y=u.oy;B.moved=false;B.pchest=null;B.mode='move';B.reach=reach(u);}else cancelSel();}
   else if(B.mode==='atk'||B.mode==='skillpick'){B.mode='menu';B.pend=null;}
   else if(B.mode==='skill'){if(B.center)B.center=null;else B.mode='skillpick';}
   render();}
@@ -3193,7 +3195,7 @@ function onCell(x,y){
   else if(B.mode==='move'){
     const k=y*W+x;
     if(u===s){B.mode='menu';B.moved=true;}
-    else if(B.reach.has(k)&&!u){s.x=x;s.y=y;B.mode='menu';B.moved=true;sfx('step');openChest(s);}
+    else if(B.reach.has(k)&&!u){s.x=x;s.y=y;B.mode='menu';B.moved=true;sfx('step');B.pchest=(B.chests||[]).find(q=>!q.taken&&q.x===x&&q.y===y)||null;}
     else if(u&&u.side==='p'&&!u.acted){cancelSel();B.sel=u;u.ox=u.x;u.oy=u.y;B.reach=reach(u);B.mode='menu';B.moved=false;setTimeout(()=>camFocus([[u.x,u.y]],COARSE?3.1:2.3),20);}
     else if(u&&u.side==='e'){B.info=u;showUnitDetail(u);}
     else{B.info=u||null;if(!u)cancelSel();}}
@@ -3289,7 +3291,14 @@ if(typeof document!=='undefined'){
   const tb=document.getElementById('themebtn');
   tb.addEventListener('click',()=>{const r=document.documentElement,cur=r.dataset.theme||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
     r.dataset.theme=cur==='dark'?'light':'dark';tb.textContent=r.dataset.theme==='dark'?'☀':'☾';});
-  render();}
+  // 页面被刷新或被系统回收后，自动回到未打完的那一战
+  const sv=savedBattle();
+  if(sv&&loadGame()){S=loadGame();try{resumeBattle();toast('战斗已自动恢复');}catch(e){console.error(e);clearBattle();render();}}
+  else render();
+  const keep=()=>{try{if(B&&!B.over&&VIEW==='battle')saveBattle();}catch(e){}};
+  window.addEventListener('pagehide',keep);window.addEventListener('blur',keep);
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')keep();});}
+function toast(t){if(typeof document==='undefined')return;const d=document.createElement('div');d.className='toast';d.textContent=t;document.body.appendChild(d);setTimeout(()=>{d.classList.add('out');setTimeout(()=>d.remove(),400);},2200);}
 window.__T={get S(){return S;},set S(v){S=v;},get B(){return B;},ACT,startBattle,autoTurn,newSave,recruitUpTo,setFast(v){FAST=v;},setSpd(v){SPD=v;},setR(f){R=f;},SKILLS,TREASURES,HEROES,CH,heroSkills,elv,SCN,SCN30,speakerUnit,playScene,SWS};
 </script>
 </body>
