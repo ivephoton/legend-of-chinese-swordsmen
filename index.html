@@ -520,7 +520,7 @@ body{background:transparent}
 /* ---- 遮挡与点选修正 ---- */
 .spr.tr{transition:opacity .25s}
 .spr.tr.xr{opacity:.42}
-.aiming .spr.tr:not(.chest){opacity:.2;filter:saturate(.5)}
+.aiming .spr.tr:not(.chest){opacity:.2}
 .aiming .spr.us .hit{pointer-events:none}
 .hits{position:absolute;inset:0;z-index:18;pointer-events:none}
 .hits.on .uh{pointer-events:auto;cursor:pointer}
@@ -733,7 +733,7 @@ body{background:transparent}
 
 
 /* ---- 选择时敌我与宝箱更醒目 ---- */
-.aiming .board,.aiming .lt{filter:brightness(.8) saturate(.75)}
+.aiming .board::after{content:"";position:absolute;inset:0;background:rgba(20,20,40,.18);pointer-events:none}
 .spr.us>.up .shd{transition:transform .2s}
 .aiming .spr.us.e>.up .shd{left:4%;right:4%;height:18%;bottom:-6%;background:radial-gradient(ellipse,rgba(255,60,80,.9),rgba(255,40,60,.35) 45%,transparent 72%);animation:ringp 1.1s ease-in-out infinite}
 .aiming .spr.us.p>.up .shd{left:4%;right:4%;height:18%;bottom:-6%;background:radial-gradient(ellipse,rgba(60,240,200,.9),rgba(40,180,255,.35) 45%,transparent 72%);animation:ringp 1.1s ease-in-out infinite}
@@ -794,6 +794,31 @@ body{background:transparent}
 .skc:hover{background:linear-gradient(180deg,#fff8e4,#f0e4c4);background-clip:padding-box}
 .skintro{font-size:15px;line-height:1.9;border-left:3px solid var(--gold);padding:4px 10px;margin:6px 0 10px}
 .skmeta{color:#6a3a1a;font-weight:700}
+
+
+/* ---- 列表 & 能力画面 ---- */
+.cmd.ulist .cscr{max-height:52vh;overflow:auto}
+.cmd.ulist button{display:flex!important;gap:8px;align-items:center;text-align:left;letter-spacing:0!important}
+.cmd.ulist .lg{width:34px;height:34px;flex:none;border-radius:50%;overflow:hidden;display:block;background:#fff}
+.cmd.ulist .lg .pt{width:100%;height:100%;display:block;background-size:cover}
+.cmd.ulist .ln{display:flex;flex-direction:column;flex:1;min-width:0}
+.cmd.ulist .ln b{font-size:14px;color:#ffe9a8}.cmd.ulist .ln small{font-size:11px;color:#c8bfd8}
+.cmd.ulist .lhp{display:block;height:4px;background:rgba(255,255,255,.15);margin-top:2px}.cmd.ulist .lhp em{display:block;height:100%;background:#20e0a0}
+.cmd.ulist.foe .lhp em{background:#ff4060}.cmd.ulist button.dn{opacity:.5}
+.udet{position:fixed;inset:0;z-index:60;display:flex;align-items:flex-end;justify-content:center;background:rgba(6,4,18,.35);animation:lfade .2s}
+.udbox{position:relative;width:min(640px,96vw);margin-bottom:2vh;color:#f2eadc;border:14px solid transparent;border-image:var(--fr-gold) 18 stretch;background:linear-gradient(160deg,rgba(18,14,44,.97),rgba(44,14,48,.97));background-clip:padding-box;padding:10px 14px;animation:udin .3s cubic-bezier(.2,1.2,.4,1)}
+.udet.foe .udbox{border-image:var(--fr-brown) 18 stretch;background:linear-gradient(160deg,rgba(44,8,16,.97),rgba(20,8,30,.97));background-clip:padding-box}
+@keyframes udin{from{transform:translateY(40px);opacity:0}}
+.udx{position:absolute;right:6px;top:6px}
+.udtop{display:flex;gap:12px}.udimg{width:34%;aspect-ratio:4/5;flex:none;background-size:contain!important;background-repeat:no-repeat!important;background-position:50% 100%!important;border-bottom:2px solid rgba(255,216,106,.5)}
+.udinfo{flex:1;min-width:0}.udname{font-size:26px;color:#ffe9a8}.bosst{font-size:12px;background:#b8261e;color:#fff;padding:1px 6px;vertical-align:middle}
+.udmeta{font-size:13px;color:#c8bfd8;margin:2px 0 6px}.udinfo .bar span{color:#f2eadc}
+.udst{display:grid;grid-template-columns:repeat(4,1fr);gap:2px 8px;font-size:13px;margin-top:6px}.udter{font-size:12px;color:#c8bfd8;margin-top:4px}
+.udsk{margin-top:8px;display:flex;flex-wrap:wrap;gap:4px;font-size:12.5px}.udsk b{width:100%;color:#ffd86a}
+.udsk span{padding:2px 8px;background:rgba(255,255,255,.08);border:1px solid rgba(255,216,106,.3)}.udsk i{font-style:normal;color:#9fd8ff;margin-left:4px;font-size:11px}
+.udfc{margin-top:8px;font-size:13px;color:#ffe9a8;border-top:1px dashed rgba(255,216,106,.4);padding-top:6px}
+@media(max-width:520px){.udst{grid-template-columns:repeat(2,1fr)}.udname{font-size:22px}}
+.tab.resumet{background:linear-gradient(180deg,#fff0c0,#f0d080)!important;font-weight:900}
 
 .themebtn{position:fixed;right:10px;bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:30;border:1px solid var(--rule);background:var(--panel);width:34px;height:34px;border-radius:50%;cursor:pointer}
 </style>
@@ -914,10 +939,10 @@ const SK_LEARN={};HEROES.forEach(h=>h.skills.forEach(s=>(SK_LEARN[s.sid]=SK_LEAR
 
 /* ================= 法宝 100 ================= */
 const TR_NAMES={
-w:['青钢剑','松纹古剑','寒光剑','白虹剑','流星剑','青蛇剑','赤霞剑','乌龙剪','金蛟剪','飞龙剑','太白剑','寒月剑','紫电剑','青霜剑','龙泉剑','湛卢剑','鱼肠剑','干将剑','莫邪剑','碧蜈钩','修罗刀','玄龟剑','七修剑','诛邪剑','斩仙剑','阴霹雳剑','阳霹雳剑','太乙神剑','雷火金光剑','冰魄神光剑','化血神刀','七星宝剑','南明离火剑','青索剑','紫郢剑'],
+w:['青钢剑','松纹古剑','寒光剑','白虹剑','流星剑','青蛇剑','赤霞剑','乌龙剪','金蛟剪','飞龙剑','太白剑','寒月剑','紫电剑','青霜剑','龙泉剑','湛卢剑','鱼肠剑','干将剑','莫邪剑','碧蜈钩','修罗刀','玄龟剑','七修剑','诛邪剑','斩仙剑','阴霹雳剑','阳霹雳剑','太乙神剑','雷火金光剑','冰魄神光剑','化血神刀','七星宝剑','南明离火剑','青虹剑','紫郢剑'],
 m:['五雷符','神火针','摄魂铃','迷魂幡','金刚杵','降魔杵','紫金钵','避毒珠','定风珠','乾坤圈','金蝉环','如意金环','火龙钗','雷火珠','太乙神雷符','伏魔禅杖','修罗幡','百毒金蚕','元磁神针','九疑鼎','彩霞宝镜','离合五云圭','定珠','牟尼珠','天璇神砂','九龙神火罩','散花檠','九天元阳尺','乾天火灵珠','太乙五烟罗','两界牌','七宝金幢','天遁镜','如意通天犀','紫府金符'],
 a:['布衲道袍','青云袍','护心镜','辟邪符','避火衣','避水珠','金丝软甲','玄冰甲','碧玉簪','云霞帔','灵犀玉佩','玄武甲','霓裳羽衣','紫绶仙衣','金刚罩','佛光舍利','七宝袈裟','太清玉符','天孙锦','须弥芥子','如意宝衣','神禹令','雪魂珠','弥尘幡','兜率宝伞','紫云仙纱','太乙青灵铠','金莲宝座','大须弥障','两仪微尘阵图']};
-const TR_SK={'紫郢剑':'紫郢飞虹','青索剑':'青索分光','南明离火剑':'南明焚天','阴霹雳剑':'霹雳双剑','阳霹雳剑':'霹雳双剑','玄龟剑':'玄龟剑气','七修剑':'七修剑光','碧蜈钩':'碧蜈钩','百毒金蚕':'金蚕蛊','太乙神雷符':'太乙神雷','九天元阳尺':'元阳尺','乾天火灵珠':'乾天火灵','天璇神砂':'天璇神砂','元磁神针':'元磁神光','两仪微尘阵图':'两仪微尘阵','冰魄神光剑':'冰魄飞剑','雪魂珠':'冰魄寒光','佛光舍利':'佛光普照','天遁镜':'剑气长虹','火龙钗':'火龙卷'};
+const TR_SK={'紫郢剑':'紫郢飞虹','青虹剑':'青索分光','南明离火剑':'南明焚天','阴霹雳剑':'霹雳双剑','阳霹雳剑':'霹雳双剑','玄龟剑':'玄龟剑气','七修剑':'七修剑光','碧蜈钩':'碧蜈钩','百毒金蚕':'金蚕蛊','太乙神雷符':'太乙神雷','九天元阳尺':'元阳尺','乾天火灵珠':'乾天火灵','天璇神砂':'天璇神砂','元磁神针':'元磁神光','两仪微尘阵图':'两仪微尘阵','冰魄神光剑':'冰魄飞剑','雪魂珠':'冰魄寒光','佛光舍利':'佛光普照','天遁镜':'剑气长虹','火龙钗':'火龙卷'};
 const SLOTN={w:'飞剑',m:'法器',a:'护身'};
 const STN={hp:'气血',mp:'真元',atk:'剑力',def:'护体',mag:'法力',res:'抗法',mov:'身法'};
 const TREASURES=[];
@@ -1017,7 +1042,7 @@ function heightMap(m,seed){const n=vnoise(seed,8),r=seeded(seed^0x77),hm=[];
 const GP={plain:[[110,176,52],[160,214,82],[78,138,40]],forest:[[74,150,48],[120,190,70],[50,112,36]],mount:[[124,168,64],[168,204,96],[92,134,52]],
   water:[[100,172,58],[150,210,88],[70,134,46]],snow:[[222,232,244],[250,252,255],[196,210,228]],cave:[[88,70,110],[120,98,144],[60,48,80]],temple:[[196,176,130],[222,204,160],[160,138,98]]};
 function paintMap2(m,style,seed,hm){
-  if(typeof document==='undefined')return null;const T=W*H>700?40:64,c=document.createElement('canvas');c.width=W*T;c.height=H*T;const g=c.getContext&&c.getContext('2d');if(!g)return null;
+  if(typeof document==='undefined')return null;const T=(typeof matchMedia!=='undefined'&&matchMedia('(pointer:coarse)').matches)?32:W*H>700?40:64,c=document.createElement('canvas');c.width=W*T;c.height=H*T;const g=c.getContext&&c.getContext('2d');if(!g)return null;
   const rng=seeded(seed^0x2f6e2b1),rr=(a,b)=>a+rng()*(b-a),P=GP[style]||GP.plain,n1=vnoise(seed,6),n2=vnoise(seed+7,18);
   const col=(k,l)=>{const a=P[0],b=P[1],d=P[2];const t=k;const base=t<0.5?a.map((v,i)=>d[i]+(v-d[i])*t*2):a.map((v,i)=>v+(b[i]-v)*(t-0.5)*2);return `rgb(${base.map(v=>Math.round(v*l)).join(',')})`;};
   // 地面：多层噪声色斑
@@ -1091,6 +1116,17 @@ function codeDialog(mode){document.querySelectorAll('.codeov').forEach(e=>e.remo
   o.addEventListener('click',async e=>{const k=e.target.dataset&&e.target.dataset.k;if(e.target===o||k==='close'){o.remove();return;}
     if(k==='copy'){try{await navigator.clipboard.writeText(ta.value);msg.textContent='已复制到剪贴板。';}catch(x){ta.select();msg.textContent='请手动全选复制。';}}
     if(k==='load'){try{S=importCode(ta.value);saveGame();o.remove();VIEW='camp';TAB='ch';render();}catch(x){msg.textContent='存档码无效：'+x.message;}}});}
+const BKEY='shushan_battle_v1';
+function saveBattle(){if(!B||B.over||FAST||typeof localStorage==='undefined'||B.mode==='deploy')return;
+  try{const o={v:1,c:B.c,st:B.st,map:B.map,bridges:B.map.bridges||[],hmap:B.hmap,seed:B.seed,units:B.units,turn:B.turn,chests:B.chests,drops:B.drops,expLog:B.expLog,lvLog:B.lvLog,start:B.start,cond:B.cond,heroIds:B.heroIds,newSk:B.newSk,gold:B.gold||0,log:B.log.slice(-8),uidN:B.uidN,z:B.z,px:B.px,py:B.py,t:Date.now()};
+    localStorage.setItem(BKEY,JSON.stringify(o));saveGame();}catch(e){}}
+function clearBattle(){try{localStorage.removeItem(BKEY);}catch(e){}}
+function savedBattle(){try{const o=JSON.parse(localStorage.getItem(BKEY)||'null');return o&&o.v===1?o:null;}catch(e){return null;}}
+function resumeBattle(){const o=savedBattle();if(!o)return;const def=stageDef(o.c,o.st);
+  B={c:o.c,st:o.st,def,map:o.map,units:o.units,turn:o.turn,phase:'p',mode:'idle',sel:null,info:null,pend:null,center:null,skill:null,log:o.log||[],drops:o.drops||[],expLog:o.expLog||{},lvLog:o.lvLog||{},over:false,autoAll:false,uidN:o.uidN,heroIds:o.heroIds,newSk:o.newSk||[]};
+  B.map.bridges=o.bridges;B.hmap=o.hmap;B.seed=o.seed;B.chests=o.chests||[];B.cond=o.cond||{};B.start=o.start;B.gold=o.gold;B.z=o.z;B.px=o.px;B.py=o.py;
+  try{B.paint=TH()?paintMap2(B.map,def.s,B.seed,B.hmap):paintMap(B.map,def.s,B.seed,true);}catch(e){B.paint=null;}
+  logL(`战斗已恢复：第${CN[B.turn]||B.turn}回合，我方行动。`);VIEW='battle';app.innerHTML='';render();}
 function saveGame(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(S));}catch(e){}}
 function loadGame(){try{const s=localStorage.getItem(SAVE_KEY);if(s)return JSON.parse(s);}catch(e){}return null;}
 function recruitUpTo(c){const j=[];HEROES.forEach(h=>{if(h.join<=c&&!S.heroes[h.id]){S.heroes[h.id]={lv:Math.max(2,elv(c)),exp:0,eq:{w:null,m:null,a:null}};j.push(h.id);}});return j;}
@@ -1131,6 +1167,7 @@ function makeFoe(d,lv,boss){
   return mkUnit({side:'e',name,glyph:g||name[0],el,cls:type,lv,boss:!!boss,maxhp:Math.round(b.hp*f*hm),hp:Math.round(b.hp*f*hm),maxmp:Math.round(b.mp*f*(boss?1.6:1)),mp:Math.round(b.mp*f*(boss?1.6:1)),
     atk:Math.round(b.atk*f),def:Math.round(b.def*f),mag:Math.round(b.mag*f),res:Math.round(b.res*f),agi:Math.round(b.agi+0.35*(lv-1)+(boss?4:0)),hit:Math.round(b.hit+0.35*(lv-1)+(boss?4:0)),mov:b.mov,r:b.r.slice(),skills:sk});}
 function startBattle(c,dep){
+  clearBattle();
   const st=c===30?S.stage30:0,def=stageDef(c,st);
   B={c,st,def,map:genMap(def.s,c*131+st*17+Math.floor(R()*99999)),units:[],turn:1,phase:'p',mode:'idle',sel:null,info:null,pend:null,center:null,skill:null,log:[],drops:[],expLog:{},lvLog:{},over:false,autoAll:false,uidN:0,heroIds:dep.slice(),newSk:[]};
   const pc=[];for(let y=0;y<H;y++)for(const x of [2,1,0])pc.push([x,y]);
@@ -1375,15 +1412,22 @@ function hum(L){
     const ul=part(new THREE.TorusGeometry(0.046,fem?0.008:0.006,4,18,Math.PI),blk,0,0.002,0.012,eg,false);ul.scale.set(1.08,fem?0.6:0.5,1);
     if(fem){const wing=part(new THREE.BoxGeometry(0.026,0.007,0.01),blk,s*0.052,0.012,0.012,eg,false);wing.rotation.z=s*0.45;
       for(let k=0;k<3;k++){const la=part(new THREE.BoxGeometry(0.004,0.014,0.004),blk,s*(0.02+k*0.012),0.03,0.013,eg,false);la.rotation.z=-s*(0.2+k*0.2);}}
+    const cr=part(new THREE.TorusGeometry(0.05,0.0035,3,16,Math.PI*0.8),new THREE.MeshBasicMaterial({color:mixC(SK,0x6a3a3a,0.35)}),0,0.018,0.006,eg,false);cr.rotation.z=Math.PI*0.1;cr.scale.set(1.05,0.55,1);
+    const ir=part(new THREE.TorusGeometry(0.024,0.004,4,18),new THREE.MeshBasicMaterial({color:mixC(IRIS,0x000000,0.55)}),0,-0.003,0.016,eg,false);ir.scale.set(1,1.1,1);
+    part(new THREE.SphereGeometry(0.015,10,8),MT(mixC(IRIS,0xffffff,0.35),{emissive:mixC(IRIS,0xffffff,0.3),emissiveIntensity:0.3}),0,-0.012,0.018,eg,false).scale.set(1,0.5,0.3);
+    if(fem)for(let k=0;k<2;k++){const lw=part(new THREE.BoxGeometry(0.003,0.008,0.003),blk,s*(0.022+k*0.014),-0.022,0.013,eg,false);lw.rotation.z=s*(0.3+k*0.2);}
     const ll=part(new THREE.TorusGeometry(0.04,0.003,3,14,Math.PI),new THREE.MeshBasicMaterial({color:mixC(SK,0x6a3a3a,0.45)}),0,-0.004,0.01,eg,false);ll.rotation.z=Math.PI;ll.scale.set(1.05,0.4,1);
     eyes.push(eg);
     const bc=mixC(HC===0xeeeeea||HC===0xf0f0f0||HC===0xd8d8e0||HC===0xe8f0ff?0x9a9a9a:HC,0x000000,0.05);
     const br=part(new THREE.TorusGeometry(0.06,fem?0.0045:0.008,3,14,Math.PI*0.62),new THREE.MeshBasicMaterial({color:bc}),s*0.07,0.052,0.168,head,false);
     br.rotation.set(0,s*0.2,Math.PI*0.19+(s<0?0:0));br.scale.set(s,0.35,1);br.rotation.z=s>0?Math.PI*0.19:Math.PI*0.19;
     if(fem||child){const bl=part(new THREE.SphereGeometry(0.03,10,8),MT(0xff9aa8,{transparent:true,opacity:0.4}),s*0.1,-0.07,0.145,head,false);bl.scale.set(1.1,0.5,0.3);}});
+  [-1,1].forEach(s=>part(new THREE.SphereGeometry(0.007,6,4),new THREE.MeshBasicMaterial({color:mixC(SK,0x5a2a2a,0.6)}),s*0.011,-0.068,0.186,head,false).scale.set(1.3,0.6,0.6));
   const lc=fem?0xd83a5a:0xb86a60;
   part(new THREE.SphereGeometry(0.02,12,8),MT(lc),0,-0.118,0.168,head,false).scale.set(1.2,0.32,0.5);
   part(new THREE.SphereGeometry(0.018,12,8),MT(mixC(lc,0xffffff,0.15)),0,-0.132,0.164,head,false).scale.set(1.05,0.36,0.5);
+  part(new THREE.BoxGeometry(0.038,0.0025,0.004),new THREE.MeshBasicMaterial({color:mixC(lc,0x000000,0.55)}),0,-0.125,0.177,head,false);
+  part(new THREE.BoxGeometry(0.006,0.018,0.004),MT(mixC(SK,0xd08070,0.12)),0,-0.1,0.183,head,false);
   // —— 发型（参照原画：中分长直发、鬓发垂胸、高髻金钗、男子高马尾玉冠）
   const hm=MT(HC,{emissive:HC,emissiveIntensity:0.08});let tail=null;
   const cap=c=>{const m=part(new THREE.SphereGeometry(0.228,30,16,0,Math.PI*2,0,Math.PI*0.55),c||hm,0,0.028,-0.01,head);m.rotation.x=-0.26;
@@ -1470,6 +1514,10 @@ function beast(col){
   part(new THREE.SphereGeometry(0.28,14,10),lt,0,0.64,0.05,body,false).scale.set(0.8,0.55,1.6);
   for(let i=0;i<6;i++){const sp=part(new THREE.ConeGeometry(0.045,0.2-i*0.015,5),GL(mixC(col,0xffd23f,0.3),0.15),0,1.12-i*0.02,0.34-i*0.16,body,false);sp.rotation.x=-0.45;}
   for(let i=0;i<4;i++)[-1,1].forEach(s=>{const st=part(new THREE.TorusGeometry(0.28,0.018,4,12,Math.PI*0.5),dk,s*0.02,0.84,0.12-i*0.16,body,false);st.rotation.set(0,Math.PI/2,s>0?Math.PI*0.62:Math.PI*0.88);});
+  // 肩臀鬃簇、腹甲、疤痕
+  [[0.28,0.95,0.3],[-0.28,0.95,0.3],[0.27,0.92,-0.38],[-0.27,0.92,-0.38]].forEach(([x,y,z])=>{for(let i=0;i<5;i++){const t=part(new THREE.ConeGeometry(0.035,0.14,5),dk,x+(i-2)*0.02*Math.sign(x),y+i*0.02,z+(i-2)*0.05,body,false);t.rotation.set(-0.8,0,Math.sign(x)*(0.9+i*0.1));}});
+  for(let i=0;i<5;i++){const pl=part(new THREE.BoxGeometry(0.2-Math.abs(i-2)*0.02,0.02,0.1),MT(mixC(col,0xffe8b0,0.5)),0,0.55+Math.abs(i-2)*0.01,0.3-i*0.15,body,false);pl.rotation.x=0.1;}
+  [0,1].forEach(i=>{const sc=part(new THREE.BoxGeometry(0.12,0.012,0.012),MT(0xd8b0a0),0.3,0.86+i*0.05,0.1-i*0.05,body,false);sc.rotation.set(0,Math.PI/2,0.5);});
   // 颈与鬃毛
   const neck=part(new THREE.CylinderGeometry(0.16,0.22,0.3,12),mc,0,0.98,0.5,body);neck.rotation.x=0.9;
   for(let i=0;i<12;i++){const a=i/12*Math.PI*2;const m=part(new THREE.ConeGeometry(0.05,0.2,5),dk,Math.cos(a)*0.2,1.02+Math.sin(a)*0.18,0.46,body,false);m.rotation.set(Math.sin(a)*0.8-0.6,0,-Math.cos(a)*0.9);}
@@ -1478,6 +1526,8 @@ function beast(col){
   part(new THREE.SphereGeometry(0.25,18,14),mc,0,0.02,0,head).scale.set(1,0.9,1);
   part(new THREE.SphereGeometry(0.15,14,10),mc,0,-0.05,0.2,head).scale.set(1,0.8,1.3);
   part(new THREE.SphereGeometry(0.07,10,8),dk,0,-0.02,0.37,head,false).scale.set(1.2,0.8,0.8);
+  part(new THREE.OctahedronGeometry(0.035,0),GL(0xff3a5a,1.2),0,0.17,0.2,head,false).scale.set(1,1.4,0.6);
+  for(let i=0;i<3;i++){const w=part(new THREE.BoxGeometry(0.1-i*0.02,0.01,0.01),dk,0,0.1-i*0.03,0.24+i*0.02,head,false);w.rotation.x=-0.3;}
   [-1,1].forEach(s=>part(new THREE.SphereGeometry(0.018,6,4),blk,s*0.035,-0.02,0.43,head,false));
   const jaw=new THREE.Group();jaw.position.set(0,-0.11,0.08);jaw.rotation.x=0.18;head.add(jaw);
   part(new THREE.SphereGeometry(0.12,12,8),dk,0,-0.02,0.12,jaw).scale.set(1,0.45,1.4);
@@ -1498,7 +1548,9 @@ function beast(col){
     part(new THREE.CylinderGeometry(0.1,0.08,0.34,10),mc,0,-0.14,0,p);
     part(new THREE.CylinderGeometry(0.07,0.06,0.3,10),dk,0,-0.42,sz*0.03,p);
     part(new THREE.SphereGeometry(0.08,10,8),dk,0,-0.58,0.04,p).scale.set(1.1,0.6,1.3);
-    for(let c=0;c<3;c++){const cl=part(new THREE.ConeGeometry(0.014,0.06,4),bone,(c-1)*0.04,-0.6,0.13,p,false);cl.rotation.x=Math.PI/2+0.4;}
+    for(let c=0;c<3;c++){const cl=part(new THREE.ConeGeometry(0.016,0.08,4),bone,(c-1)*0.04,-0.6,0.14,p,false);cl.rotation.x=Math.PI/2+0.4;}
+    const kn=part(new THREE.ConeGeometry(0.025,0.09,5),bone,0,-0.3,sz>0?0.08:-0.08,p,false);kn.rotation.x=sz>0?1.2:-1.2;
+    for(let r=0;r<3;r++)part(new THREE.TorusGeometry(0.066-r*0.004,0.008,4,12),dk,0,-0.34-r*0.06,sz*0.03,p,false).rotation.x=Math.PI/2;
     legs.push(p);});
   // 尾：节节渐细，末端尾簇
   const tail=new THREE.Group();tail.position.set(0,0.88,-0.62);body.add(tail);
@@ -1511,6 +1563,7 @@ function bird(col){
   part(new THREE.SphereGeometry(0.33,18,14),mc,0,0.95,0,body).scale.set(0.95,0.9,1.4);
   part(new THREE.SphereGeometry(0.24,14,10),lt,0,0.9,0.2,body,false).scale.set(0.9,0.9,1);
   for(let i=0;i<5;i++){const f=part(new THREE.BoxGeometry(0.14,0.01,0.1),lt,0,0.78+i*0.05,0.3,body,false);f.rotation.x=0.3;}
+  for(let r=0;r<4;r++)for(let i=0;i<7;i++){const a=(i-3)*0.32;const f=part(new THREE.BoxGeometry(0.08,0.012,0.12),r%2?dk:mc,Math.sin(a)*0.3,1.12-r*0.09,Math.cos(a)*0.1-0.1-r*0.12,body,false);f.rotation.set(0.6,a,0);}
   const neck=part(new THREE.CylinderGeometry(0.1,0.15,0.25,10),mc,0,1.14,0.32,body);neck.rotation.x=0.5;
   const head=new THREE.Group();head.position.set(0,1.28,0.44);body.add(head);
   part(new THREE.SphereGeometry(0.17,16,12),mc,0,0,0,head);
@@ -1527,7 +1580,7 @@ function bird(col){
     for(let i=0;i<6;i++){const f=part(new THREE.BoxGeometry(0.5-i*0.04,0.025,0.075),i%2?dk:lt,s*(0.42+i*0.03),-0.01,-0.13+i*0.05,w2,false);f.rotation.y=s*(0.35-i*0.1);}
     wings[s]=w2;});
   for(let i=0;i<5;i++){const f=part(new THREE.BoxGeometry(0.07,0.02,0.5),i%2?dk:lt,(i-2)*0.055,0.9,-0.62,body,false);f.rotation.set(0.25,(i-2)*0.18,0);}
-  [-1,1].forEach(s=>{part(new THREE.CylinderGeometry(0.02,0.02,0.3,6),gold,s*0.1,0.55,0.05,body,false);
+  [-1,1].forEach(s=>{part(new THREE.CylinderGeometry(0.02,0.02,0.3,6),gold,s*0.1,0.55,0.05,body,false);for(let r=0;r<4;r++)part(new THREE.TorusGeometry(0.022,0.006,4,10),MT(0xb88a20),s*0.1,0.45+r*0.06,0.05,body,false).rotation.x=Math.PI/2;
     for(let t=0;t<3;t++){const tl=part(new THREE.ConeGeometry(0.012,0.07,4),MT(0x2a1a0a),s*0.1+(t-1)*0.025,0.4,0.1,body,false);tl.rotation.x=Math.PI/2;}});
   g.userData={kind:'bird',body,head,wings,scale:0.85,focus:head};return g;}
 function ghost(col){
@@ -1545,6 +1598,10 @@ function ghost(col){
     part(new THREE.SphereGeometry(0.02,8,6),GL(0xff3020,1.6),s*0.05,1.49,0.215,body,false);});
   part(new THREE.ConeGeometry(0.015,0.03,3),blk2(),0,1.43,0.225,body,false).rotation.x=Math.PI;
   for(let t=0;t<5;t++)part(new THREE.BoxGeometry(0.014,0.03,0.01),bone,-0.04+t*0.02,1.37,0.19,body,false);
+  for(let i=0;i<4;i++)[-1,1].forEach(s=>{const rb=part(new THREE.TorusGeometry(0.1-i*0.012,0.008,4,10,Math.PI*0.7),bone,s*0.01,1.25-i*0.06,0.12,body,false);rb.rotation.set(0,0,s>0?-0.2:Math.PI+0.2);});
+  part(new THREE.CylinderGeometry(0.012,0.012,0.3,6),bone,0,1.16,0.12,body,false);
+  for(let i=0;i<5;i++){const a=i/5*Math.PI*2;const tg=part(new THREE.PlaneGeometry(0.07,0.2),MT(0xf2d060,{side:THREE.DoubleSide,emissive:0x6a4a00,emissiveIntensity:0.4}),Math.cos(a)*0.45,1.0+Math.sin(i*1.7)*0.2,Math.sin(a)*0.45,body,false);tg.rotation.set(0.2,-a,Math.sin(i)*0.3);
+    part(new THREE.PlaneGeometry(0.02,0.14),new THREE.MeshBasicMaterial({color:0xc01010,side:THREE.DoubleSide}),Math.cos(a)*0.451,1.0+Math.sin(i*1.7)*0.2,Math.sin(a)*0.451,body,false).rotation.set(0.2,-a,Math.sin(i)*0.3);}
   // 双臂：破袖、枯爪
   const arms={};[-1,1].forEach(s=>{const a=new THREE.Group();a.position.set(s*0.26,1.25,0.02);a.rotation.z=s*0.5;body.add(a);
     part(new THREE.CylinderGeometry(0.05,0.12,0.55,10,1,true),gm,0,-0.27,0,a,false);
@@ -1624,12 +1681,12 @@ function portraitCls(u){
   if(!TH()||typeof document==='undefined')return null;
   const key=portraitKey(u);if(PCACHE[key]!==undefined)return PCACHE[key];
   return withPR(key,()=>{
-    ensurePR();PR.r.setSize(224,224);PR.cam.aspect=1;PR.cam.updateProjectionMatrix();
+    const PS=COARSE?256:320;ensurePR();PR.r.setSize(PS,PS);PR.cam.aspect=1;PR.cam.updateProjectionMatrix();
     const m=shadowize(buildFor(u));m.rotation.y=u.side==='p'?0.5:-0.5;PR.scene.add(m);m.updateMatrixWorld(true);
     const p=new THREE.Vector3();m.userData.focus.getWorldPosition(p);
     const kd=m.userData.kind,dist=kd==='hum'?0.92:kd==='ghost'?1.9:kd==='bird'?1.6:2.3;
     PR.cam.position.set(p.x,p.y+0.08,p.z+dist);PR.cam.lookAt(p.x,p.y-(kd==='hum'?0.06:0.02),p.z);
-    PR.r.render(PR.scene,PR.cam);const ok=drawnOK(224,224);const url=ok?PR.r.domElement.toDataURL('image/png'):null;
+    PR.r.render(PR.scene,PR.cam);const ok=drawnOK(PS,PS);const url=ok?PR.r.domElement.toDataURL('image/png'):null;
     PR.scene.remove(m);disposeObj(m);if(!ok)throw new Error('blank portrait');
     const cls='pk'+(PN++);const grad=u.side==='p'?'radial-gradient(circle at 50% 35%,#ffffff,#d8f4ec 60%,#8fd8c0)':'radial-gradient(circle at 50% 35%,#ffffff,#ffe6e0 60%,#f0a8a0)';
     PSTYLE.appendChild(document.createTextNode(`.${cls}{background-image:url(${url}),${grad}}`));return cls;});}
@@ -2536,7 +2593,7 @@ function phaseBanner(txt,sub,side,short){
   d.innerHTML=`<div class="pbar"><span class="pl"></span><b>${txt}</b>${sub?`<small>${sub}</small>`:''}<span class="pr"></span></div>`;host.appendChild(d);
   if(!short)sfx(side==='p'?'gong':'boom');const dur=(short?760:1300)*(B.autoAll?0.6:1)*SPD;
   return new Promise(r=>setTimeout(()=>{d.classList.add('out');setTimeout(()=>{d.remove();r();},260*SPD);},dur));}
-function beginBattle(){if(!B||B.mode!=='deploy')return;B.dsel=null;const b0=B;B.mode='busy';logL('布阵完毕，开战！');render();sfx('gong');
+function beginBattle(){if(!B||B.mode!=='deploy')return;B.dsel=null;const b0=B;B.mode='busy';setTimeout(()=>{B.mode==='busy'&&(B.mode='idle',saveBattle(),B.mode='busy');},0);logL('布阵完毕，开战！');render();sfx('gong');
   phaseBanner('我方回合','第一回合 · 开战','p').then(()=>{if(B===b0&&!B.over&&B.mode==='busy'){B.mode='idle';render();if(B.autoAll)autoTurn();}});}
 const inDeployZone=(x,y)=>x<=1&&x>=0&&y>=0&&y<H;
 function startPhase(side){
@@ -2586,6 +2643,20 @@ function aiPlan(u){
   for(const [k,c] of RC){const v=df[k]+c*0.01;if(v<bv){bv=v;bx=k%W;by=Math.floor(k/W);}}
   return {x:bx,y:by,act:'wait'};}
 // 镜头跟随：平滑平移，使指定格位于画面中央；已在中央区域内则不动
+function showUnitDetail(u){if(typeof document==='undefined'||FAST||!B)return;document.querySelectorAll('.udet').forEach(e=>e.remove());
+  const tn=TER[B.map[u.y][u.x]],sk=(u.skills||[]).map(i=>SKILLS[i]);
+  const d=document.createElement('div');d.className='udet '+(u.side==='e'?'foe':'ally');
+  d.innerHTML=`<div class="udbox" data-a="noop"><button class="btn sm udx" data-a="udclose">关闭</button>
+   <div class="udtop"><div class="udimg ${vnCls(u,u.side==='p'?1:-1)||''}"></div>
+    <div class="udinfo"><div class="udname disp">${esc(u.name)}${u.boss?' <span class="bosst">首领</span>':''}</div>
+     <div class="udmeta">${eld(u.el)}${u.el}行 · ${u.cls} · Lv.${u.lv}${u.side==='p'?' · '+realmTag(u.lv):''}</div>
+     ${bar('气血',u.hp,u.maxhp,'#0fa37a')}${bar('真元',u.mp,u.maxmp,'#2f6fd6')}
+     <div class="udst"><span>${tp('atk','剑力')} ${u.atk}</span><span>${tp('def','护体')} ${u.def}</span><span>${tp('mag','法力')} ${u.mag}</span><span>${tp('res','抗法')} ${u.res}</span><span>${tp('agi','身法')} ${u.agi}</span><span>${tp('hit','命中')} ${u.hit}</span><span>${tp('mov','移动')} ${u.mov}</span><span>${tp('rng','攻距')} ${u.r[0]}-${u.r[1]}</span></div>
+     <div class="udter">${tp('terr',TERFX[B.map[u.y][u.x]])}${hAt(u.x,u.y)?'　高地':''}</div></div></div>
+   <div class="udsk"><b>${u.side==='p'?'道法':'妖术'}</b>${sk.length?sk.map(s=>`<span>${eld(s.el)}${s.name}<i>${TYN[s.type]}·${s.mp}</i></span>`).join(''):'<span class="muted">—</span>'}</div>
+   ${u.side==='e'&&B.sel&&B.sel.side==='p'?`<div class="udfc">若【${esc(B.sel.name)}】攻击：伤害约 ${estPhys(B.sel,u)}，命中 ${Math.round(100-dodgeP(B.sel,u)*100)}%${elMul(B.sel.el,u.el)>1?' · 五行克制':''}</div>`:''}</div>`;
+  d.addEventListener('click',e=>{if(e.target===d||e.target.dataset.a==='udclose'){e.stopPropagation();d.remove();}});
+  document.body.appendChild(d);}
 function camFollow(pts,force){if(FAST||typeof document==='undefined'||!B)return false;const bw=document.querySelector('.bwrap'),tl=document.getElementById('tilt');if(!bw||!tl)return false;
   const wr=bw.getBoundingClientRect();let cx=0,cy=0,n=0;
   for(const [x,y] of pts){const c=document.querySelector(`#board .cell[data-v="${x},${y}"]`);if(!c)continue;const r=c.getBoundingClientRect();cx+=r.left+r.width/2;cy+=r.top+r.height/2-hAt(x,y)*r.height*0.5;n++;}
@@ -2598,7 +2669,7 @@ function camFocus(pts,zTarget){if(FAST||typeof document==='undefined'||!B)return
   const wr=bw.getBoundingClientRect();let cx=0,cy=0,n=0;
   for(const [x,y] of pts){const c=document.querySelector(`#board .cell[data-v="${x},${y}"]`);if(!c)continue;const r=c.getBoundingClientRect();cx+=r.left+r.width/2;cy+=r.top+r.height/2-hAt(x,y)*r.height*0.5;n++;}
   if(!n)return;cx/=n;cy/=n;
-  const coarse=COARSE,zMax=coarse?3.8:4,z1=B.z,z2=clamp(Math.max(z1,zTarget||z1),0.45,zMax),k=z2/z1;
+  const coarse=COARSE,zMax=coarse?3.4:4,z1=B.z,z2=clamp(Math.max(z1,zTarget||z1),0.45,zMax),k=z2/z1;
   const Ox=wr.left+tl.offsetLeft+tl.offsetWidth/2,Oy=wr.top+tl.offsetTop+tl.offsetHeight/2;
   const cx2=Ox+B.px+(cx-Ox-B.px)*k,cy2=Oy+B.py+(cy-Oy-B.py)*k,tx=wr.left+wr.width/2,ty=wr.top+wr.height*0.5;
   tl.style.transition='transform .45s cubic-bezier(.3,.7,.3,1)';B.z=z2;B.px+=tx-cx2;B.py+=ty-cy2;applyZoom();
@@ -2620,7 +2691,7 @@ async function enemyPhase(){
   for(const u of B.units.filter(o=>o.side==='e')){if(B.over)return;if(u.hp<=0||u.acted)continue;await aiAct(u);if(checkEnd())return;}
   if(B.over)return;
   await phaseBanner('敌方回合结束','','e',true);if(B.over)return;
-  B.turn++;B.phase='p';{const ps=B.units.filter(o=>o.side==='p');if(ps.length&&!B.autoAll)camFollow(ps.map(o=>[o.x,o.y]),false);}await phaseBanner('我方回合',`第${CN[B.turn]||B.turn}回合`,'p');if(B.over)return;startPhase('p');B.mode='idle';logL(`第${CN[B.turn]||B.turn}回合，我方行动。`);render();
+  B.turn++;B.phase='p';{const ps=B.units.filter(o=>o.side==='p');if(ps.length&&!B.autoAll)camFollow(ps.map(o=>[o.x,o.y]),false);}await phaseBanner('我方回合',`第${CN[B.turn]||B.turn}回合`,'p');if(B.over)return;startPhase('p');B.mode='idle';saveBattle();logL(`第${CN[B.turn]||B.turn}回合，我方行动。`);render();
   if(B.turn>80){defeat();return;}
   if(B.units.filter(o=>o.side==='p').every(o=>o.acted)){await sleep(300);return enemyPhase();}
   B.stopAuto=false;if(B.autoAll)return autoTurn();}
@@ -2637,9 +2708,9 @@ function cancelSel(){const u=B.sel;if(u&&u.ox!=null){u.x=u.ox;u.y=u.oy;}B.sel=nu
 async function runManual(fn){
   const a=B.sel;B.mode='busy';render();await fn();a.acted=true;
   B.sel=null;B.pend=null;B.center=null;B.skill=null;B.reach=null;
-  if(checkEnd())return;B.mode='idle';render();
+  if(checkEnd())return;B.mode='idle';render();saveBattle();
   if(B.units.filter(u=>u.side==='p').every(u=>u.acted))await enemyPhase();}
-function victory(){
+function victory(){clearBattle();
   B.over=true;B.win=true;const c=B.c;B.joined=[];B.final=false;
   B.goldClear=100+c*40;addGold(B.goldClear);
   if(c===30){if(B.st<2)S.stage30=B.st+1;else{S.cleared[30]=true;S.stage30=0;S.ended=true;B.final=true;}}
@@ -2648,7 +2719,7 @@ function victory(){
   catchUp();saveGame();
   const fin=()=>{VIEW='result';render();jingle(true);setTimeout(()=>{if(VIEW==='result')playTrack('camp');},4500);};
   setTimeout(()=>playScene(c,B.st,'post',fin),FAST?0:900);}
-function defeat(why){B.over=true;B.win=false;B.why=why||'我方全灭';catchUp();saveGame();setTimeout(()=>{VIEW='result';render();jingle(false);setTimeout(()=>{if(VIEW==='result')playTrack('camp');},4500);},FAST?0:900);}
+function defeat(why){clearBattle();B.over=true;B.win=false;B.why=why||'我方全灭';catchUp();saveGame();setTimeout(()=>{VIEW='result';render();jingle(false);setTimeout(()=>{if(VIEW==='result')playTrack('camp');},4500);},FAST?0:900);}
 function catchUp(){
   const lvs=B.heroIds.map(id=>S.heroes[id].lv),tg=Math.round(lvs.reduce((a,b)=>a+b,0)/lvs.length)-2;
   for(const id of recruited()){const s=S.heroes[id];if(s.lv<tg){s.lv=tg;s.exp=0;}}}
@@ -2798,7 +2869,7 @@ function vTitle(){
   <p class="muted">一部仿《天地劫》式的战棋。三十回章节，终章为三次峨眉斗剑；二十位可控侠士，百种道法，百件法宝。击败敌人有机会掉落法宝，首领必掉。</p>
   <div class="mtn"></div>
   <div class="btns"><button class="btn pri" data-a="cont" ${has?'':'disabled'}>继续修行</button>
-  <button class="btn" data-a="codein">输入存档码</button>
+  ${savedBattle()?`<button class="btn pri" data-a="resume">继续战斗 · 第${CN[savedBattle().c]}回</button>`:''}<button class="btn" data-a="codein">输入存档码</button>
   <button class="btn ${confirmNew?'red':''}" data-a="new">${confirmNew?'再点一次，覆盖旧档':'新开一局'}</button></div>
   <p class="muted" style="margin-top:18px;font-size:13px">进度自动保存在本浏览器中。五行相克：金克木，木克土，土克水，水克火，火克金，克制方伤害提升三成。</p></div></div>`;}
 function vCamp(){
@@ -2823,7 +2894,7 @@ function vCamp(){
   return `<div class="wrap"><div class="top"><h1 class="disp">峨眉·凝碧洞府</h1>
   <div class="tally"><span>${tp('gold','金钱')} <b>${S.gold||0}</b></span><span>群侠 <b>${recruited().length}</b>/20</span><span>法宝 <b>${own}</b>/100</span><span>道法 <b>${learned.size}</b>/100</span></div></div>
   <div class="tabs">${[['ch','章回'],['hero','群侠'],['tr','法宝录'],['sk','道法录']].map(([k,n])=>`<button class="tab ${TAB===k?'on':''}" data-a="tab" data-v="${k}">${n}</button>`).join('')}
-  <button class="tab" data-a="codeout" style="margin-left:auto">存档码</button><button class="tab" data-a="totitle">回标题</button></div>${body}</div>${MODAL?vModal():''}`;}
+  ${savedBattle()?`<button class="tab resumet" data-a="resume">▶ 继续战斗（第${CN[savedBattle().c]}回 第${savedBattle().turn}回合）</button>`:''}<button class="tab" data-a="codeout" style="margin-left:auto">存档码</button><button class="tab" data-a="totitle">回标题</button></div>${body}</div>${MODAL?vModal():''}`;}
 function vModal(){
   if(MODAL.sk!=null){const sk=SKILLS[MODAL.sk],who=(SK_LEARN[sk.id]||[]).map(i=>`${HEROES[i].name}（Lv.${HEROES[i].skills.find(x=>x.sid===sk.id).lv}）`).join('、');
     const trs=TREASURES.filter(t=>t.sk===sk.id).map(t=>t.name).join('、');
@@ -2901,7 +2972,7 @@ function vEnding(){
 
 /* ---------- 战斗界面 ---------- */
 function applyZoom(){const t=document.getElementById('tilt');if(!t||!B)return;
-  const coarse=typeof matchMedia!=='undefined'&&matchMedia('(pointer:coarse)').matches;B.z=clamp(B.z,0.45,coarse?3.8:4);
+  const coarse=typeof matchMedia!=='undefined'&&matchMedia('(pointer:coarse)').matches;B.z=clamp(B.z,0.45,coarse?3.4:4);
   t.style.setProperty('--z',B.z);t.style.setProperty('--px',B.px+'px');t.style.setProperty('--py',B.py+'px');
   if(typeof placeCmd==='function')placeCmd();syncHits();}
 function centerView(){if(!B||!B.spr)return;const bw=document.querySelector('.bwrap');if(!bw)return;const tl=document.getElementById('tilt');if(tl){tl.style.transition='none';void tl.offsetWidth;setTimeout(()=>{if(tl)tl.style.transition='';},50);}
@@ -2982,7 +3053,7 @@ function renderBattle(){
     if(el._flat===undefined)el._flat=!bodyCls(u);
     else if(el._flat&&bodyCls(u)){const bc=bodyCls(u);el._flat=false;el.innerHTML=`<div class="up"><div class="hit"></div><div class="shd"></div><div class="bdy ${bc}"></div><div class="hp"><i></i></div><span class="ed" style="background:${ELC[u.el]}"></span><span class="stn"></span></div>`;el._hp=el.querySelector('.hp i');el._st=el.querySelector('.stn');}
     el.className=`spr us ${u.side}${u.boss?' boss':''}${u.acted&&B.phase===u.side?' done':''}${sel===u||B.dsel===u?' sel':''}${bodyCls(u)?'':' flat'}${tg?' tgt':''}${B.pend===u?' pend':''}`;
-    el.dataset.v=`${u.x},${u.y}`;el.style.left=((u.x+0.62)/W*100)+'%';el.style.top=((u.y+0.62)/H*100)+'%';el.style.width=(100/W*(u.boss?1.38:1.16))+'%';el.style.setProperty('--h',hAt(u.x,u.y));
+    el.dataset.v=`${u.x},${u.y}`;el.style.left=((u.x+0.62)/W*100)+'%';el.style.top=((u.y+0.62)/H*100)+'%';el.style.width=(100/W*(u.boss?0.72:0.6))+'%';el.style.setProperty('--h',hAt(u.x,u.y));
     el._hp.style.width=Math.round(u.hp/u.maxhp*100)+'%';el._st.textContent=u.st.stun?'定':u.st.poison?'毒':'';el._st.style.display=el._st.textContent?'':'none';}
   for(const id in B.spr)if(!alive.has(+id)){const el=B.spr[id];delete B.spr[id];el.classList.add('gone');setTimeout(()=>el.remove(),600);}
   const tilt=document.getElementById('tilt'),aiming=B.phase==='p'&&['move','atk','skill'].includes(B.mode);
@@ -3025,6 +3096,8 @@ function sidePanel(){
   const log=B.log.slice(-8).reverse().map(l=>`<div class="${l.c}">${esc(l.m)}</div>`).join('');
   return `${top}<div class="card">${act}</div><div class="card log">${log}</div>`;}
 function cmdHTML(){
+  if(B&&B.sys&&B.sys.list&&!B.over){const side=B.sys.list,L=B.units.filter(u=>u.side===side).sort((a,b)=>(b.boss?1:0)-(a.boss?1:0)||b.lv-a.lv);
+    return {a:{dock:'tl'},cls:'wide dock ulist'+(side==='e'?' foe':''),h:`<div class="ct">${side==='p'?'己方':'敌方'}列表　${L.length} 人</div><div class="cscr">${L.map(u=>`<button data-a="bpick" data-v="${u.uid}" class="${u.acted&&side==='p'?'dn':''}"><span class="lg">${pimg(u)}</span><span class="ln"><b>${esc(u.name)}${u.boss?' ★':''}</b><small>${u.el}·${u.cls} Lv.${u.lv}${side==='p'&&u.acted?' · 已行动':''}</small><i class="lhp"><em style="width:${u.hp/u.maxhp*100}%"></em></i></span></button>`).join('')}</div><button data-a="bsysx"><span>返回</span></button>`};}
   if(B&&B.mode==='deploy')return {a:{dock:'tl'},cls:'wide dock deploy',h:`<div class="ct">布阵</div><div class="dh">${B.dsel?`已选【${esc(B.dsel.name)}】，点前两排空格移动，点其他侠士互换`:'点选我方侠士，再点前两排的格子'}</div><button data-a="bautodeploy"><span>自动布阵</span></button><button data-a="bdeploy"><span>⚔ 出击</span></button>`};
   if(B&&!B.over&&(B.autoAll||B.stopAuto)&&!B.react)return {a:{dock:'tl'},cls:'cmini dock autod',h:`<div class="ct">${B.autoAll?'全自动中':'即将停止…'}</div><button data-a="bstopauto" ${B.autoAll?'':'disabled'}><span>⏸ 停止全自动</span></button>`};
   if(B&&B.react){const {a,d,left}=B.react;const dmg=estPhys(a,d),ch=Math.round(dodgeP(a,d,'dodge')*100),base=Math.round(dodgeP(a,d)*100);
@@ -3036,11 +3109,11 @@ function cmdHTML(){
       <button data-a="react" data-v="dodge"><span>回 避</span><i>闪避率 ${base}%→${ch}%，失败受创 115%</i></button>`};}
   if(!B||B.over||B.phase!=='p'||B.mode==='busy')return null;const u=B.sel;
   const it=(a,t,v,dis,r)=>`<button data-a="${a}"${v!=null?` data-v="${v}"`:''}${dis?' disabled':''}><span>${t}</span>${r!=null?`<i>${r}</i>`:''}</button>`;
-  if(B.mode==='idle'&&B.sys)return {a:{c:B.sys},cls:'sys',h:`<div class="ct">系统</div>${it('bend','结束回合')}${it('bauto','委托本回合')}${it('bautoall','全自动',null,0,B.autoAll?'开':'关')}${it('banim','战斗画面',null,0,ANIMN[S.anim||'all'])}${it('bmusic','音乐',null,0,AU.on.music?'开':'关')}${it('bsave','保存进度')}${it('brestart',B.rconf?'确认重新开始？':'重新开始本战')}${it('bquit','撤退')}${it('bsysx','关闭')}`};
+  if(B.mode==='idle'&&B.sys)return {a:{c:B.sys},cls:'sys',h:`<div class="ct">系统</div>${it('bend','结束回合')}${it('bauto','委托本回合')}${it('bautoall','全自动',null,0,B.autoAll?'开':'关')}${it('banim','战斗画面',null,0,ANIMN[S.anim||'all'])}${it('bmusic','音乐',null,0,AU.on.music?'开':'关')}${it('blist','己方列表','p')}${it('blist','敌方列表','e')}${it('bsave','保存进度')}${it('brestart',B.rconf?'确认重新开始？':'重新开始本战')}${it('bquit','撤退')}${it('bsysx','关闭')}`};
   if(!u)return null;
   if(B.mode==='move')return {a:{dock:'tl'},cls:'cmini dock',h:`<div class="ct">${esc(u.name)}　移动</div>${it('bcancel','取消')}`};
   if(B.mode==='menu'){const canA=B.units.some(o=>o.side==='e'&&inRng(u,u.x,u.y,o));
-    return {a:{u},h:`<div class="ct">${esc(u.name)}</div>${it('batk','攻击',null,!canA)}${it('bskill','法术',null,!u.skills.length)}${it('bwait','待机')}${it('bcancel','取消')}`};}
+    return {a:{u},h:`<div class="ct">${esc(u.name)}</div>${B.moved?'':it('bmove','移动')}${it('batk','攻击',null,!canA)}${it('bskill','法术',null,!u.skills.length)}${it('bwait','待机')}${it('bstat','状态')}${it('bcancel',B.moved?'返回':'取消')}`};}
   if(B.mode==='skillpick')return {a:{u},cls:'wide',h:`<div class="ct">${esc(u.name)}　真元 ${u.mp}/${u.maxmp}</div><div class="cscr">${u.skills.map(i=>{const s=SKILLS[i];return `<button data-a="bsk" data-v="${i}" ${u.mp<s.mp?'disabled':''} title="${esc(skDesc(s))}"><span>${eld(s.el)}${s.name}<small>${TYN[s.type]}${s.area?'·范围'+s.area:''}</small></span><i>${s.mp}</i></button>`;}).join('')}</div>${it('bback','返回')}`};
   if(B.mode==='atk'){if(B.pend){const t=B.pend,d=estPhys(u,t),cnt=inRng(t,t.x,t.y,u)&&d<t.hp&&!t.st.stun?estPhys(t,u,0.7):0,em=elMul(u.el,t.el);
       return {a:{dock:'tr'},cls:'wide fc2 dock',h:`<div class="ct">战斗预测</div><div class="pv"><div><b>${esc(u.name)}</b><span>伤害 <em>${d}</em>${d>=t.hp?' <u>击破</u>':''}</span><span>命中 ${Math.round(100-dodgeP(u,t)*100)}%</span></div><div class="vs">VS</div><div><b>${esc(t.name)}</b><span>${cnt?`反击 <em>${cnt}</em>`:'无法反击'}</span>${cnt?`<span>命中 ${Math.round(100-dodgeP(t,u)*100)}%</span>`:''}</div></div>${em!==1?`<div class="ke">${em>1?'五行克制 ▲':'五行被克 ▼'}</div>`:''}${it('bconfirm','出手')}${it('bback','返回')}`};}
@@ -3067,7 +3140,7 @@ function threat(u){const R0=reach(u),mv=new Set(),at=new Set();for(const [k] of 
 function cmdCancel(){if(!B||B.over||B.phase!=='p'||B.mode==='busy')return;
   if(B.mode==='idle'){B.sys=null;B.info=null;B.erange=null;}
   else if(B.mode==='move')cancelSel();
-  else if(B.mode==='menu')cancelSel();
+  else if(B.mode==='menu'){if(B.moved&&B.sel){const u=B.sel;u.x=u.ox;u.y=u.oy;B.moved=false;B.mode='move';B.reach=reach(u);}else cancelSel();}
   else if(B.mode==='atk'||B.mode==='skillpick'){B.mode='menu';B.pend=null;}
   else if(B.mode==='skill'){if(B.center)B.center=null;else B.mode='skillpick';}
   render();}
@@ -3090,14 +3163,15 @@ function onCell(x,y){
   const u=unitAt(x,y),s=B.sel;
   if(B.mode==='idle'){
     const had=!!B.sys;B.sys=null;B.erange=null;
-    if(u&&u.side==='p'&&!u.acted){B.sel=u;u.ox=u.x;u.oy=u.y;B.reach=reach(u);B.mode='move';B.info=null;setTimeout(()=>camFocus([[u.x,u.y]],COARSE?3.1:2.3),20);}
-    else if(u){B.info=u;if(u.side==='e')B.erange=threat(u);}
+    if(u&&u.side==='p'&&!u.acted){B.sel=u;u.ox=u.x;u.oy=u.y;B.reach=reach(u);B.mode='menu';B.moved=false;B.info=null;setTimeout(()=>camFocus([[u.x,u.y]],COARSE?3.1:2.3),20);}
+    else if(u){B.info=u;if(u.side==='e')B.erange=threat(u);showUnitDetail(u);}
     else{B.info=null;if(!had)B.sys={x,y};}}
   else if(B.mode==='move'){
     const k=y*W+x;
-    if(u===s){B.mode='menu';}
-    else if(B.reach.has(k)&&!u){s.x=x;s.y=y;B.mode='menu';sfx('step');openChest(s);}
-    else if(u&&u.side==='p'&&!u.acted){cancelSel();B.sel=u;u.ox=u.x;u.oy=u.y;B.reach=reach(u);B.mode='move';setTimeout(()=>camFocus([[u.x,u.y]],COARSE?3.1:2.3),20);}
+    if(u===s){B.mode='menu';B.moved=true;}
+    else if(B.reach.has(k)&&!u){s.x=x;s.y=y;B.mode='menu';B.moved=true;sfx('step');openChest(s);}
+    else if(u&&u.side==='p'&&!u.acted){cancelSel();B.sel=u;u.ox=u.x;u.oy=u.y;B.reach=reach(u);B.mode='menu';B.moved=false;setTimeout(()=>camFocus([[u.x,u.y]],COARSE?3.1:2.3),20);}
+    else if(u&&u.side==='e'){B.info=u;showUnitDetail(u);}
     else{B.info=u||null;if(!u)cancelSel();}}
   else if(B.mode==='atk'){
     if(u&&u.side==='e'&&inRng(s,s.x,s.y,u)){if(B.pend===u){runManual(()=>actAttack(s,u));return;}B.pend=u;}}
@@ -3112,6 +3186,8 @@ const ACT={
   new(){if(loadGame()&&!confirmNew){confirmNew=true;render();return;}confirmNew=false;S=newSave();recruitUpTo(1);
     [0,1,35,70].forEach(t=>S.inv[t]=(S.inv[t]||0)+1);S.heroes[0].eq.w=0;S.heroes[1].eq.a=70;saveGame();VIEW='camp';TAB='ch';render();ACT.ch('1');},
   cont(){S=loadGame();if(!S)return;VIEW='camp';render();},
+  resume(){if(!S)S=loadGame();if(!S)return;resumeBattle();},
+  dropresume(){clearBattle();render();},
   totitle(){VIEW='title';confirmNew=false;render();},
   tab(v){TAB=v;MODAL=null;render();},
   ch(v){const c=+v;if(c>S.unlocked)return;
@@ -3162,13 +3238,21 @@ const ACT={
   bautodeploy(){if(!B||B.mode!=='deploy')return;const ps=B.units.filter(u=>u.side==='p').sort((a,b)=>(a.cls==='佛门'||a.cls==='法修')-(b.cls==='佛门'||b.cls==='法修'));
     const slots=[];for(let y=0;y<H;y++)for(const x of [1,0])slots.push([x,y]);slots.sort((a,b)=>Math.abs(a[1]-(H-1)/2)-Math.abs(b[1]-(H-1)/2)||b[0]-a[0]);
     ps.forEach((u,i)=>{[u.x,u.y]=slots[i];});B.dsel=null;sfx('step');render();},
+  bmove(){if(!B||B.mode!=='menu'||!B.sel)return;B.reach=reach(B.sel);B.mode='move';render();},
+  bstat(){if(B&&B.sel)showUnitDetail(B.sel);},
+  blist(v){if(!B)return;B.sys={list:v};render();},
+  bpick(v){if(!B)return;const u=B.units.find(o=>o.uid===+v);B.sys=null;if(!u){render();return;}
+    if(u.side==='p'&&!u.acted&&B.phase==='p'&&B.mode==='idle'){B.sel=u;u.ox=u.x;u.oy=u.y;B.reach=reach(u);B.mode='menu';B.moved=false;B.info=null;render();setTimeout(()=>camFocus([[u.x,u.y]],COARSE?3.1:2.3),20);}
+    else{B.info=u;if(u.side==='e')B.erange=threat(u);render();setTimeout(()=>camFocus([[u.x,u.y]]),20);showUnitDetail(u);}},
+  udclose(){document.querySelectorAll('.udet').forEach(e=>e.remove());},
   bstopauto(){if(!B)return;B.autoAll=false;if(B.phase==='p'&&B.mode==='busy')B.stopAuto=true;sfx('click');render();},
+  bsysx0(){},
   bsysx(){B.sys=null;B.rconf=false;render();},
   brestart(){if(!B.rconf){B.rconf=true;render();return;}B.over=true;saveGame();ACT.restart();},
   restart(){if(!B)return;const c=B.c,dep=B.heroIds.filter(id=>S.heroes[id]);MODAL=null;startBattle(c,dep);window.scrollTo(0,0);},
   bmusic(){auInit();auToggle('music');syncMusic();render();},
   bconfirm(){const s=B.sel;if(!s)return;if(B.mode==='atk'&&B.pend){const t=B.pend;runManual(()=>actAttack(s,t));}else if(B.mode==='skill'&&B.center){const sk=SKILLS[B.skill],[x,y]=B.center;runManual(()=>actSkill(s,sk,x,y));}},
-  bquit(){if(B.mode!=='idle')return;B.over=true;saveGame();B=null;VIEW='camp';render();}};
+  bquit(){if(B.mode!=='idle')return;clearBattle();B.over=true;saveGame();B=null;VIEW='camp';render();}};
 if(typeof document!=='undefined'){
   app.addEventListener('click',e=>{const el=e.target.closest('[data-a]');if(!el||!app.contains(el))return;
     const a=el.dataset.a;if(a!=='tip')hideTip();if(a==='noop'){e.stopPropagation();return;}if(B&&B.panSkip){B.panSkip=false;return;}if(a!=='cell')sfx('click');if(ACT[a])ACT[a](el.dataset.v,el,e);});
