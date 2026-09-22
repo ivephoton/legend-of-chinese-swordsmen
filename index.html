@@ -488,6 +488,8 @@ body{background:transparent}
 .cmd .ke{text-align:center;font-size:12px;color:#ffd23f;padding:2px}
 .cmd .tl{display:flex;justify-content:space-between;gap:10px;padding:2px 8px;font-size:13px}
 .cmd.sys{border-color:#5fb0ff}
+.cmd.deploy .dh{font-size:12px;color:#f0e0c0;padding:2px 8px 6px;max-width:220px;line-height:1.5}
+.cell.hd::before,.lc.hd::before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle,rgba(255,236,150,.5),rgba(255,190,60,.32));box-shadow:inset 0 0 0 1px rgba(255,240,180,.7)}
 .cmd.rea{border-color:#ff6070;animation:reapop .25s ease-out}
 .cmd.rea button i{font-size:11px;opacity:.8}
 @keyframes reapop{from{transform:scale(.8);opacity:0}}
@@ -784,6 +786,15 @@ body{background:transparent}
 
 .pbar b,.pbar small{white-space:nowrap}
 @media(max-width:640px){.pbar{flex-direction:column;gap:4px;min-width:0;padding:8px 18px}.pbar b{font-size:clamp(22px,7.5vw,34px);letter-spacing:.22em}.pbar small{font-size:12px;letter-spacing:.15em}.pbar .pl,.pbar .pr{display:none}}
+
+.skcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:6px;margin-bottom:16px}
+.skc{display:flex;flex-direction:column;gap:2px;text-align:left;padding:8px 10px;cursor:pointer;font:inherit;font-family:var(--f-menu);border:10px solid transparent;border-image:var(--fr-brown) 18 stretch;background:var(--panel);background-clip:padding-box;color:var(--ink)}
+.skc b{font-size:16px;color:#1a0a00}.skc .skm{font-size:12px;color:#6a3a1a;font-weight:700}.skc .ski{font-size:12.5px;line-height:1.55;color:#2a1a10}
+.skc.no{opacity:.55}.skc.have{box-shadow:inset 0 0 0 1px rgba(15,163,122,.5)}
+.skc:hover{background:linear-gradient(180deg,#fff8e4,#f0e4c4);background-clip:padding-box}
+.skintro{font-size:15px;line-height:1.9;border-left:3px solid var(--gold);padding:4px 10px;margin:6px 0 10px}
+.skmeta{color:#6a3a1a;font-weight:700}
+
 .themebtn{position:fixed;right:10px;bottom:calc(10px + env(safe-area-inset-bottom,0px));z-index:30;border:1px solid var(--rule);background:var(--panel);width:34px;height:34px;border-radius:50%;cursor:pointer}
 </style>
 </head>
@@ -836,6 +847,21 @@ ELS.forEach((e,ei)=>SKN[e].forEach((n,i)=>{const p=PAT[i];
     pow:p[0]==='atk'?(1.1+0.3*(p[1]-1))*(p[2]?0.78:1):p[0]==='heal'?(0.9+0.3*(p[1]-1))*(p[2]?0.75:1):p[0]==='debuff'?0.8:p[0]==='status'?0.7:0,
     mp:5+p[1]*5+p[2]*4, st:p[0]==='status'?((e==='木'||e==='火')?'poison':'stun'):null});}));
 const TYN={atk:'攻伐',heal:'回春',buff:'增益',debuff:'破防',status:'异状'};
+const SK_FLAVOR={taiji:'以两仪之理布下微尘大阵，阴阳流转，将敌困于方寸之间，阵中万象皆为杀机',swordCircle:'飞剑化作剑阵合围，剑光首尾相衔，陷入其中者无处可逃',
+ swordRain:'万道剑光自天而降，如骤雨倾盆，一片战场尽在剑锋之下',swordFan:'一剑分光化形，扇形疾射而出，封死敌人左右去路',rainbow:'剑光化作长虹贯日，七彩流光一击穿透',
+ crossSwords:'双剑一阴一阳交错斩落，刚柔相济',lightning:'引动天罡雷火，雷霆自九霄劈落',chains:'以符箓禁制化作锁链缠身，令敌动弹不得',beam:'凝聚本元化作神光直射，所过之处邪祟辟易',
+ dragon:'真气化龙，蜿蜒扑击，声势浩大',needles:'以真元凝成细针，密如牛毛，防不胜防',orbs:'法珠离手，化作数道流光追身而至',ruler:'祭出宝尺当头镇落，力重千钧',
+ hook:'飞钩回旋，钩锋过处如月轮切割',swarm:'放出蛊虫成群扑咬，毒入肌骨',mist:'瘴雾弥漫四野，吸入者神昏气滞',petals:'花叶随风飞旋，看似柔美，片片皆是利刃',
+ vines:'催动草木生机，藤蔓破土缠绞',wave:'引动水脉掀起巨浪，席卷一线',iceSpikes:'寒气凝冰，冰刺自地下破土而出',quake:'震动地脉，山石崩裂',rocks:'飞沙走石，漫天砸落',
+ fire:'真火离手，烈焰焚身',swordVolley:'御剑连环疾刺，一气呵成'};
+const SK_ELP={金:'庚金锐气',木:'乙木生机',水:'玄水寒气',火:'离火真阳',土:'戊土厚重'};
+const SK_TIER=['','入门小术，胜在灵便','寻常道法，攻守相宜','已具火候，可独当一面','上乘法门，非苦修不能得','镇派秘传，一出手便定胜负','镇派绝学，威能惊天，须耗极大真元'];
+function skIntro(s){let f;
+  if(s.type==='heal'){f=/水|甘露|春风/.test(s.name)?'甘霖普降，伤势随雨而愈':/涅槃|凤凰/.test(s.name)?'凤火涅槃，于烈焰中重焕生机':'莲台升起，佛光护体，气血渐复';}
+  else if(s.type==='buff'){f=/护|甲|罩|明王|须弥/.test(s.name)?'护体罡气化作光罩，刀剑难伤':/剑|合一/.test(s.name)?'飞剑环身护法，攻守兼备':'真气灌注经脉，力量陡增';}
+  else f=SK_FLAVOR[skillRecipe(s)]||SK_FLAVOR.swordVolley;
+  const st=s.type==='status'?(s.st==='stun'?'，中者往往当场定身':'，中者毒气攻心，持续受创'):s.type==='debuff'?'，更能破其护体，令后续攻势事半功倍':'';
+  return `「${s.name}」乃${SK_ELP[s.el]}所化：${f}${st}。${SK_TIER[s.tier]}。`;}
 function skDesc(s){
   let d='';
   if(s.type==='atk')d=`法术伤害，威力${Math.round(s.pow*100)}%`;
@@ -1108,6 +1134,7 @@ function startBattle(c,dep){
   const st=c===30?S.stage30:0,def=stageDef(c,st);
   B={c,st,def,map:genMap(def.s,c*131+st*17+Math.floor(R()*99999)),units:[],turn:1,phase:'p',mode:'idle',sel:null,info:null,pend:null,center:null,skill:null,log:[],drops:[],expLog:{},lvLog:{},over:false,autoAll:false,uidN:0,heroIds:dep.slice(),newSk:[]};
   const pc=[];for(let y=0;y<H;y++)for(const x of [2,1,0])pc.push([x,y]);
+  for(let i=pc.length-1;i>=0;i--)if(pc[i][0]>1)pc.splice(i,1);
   pc.sort((a,b)=>Math.abs(a[1]-(H-1)/2)-Math.abs(b[1]-(H-1)/2)||b[0]-a[0]);
   B.chests=[];{const cand=[];for(let y=1;y<H-1;y++)for(let x=5;x<W-9;x++)if(B.map[y][x]!==4)cand.push([x,y]);shuf(cand);
     const nC=2+(R()<0.5?1:0);for(const [x,y] of cand){if(B.chests.length>=nC)break;if(B.chests.every(q=>md(q.x,q.y,x,y)>=5))B.chests.push({x,y,taken:false});}}
@@ -1124,7 +1151,7 @@ function startBattle(c,dep){
   B.seed=Math.floor(R()*1e9);B.hmap=heightMap(B.map,B.seed);try{B.paint=TH()?paintMap2(B.map,def.s,B.seed,B.hmap):paintMap(B.map,def.s,B.seed,true);}catch(e){console.error(e);B.paint=null;}
   logL(`第${CN[B.turn]}回合，我方行动。`);
   VIEW='battle';if(typeof document!=='undefined'&&document.getElementById('bt'))app.innerHTML='';render();
-  if(!FAST&&typeof document!=='undefined'){const b0=B;B.mode='busy';render();phaseBanner('我方回合','第一回合 · 开战','p').then(()=>{if(B===b0&&!B.over&&B.mode==='busy'){B.mode='idle';render();if(B.autoAll)autoTurn();}});}
+  if(!FAST&&typeof document!=='undefined'){B.mode='deploy';B.dsel=null;logL('布阵：点选我方侠士，再点选前两排的格子安排开战位置。');render();}
 }
 const unitAt=(x,y)=>B.units.find(u=>u.hp>0&&u.x===x&&u.y===y);
 function logL(m,c){B.log.push({m,c:c||''});if(B.log.length>60)B.log.shift();}
@@ -1432,39 +1459,104 @@ function hum(L){
   const sword=L.noSword?null:buildSword(g,L.sws);
   g.userData={kind:'hum',body,head,arms,sword,spin,shawl,tail,eyes,scale:1,focus:head};return g;}
 
+/* ================= 妖兽 / 妖禽 / 鬼卒：细化脸部与全身 ================= */
 function beast(col){
-  const g=new THREE.Group(),body=new THREE.Group();g.add(body);const mc=MT(col),dk=MT(mixC(col,0x000000,0.45)),lt=MT(mixC(col,0xffffff,0.35));
-  part(new THREE.SphereGeometry(0.5,16,12),mc,0,0.75,0,body).scale.set(0.8,0.7,1.25);
-  part(new THREE.SphereGeometry(0.4,14,10),lt,0,0.62,0.1,body,false).scale.set(0.7,0.55,1.1);
-  for(let i=0;i<4;i++){const sp=part(new THREE.ConeGeometry(0.06,0.22,5),dk,0,1.08,0.3-i*0.22,body,false);sp.rotation.x=-0.3;}
-  const head=new THREE.Group();head.position.set(0,1.02,0.66);body.add(head);
-  part(new THREE.SphereGeometry(0.28,14,10),mc,0,0,0,head);
-  part(new THREE.BoxGeometry(0.22,0.16,0.25),dk,0,-0.07,0.25,head);
-  [-1,1].forEach(s=>{part(new THREE.SphereGeometry(0.05,8,6),GL(0xffe23f,1.2),s*0.12,0.07,0.22,head,false);
-    const h=part(new THREE.ConeGeometry(0.06,0.34,6),GL(0xfff2d0,0.2),s*0.13,0.25,-0.02,head);h.rotation.set(-0.4,0,-s*0.35);
-    const f=part(new THREE.ConeGeometry(0.025,0.1,4),MT(0xffffff),s*0.07,-0.17,0.33,head,false);f.rotation.x=Math.PI;});
-  const legs=[];[[-1,1],[1,1],[-1,-1],[1,-1]].forEach(([sx,sz])=>{const p=new THREE.Group();p.position.set(sx*0.26,0.58,sz*0.38);body.add(p);part(new THREE.CylinderGeometry(0.1,0.08,0.58,8),dk,0,-0.29,0,p);legs.push(p);});
-  const tail=new THREE.Group();tail.position.set(0,0.85,-0.6);body.add(tail);const tc=part(new THREE.ConeGeometry(0.08,0.6,6),dk,0,0,-0.28,tail);tc.rotation.x=-Math.PI/2;
-  g.userData={kind:'beast',body,head,legs,tail,scale:0.8,focus:head};return g;}
+  const g=new THREE.Group(),body=new THREE.Group();g.add(body);
+  const mc=MT(col),dk=MT(mixC(col,0x000000,0.45)),lt=MT(mixC(col,0xffffff,0.4)),bone=MT(0xf2e8d0),blk=new THREE.MeshBasicMaterial({color:0x100808});
+  // 躯干：胸、腰、臀三段，腹部浅色，背脊骨刺，身上斑纹
+  part(new THREE.SphereGeometry(0.34,18,14),mc,0,0.82,0.28,body).scale.set(1,0.95,1.05);
+  part(new THREE.SphereGeometry(0.3,18,14),mc,0,0.76,-0.05,body).scale.set(0.95,0.85,1.2);
+  part(new THREE.SphereGeometry(0.32,18,14),mc,0,0.78,-0.36,body).scale.set(1,0.95,1);
+  part(new THREE.SphereGeometry(0.28,14,10),lt,0,0.64,0.05,body,false).scale.set(0.8,0.55,1.6);
+  for(let i=0;i<6;i++){const sp=part(new THREE.ConeGeometry(0.045,0.2-i*0.015,5),GL(mixC(col,0xffd23f,0.3),0.15),0,1.12-i*0.02,0.34-i*0.16,body,false);sp.rotation.x=-0.45;}
+  for(let i=0;i<4;i++)[-1,1].forEach(s=>{const st=part(new THREE.TorusGeometry(0.28,0.018,4,12,Math.PI*0.5),dk,s*0.02,0.84,0.12-i*0.16,body,false);st.rotation.set(0,Math.PI/2,s>0?Math.PI*0.62:Math.PI*0.88);});
+  // 颈与鬃毛
+  const neck=part(new THREE.CylinderGeometry(0.16,0.22,0.3,12),mc,0,0.98,0.5,body);neck.rotation.x=0.9;
+  for(let i=0;i<12;i++){const a=i/12*Math.PI*2;const m=part(new THREE.ConeGeometry(0.05,0.2,5),dk,Math.cos(a)*0.2,1.02+Math.sin(a)*0.18,0.46,body,false);m.rotation.set(Math.sin(a)*0.8-0.6,0,-Math.cos(a)*0.9);}
+  // 头：颅、吻、下颌、獠牙、鼻孔、怒目、耳、弯角
+  const head=new THREE.Group();head.position.set(0,1.08,0.7);body.add(head);
+  part(new THREE.SphereGeometry(0.25,18,14),mc,0,0.02,0,head).scale.set(1,0.9,1);
+  part(new THREE.SphereGeometry(0.15,14,10),mc,0,-0.05,0.2,head).scale.set(1,0.8,1.3);
+  part(new THREE.SphereGeometry(0.07,10,8),dk,0,-0.02,0.37,head,false).scale.set(1.2,0.8,0.8);
+  [-1,1].forEach(s=>part(new THREE.SphereGeometry(0.018,6,4),blk,s*0.035,-0.02,0.43,head,false));
+  const jaw=new THREE.Group();jaw.position.set(0,-0.11,0.08);jaw.rotation.x=0.18;head.add(jaw);
+  part(new THREE.SphereGeometry(0.12,12,8),dk,0,-0.02,0.12,jaw).scale.set(1,0.45,1.4);
+  part(new THREE.SphereGeometry(0.1,10,6),MT(0x8a1a1a),0,0.01,0.12,jaw,false).scale.set(0.9,0.2,1.2);
+  [-1,1].forEach(s=>{const f=part(new THREE.ConeGeometry(0.022,0.1,5),bone,s*0.07,-0.1,0.3,head,false);f.rotation.x=Math.PI;
+    const f2=part(new THREE.ConeGeometry(0.016,0.06,5),bone,s*0.06,0.03,0.2,jaw,false);
+    for(let t=0;t<3;t++)part(new THREE.ConeGeometry(0.009,0.03,4),bone,s*(0.015+t*0.018),-0.09,0.33-t*0.02,head,false).rotation.x=Math.PI;
+    const eg=new THREE.Group();eg.position.set(s*0.12,0.08,0.18);head.add(eg);
+    part(new THREE.SphereGeometry(0.045,10,8),GL(0xffd23f,1.1),0,0,0,eg,false).scale.set(1,0.7,0.6);
+    part(new THREE.BoxGeometry(0.012,0.055,0.02),blk,0,0,0.025,eg,false);
+    const br=part(new THREE.BoxGeometry(0.12,0.03,0.05),dk,s*0.12,0.14,0.18,head,false);br.rotation.z=s*0.4;
+    const ear=part(new THREE.ConeGeometry(0.06,0.16,6),mc,s*0.17,0.2,-0.06,head);ear.rotation.set(-0.3,0,-s*0.5);
+    part(new THREE.ConeGeometry(0.03,0.1,5),MT(0xd88a8a),s*0.17,0.2,-0.04,head,false).rotation.set(-0.3,0,-s*0.5);
+    ribbon(head,[[s*0.12,0.18,0],[s*0.22,0.34,-0.06],[s*0.3,0.42,-0.2],[s*0.26,0.48,-0.34]],0.028,0xefe6cf);
+    ribbon(head,[[s*0.26,0.47,-0.33],[s*0.24,0.5,-0.4]],0.014,0xefe6cf);});
+  // 四肢：大腿、小腿、爪、趾甲
+  const legs=[];[[-1,1],[1,1],[-1,-1],[1,-1]].forEach(([sx,sz])=>{const p=new THREE.Group();p.position.set(sx*0.24,0.66,sz*0.34);body.add(p);
+    part(new THREE.CylinderGeometry(0.1,0.08,0.34,10),mc,0,-0.14,0,p);
+    part(new THREE.CylinderGeometry(0.07,0.06,0.3,10),dk,0,-0.42,sz*0.03,p);
+    part(new THREE.SphereGeometry(0.08,10,8),dk,0,-0.58,0.04,p).scale.set(1.1,0.6,1.3);
+    for(let c=0;c<3;c++){const cl=part(new THREE.ConeGeometry(0.014,0.06,4),bone,(c-1)*0.04,-0.6,0.13,p,false);cl.rotation.x=Math.PI/2+0.4;}
+    legs.push(p);});
+  // 尾：节节渐细，末端尾簇
+  const tail=new THREE.Group();tail.position.set(0,0.88,-0.62);body.add(tail);
+  for(let i=0;i<6;i++)part(new THREE.SphereGeometry(0.07-i*0.008,10,8),i%2?dk:mc,0,0.04*i,-0.1*i,tail,false);
+  const tf=part(new THREE.ConeGeometry(0.07,0.22,6),dk,0,0.26,-0.66,tail);tf.rotation.x=-2.2;
+  g.userData={kind:'beast',body,head,legs,tail,jaw,scale:0.8,focus:head};return g;}
 function bird(col){
-  const g=new THREE.Group(),body=new THREE.Group();g.add(body);const mc=MT(col),dk=MT(mixC(col,0x000000,0.4)),lt=GL(mixC(col,0xffffff,0.4),0.15);
-  part(new THREE.SphereGeometry(0.35,14,10),mc,0,0.95,0,body).scale.set(1,0.9,1.5);
-  const head=new THREE.Group();head.position.set(0,1.25,0.42);body.add(head);
-  part(new THREE.SphereGeometry(0.18,12,10),mc,0,0,0,head);
-  const cr=part(new THREE.ConeGeometry(0.05,0.2,5),GL(0xff3a3a,0.4),0,0.2,-0.03,head,false);cr.rotation.x=-0.4;
-  const bk=part(new THREE.ConeGeometry(0.06,0.22,6),MT(0xffc040),0,-0.03,0.22,head);bk.rotation.x=Math.PI/2;
-  [-1,1].forEach(s=>part(new THREE.SphereGeometry(0.035,6,6),GL(0xff3b2f,1.2),s*0.09,0.05,0.13,head,false));
-  const wings={};[-1,1].forEach(s=>{const w2=new THREE.Group();w2.position.set(s*0.3,1.05,0);body.add(w2);part(new THREE.BoxGeometry(0.9,0.04,0.42),dk,s*0.45,0,0,w2);part(new THREE.BoxGeometry(0.6,0.05,0.2),lt,s*0.55,0.01,-0.18,w2,false);wings[s]=w2;});
-  const t=part(new THREE.BoxGeometry(0.3,0.03,0.5),lt,0,0.95,-0.66,body);t.rotation.x=0.3;
+  const g=new THREE.Group(),body=new THREE.Group();g.add(body);
+  const mc=MT(col),dk=MT(mixC(col,0x000000,0.4)),lt=MT(mixC(col,0xffffff,0.45)),gold=MT(0xffc040),blk=new THREE.MeshBasicMaterial({color:0x100808});
+  part(new THREE.SphereGeometry(0.33,18,14),mc,0,0.95,0,body).scale.set(0.95,0.9,1.4);
+  part(new THREE.SphereGeometry(0.24,14,10),lt,0,0.9,0.2,body,false).scale.set(0.9,0.9,1);
+  for(let i=0;i<5;i++){const f=part(new THREE.BoxGeometry(0.14,0.01,0.1),lt,0,0.78+i*0.05,0.3,body,false);f.rotation.x=0.3;}
+  const neck=part(new THREE.CylinderGeometry(0.1,0.15,0.25,10),mc,0,1.14,0.32,body);neck.rotation.x=0.5;
+  const head=new THREE.Group();head.position.set(0,1.28,0.44);body.add(head);
+  part(new THREE.SphereGeometry(0.17,16,12),mc,0,0,0,head);
+  const bu=part(new THREE.ConeGeometry(0.06,0.22,8),gold,0,0.0,0.21,head);bu.rotation.x=Math.PI/2+0.25;
+  const bl=part(new THREE.ConeGeometry(0.04,0.13,8),MT(0xd89a20),0,-0.05,0.17,head,false);bl.rotation.x=Math.PI/2+0.4;
+  part(new THREE.SphereGeometry(0.04,8,6),MT(0xffe080),0,0.03,0.13,head,false).scale.set(1.2,0.6,0.6);
+  [-1,1].forEach(s=>{const eg=new THREE.Group();eg.position.set(s*0.1,0.04,0.09);head.add(eg);
+    part(new THREE.SphereGeometry(0.038,10,8),GL(0xff5030,1),0,0,0,eg,false);part(new THREE.SphereGeometry(0.016,6,4),blk,0,0,0.028,eg,false);
+    part(new THREE.TorusGeometry(0.04,0.008,4,12),gold,0,0,0.01,eg,false);
+    const br=part(new THREE.BoxGeometry(0.08,0.018,0.03),dk,s*0.09,0.1,0.1,head,false);br.rotation.z=s*0.35;});
+  for(let i=0;i<4;i++){const c=part(new THREE.ConeGeometry(0.025,0.24-i*0.03,5),GL(0xff3a3a,0.35),0,0.16,-0.04-i*0.05,head,false);c.rotation.x=-0.5-i*0.2;}
+  const wings={};[-1,1].forEach(s=>{const w2=new THREE.Group();w2.position.set(s*0.26,1.05,0.02);body.add(w2);
+    part(new THREE.BoxGeometry(0.46,0.05,0.34),mc,s*0.23,0,0,w2);
+    for(let i=0;i<6;i++){const f=part(new THREE.BoxGeometry(0.5-i*0.04,0.025,0.075),i%2?dk:lt,s*(0.42+i*0.03),-0.01,-0.13+i*0.05,w2,false);f.rotation.y=s*(0.35-i*0.1);}
+    wings[s]=w2;});
+  for(let i=0;i<5;i++){const f=part(new THREE.BoxGeometry(0.07,0.02,0.5),i%2?dk:lt,(i-2)*0.055,0.9,-0.62,body,false);f.rotation.set(0.25,(i-2)*0.18,0);}
+  [-1,1].forEach(s=>{part(new THREE.CylinderGeometry(0.02,0.02,0.3,6),gold,s*0.1,0.55,0.05,body,false);
+    for(let t=0;t<3;t++){const tl=part(new THREE.ConeGeometry(0.012,0.07,4),MT(0x2a1a0a),s*0.1+(t-1)*0.025,0.4,0.1,body,false);tl.rotation.x=Math.PI/2;}});
   g.userData={kind:'bird',body,head,wings,scale:0.85,focus:head};return g;}
 function ghost(col){
   const g=new THREE.Group(),body=new THREE.Group();g.add(body);
-  const gm=MT(col,{transparent:true,opacity:0.72,emissive:col,emissiveIntensity:0.35});
-  const c=part(new THREE.ConeGeometry(0.36,1.3,14,1,true),gm,0,0.8,0,body,false);c.rotation.x=Math.PI;
-  const hd=part(new THREE.SphereGeometry(0.24,14,10),gm,0,1.5,0,body,false);
-  [-1,1].forEach(s=>part(new THREE.SphereGeometry(0.045,8,6),GL(0xff4030,1.3),s*0.08,1.52,0.2,body,false));
-  const arms={};[-1,1].forEach(s=>{const a=new THREE.Group();a.position.set(s*0.3,1.2,0);a.rotation.z=s*0.5;body.add(a);part(new THREE.CylinderGeometry(0.04,0.07,0.55,6),gm,0,-0.27,0,a,false);arms[s<0?'L':'R']=a;});
-  g.userData={kind:'ghost',body,arms,scale:1,focus:hd};return g;}
+  const gm=MT(col,{transparent:true,opacity:0.78,emissive:col,emissiveIntensity:0.35,side:THREE.DoubleSide}),dark=MT(0x0a0810),bone=MT(0xe8e0cc,{emissive:0x302820,emissiveIntensity:0.4});
+  // 褴褛长袍：下摆锯齿飘散
+  const robe=new THREE.ConeGeometry(0.42,1.35,28,6,true);{const P=robe.attributes.position;for(let i=0;i<P.count;i++){const x=P.getX(i),y=P.getY(i),z=P.getZ(i),a=Math.atan2(x,z),t=(0.675-y)/1.35;
+    P.setY(i,y-(t>0.95?(Math.sin(a*9)*0.5+0.5)*0.22:0));P.setX(i,x*(1+t*0.12*Math.sin(a*5)));}robe.computeVertexNormals();}
+  const r=part(robe,gm,0,0.8,0,body,false);r.rotation.x=Math.PI;
+  // 兜帽与骷髅脸
+  part(new THREE.SphereGeometry(0.26,18,14,0,Math.PI*2,0,Math.PI*0.62),gm,0,1.5,-0.02,body,false);
+  part(new THREE.SphereGeometry(0.2,16,12),dark,0,1.46,0.04,body,false).scale.set(1,1.05,0.8);
+  const sk=part(new THREE.SphereGeometry(0.14,16,12),bone,0,1.47,0.1,body,false);sk.scale.set(0.9,1,0.85);
+  [-1,1].forEach(s=>{part(new THREE.SphereGeometry(0.04,8,6),blk2(),s*0.05,1.49,0.2,body,false).scale.set(1,1.1,0.5);
+    part(new THREE.SphereGeometry(0.02,8,6),GL(0xff3020,1.6),s*0.05,1.49,0.215,body,false);});
+  part(new THREE.ConeGeometry(0.015,0.03,3),blk2(),0,1.43,0.225,body,false).rotation.x=Math.PI;
+  for(let t=0;t<5;t++)part(new THREE.BoxGeometry(0.014,0.03,0.01),bone,-0.04+t*0.02,1.37,0.19,body,false);
+  // 双臂：破袖、枯爪
+  const arms={};[-1,1].forEach(s=>{const a=new THREE.Group();a.position.set(s*0.26,1.25,0.02);a.rotation.z=s*0.5;body.add(a);
+    part(new THREE.CylinderGeometry(0.05,0.12,0.55,10,1,true),gm,0,-0.27,0,a,false);
+    const hand=new THREE.Group();hand.position.set(0,-0.58,0.02);a.add(hand);part(new THREE.SphereGeometry(0.03,8,6),bone,0,0,0,hand,false);
+    for(let f=0;f<4;f++){const c=part(new THREE.ConeGeometry(0.008,0.1,4),bone,(f-1.5)*0.016,-0.06,0.01,hand,false);c.rotation.x=Math.PI+0.3;}
+    arms[s<0?'L':'R']=a;});
+  // 缠身锁链与幽魂烟缕
+  for(let i=0;i<8;i++){const l=part(new THREE.TorusGeometry(0.03,0.009,4,10),MT(0x6a6a70),Math.cos(i*0.7)*0.3,1.05-i*0.05,Math.sin(i*0.7)*0.3,body,false);l.rotation.set(i%2?Math.PI/2:0,i*0.7,0);}
+  for(let i=0;i<4;i++)ribbon(body,[[(i-1.5)*0.12,0.2,-0.1],[(i-1.5)*0.18,-0.05,-0.25],[(i-1.5)*0.14,-0.2,-0.45]],0.02,mixC(col,0xffffff,0.3));
+  g.userData={kind:'ghost',body,arms,scale:1,focus:sk};return g;}
+function blk2(){return new THREE.MeshBasicMaterial({color:0x050305});}
+
 function foeLook(u){
   const ec=hexOf(ELC[u.el]);
   const L=({邪僧:{g:'m',robe:0x7a1a14,coat:0x4a0e0a,trim:0xffc83a,sash:0x2a0a08,inner:0xffe0a0,hair:'bald',monk:1,beads:1,big:1.15,noSword:1},
@@ -1511,6 +1603,7 @@ function animModel(m,pose,t,dt){
     if(u.tail)u.tail.rotation.x=Math.sin(t*2.6)*0.06-(pose==='slash'||pose==='windup'||pose==='dodge'?0.2:0);
     const bl=(t%3.7)<0.12?0.12:1;u.eyes.forEach(e=>e.scale.y=bl);}
   else if(u.kind==='beast'){const a=pose==='slash',w=pose==='windup',v=pose==='victory',h=pose==='hit';
+    if(u.jaw)L(u.jaw.rotation,'x',a||v?0.55:0.18+Math.sin(t*2)*0.04);
     L(u.head.position,'z',a?0.98:0.66);L(u.head.rotation,'x',v?-0.7:a?0.25:0);L(u.body.rotation,'x',a?0.2:h?-0.3:w?0.15:0);L(u.body.position,'y',w?-0.12:0);
     u.legs.forEach((l,i)=>l.rotation.x=Math.sin(t*(a?16:3)+i*Math.PI/2)*(a?0.7:0.12));u.tail.rotation.y=Math.sin(t*(a||v?9:3))*0.5;}
   else if(u.kind==='bird'){const fast=pose==='slash'||pose==='windup';const f=Math.sin(t*(fast?22:7));u.wings[-1].rotation.z=-0.2-f*0.7;u.wings[1].rotation.z=0.2+f*0.7;
@@ -2443,6 +2536,9 @@ function phaseBanner(txt,sub,side,short){
   d.innerHTML=`<div class="pbar"><span class="pl"></span><b>${txt}</b>${sub?`<small>${sub}</small>`:''}<span class="pr"></span></div>`;host.appendChild(d);
   if(!short)sfx(side==='p'?'gong':'boom');const dur=(short?760:1300)*(B.autoAll?0.6:1)*SPD;
   return new Promise(r=>setTimeout(()=>{d.classList.add('out');setTimeout(()=>{d.remove();r();},260*SPD);},dur));}
+function beginBattle(){if(!B||B.mode!=='deploy')return;B.dsel=null;const b0=B;B.mode='busy';logL('布阵完毕，开战！');render();sfx('gong');
+  phaseBanner('我方回合','第一回合 · 开战','p').then(()=>{if(B===b0&&!B.over&&B.mode==='busy'){B.mode='idle';render();if(B.autoAll)autoTurn();}});}
+const inDeployZone=(x,y)=>x<=1&&x>=0&&y>=0&&y<H;
 function startPhase(side){
   for(const u of B.units.filter(o=>o.side===side)){
     u.acted=false;for(const k in u.b)if(u.b[k]>0)u.b[k]--;
@@ -2722,13 +2818,24 @@ function vCamp(){
     body=['w','m','a'].map(sl=>`<h3>${SLOTN[sl]}</h3><div class="grid100">${TREASURES.filter(t=>t.slot===sl).map(t=>{const n=S.inv[t.id]||0;
       return n?`<button class="ti have" data-a="tr" data-v="${t.id}">${t.name}<div class="tr">${CN[t.tier]}重${n>1?' ×'+n:''}</div></button>`:`<div class="ti no">？<div class="tr">${CN[t.tier]}重</div></div>`;}).join('')}</div>`).join('');}
   else{
-    body=ELS.map(e=>`<h3>${eld(e)}${e}行道法</h3><div class="grid100 sk100">${SKILLS.filter(s=>s.el===e).map(s=>{const who=(SK_LEARN[s.id]||[]).map(i=>HEROES[i].name).join('、')||'法宝所授';
-      return `<div class="ti ${learned.has(s.id)?'have':'no'}" title="${esc(skDesc(s)+'　习得：'+who)}">${s.name}<div class="tr">${TYN[s.type]}·${CN[s.tier]}阶</div></div>`;}).join('')}</div>`).join('')+'<p class="muted" style="font-size:13px">亮起的是已领悟的道法。长按或悬停可查看说明。</p>';}
+    body='<p class="muted" style="font-size:13px">亮起的是已领悟的道法。点击任一道法查看详细介绍。</p>'+ELS.map(e=>`<h3>${eld(e)}${e}行道法</h3><div class="skcards">${SKILLS.filter(s=>s.el===e).map(s=>{
+      return `<button class="skc ${learned.has(s.id)?'have':'no'}" data-a="skinfo" data-v="${s.id}"><b>${s.name}</b><span class="skm">${TYN[s.type]} · ${CN[s.tier]}阶 · 真元 ${s.mp}</span><span class="ski">${skIntro(s)}</span></button>`;}).join('')}</div>`).join('');}
   return `<div class="wrap"><div class="top"><h1 class="disp">峨眉·凝碧洞府</h1>
   <div class="tally"><span>${tp('gold','金钱')} <b>${S.gold||0}</b></span><span>群侠 <b>${recruited().length}</b>/20</span><span>法宝 <b>${own}</b>/100</span><span>道法 <b>${learned.size}</b>/100</span></div></div>
   <div class="tabs">${[['ch','章回'],['hero','群侠'],['tr','法宝录'],['sk','道法录']].map(([k,n])=>`<button class="tab ${TAB===k?'on':''}" data-a="tab" data-v="${k}">${n}</button>`).join('')}
   <button class="tab" data-a="codeout" style="margin-left:auto">存档码</button><button class="tab" data-a="totitle">回标题</button></div>${body}</div>${MODAL?vModal():''}`;}
 function vModal(){
+  if(MODAL.sk!=null){const sk=SKILLS[MODAL.sk],who=(SK_LEARN[sk.id]||[]).map(i=>`${HEROES[i].name}（Lv.${HEROES[i].skills.find(x=>x.sid===sk.id).lv}）`).join('、');
+    const trs=TREASURES.filter(t=>t.sk===sk.id).map(t=>t.name).join('、');
+    const tgt=sk.rng===0?(sk.area?'自身周围':'自身'):`射程 ${sk.rng} 格`,rec=sk.type==='heal'||sk.type==='buff'?'我方':'敌方';
+    return `<div class="ov" data-a="close"><div class="modal" data-a="noop"><button class="btn sm x" data-a="close">关闭</button>
+    <h3 class="disp" style="font-size:28px">${eld(sk.el)}${sk.name}</h3>
+    <p class="skmeta">${sk.el}行 · ${TYN[sk.type]} · ${CN[sk.tier]}阶</p>
+    <p class="skintro">${skIntro(sk)}</p>
+    <div class="statg"><span>威力 ${sk.pow?Math.round(sk.pow*100)+'%':'—'}</span><span>真元 ${sk.mp}</span><span>${tgt}</span><span>范围 ${sk.area?sk.area+' 格':'单体'}</span><span>作用 ${rec}</span><span>五行 ${sk.el}</span></div>
+    <p><b>效果：</b>${skDesc(sk)}</p>
+    <p><b>克制：</b>${sk.el}克${KE[sk.el]}，对${KE[sk.el]}行目标伤害 +30%；对克制${sk.el}的${ELS.find(e=>KE[e]===sk.el)}行目标伤害 −20%。</p>
+    <p><b>习得：</b>${who||'—'}</p>${trs?`<p><b>法宝所授：</b>装备「${trs}」即可施展</p>`:''}</div></div>`;}
   if(MODAL.tr!=null){const t=TREASURES[MODAL.tr];
     return `<div class="ov" data-a="close"><div class="modal" data-a="noop"><button class="btn sm x" data-a="close">关闭</button>
     <h3 class="disp" style="font-size:26px">${t.name}</h3><p>${SLOTN[t.slot]}　${CN[t.tier]}重　持有 ${S.inv[t.id]||0}（已装备 ${eqCount(t.id)}）</p>
@@ -2850,6 +2957,7 @@ function renderBattle(){
   document.getElementById('bhead').innerHTML=`<span class="disp">第${CN[c]||c}回　${def.t}</span><span><button class="btn sm abtn" data-a="banim">战斗画面：${ANIMN[S.anim||'all']}</button><span class="phase ${B.phase}">第${B.turn}回合${B.cond&&B.cond.turns?'/'+B.cond.turns:B.cond&&B.cond.survive?'/'+B.cond.survive:''}　${B.phase==='p'?'我方':'敌方'}</span></span>`;
   {const ct=condText(B.cond);const hb=document.getElementById('bhead');hb.insertAdjacentHTML('beforeend',`<div class="condbar" style="width:100%"><span>胜利：<b>${ct.win}</b></span><span>失败：<i>${ct.lose}</i></span></div>`);}
   const hl={};
+  if(B.mode==='deploy'){for(let y=0;y<H;y++)for(let x=0;x<2;x++)hl[y*W+x]='hd';if(B.dsel)hl[B.dsel.y*W+B.dsel.x]='ha';}
   if(B.mode==='move'&&B.reach){for(const [k] of B.reach)hl[k]='hm';}
   if(B.mode==='idle'&&B.erange&&B.info&&B.info.hp>0){for(const k of B.erange.at)hl[k]='hx';for(const k of B.erange.mv)hl[k]='he';}
   if(B.mode==='atk'&&B.sel){for(let y=0;y<H;y++)for(let x=0;x<W;x++){const d=md(x,y,B.sel.x,B.sel.y);if(d>=B.sel.r[0]&&d<=B.sel.r[1])hl[y*W+x]='ht';}
@@ -2873,7 +2981,7 @@ function renderBattle(){
       else if(B.mode==='skill'&&B.skill!=null){const sk=SKILLS[B.skill],al=sk.type==='heal'||sk.type==='buff';tg=(al?u.side==='p':u.side==='e')&&md(u.x,u.y,sel.x,sel.y)<=sk.rng+sk.area;}}
     if(el._flat===undefined)el._flat=!bodyCls(u);
     else if(el._flat&&bodyCls(u)){const bc=bodyCls(u);el._flat=false;el.innerHTML=`<div class="up"><div class="hit"></div><div class="shd"></div><div class="bdy ${bc}"></div><div class="hp"><i></i></div><span class="ed" style="background:${ELC[u.el]}"></span><span class="stn"></span></div>`;el._hp=el.querySelector('.hp i');el._st=el.querySelector('.stn');}
-    el.className=`spr us ${u.side}${u.boss?' boss':''}${u.acted&&B.phase===u.side?' done':''}${sel===u?' sel':''}${bodyCls(u)?'':' flat'}${tg?' tgt':''}${B.pend===u?' pend':''}`;
+    el.className=`spr us ${u.side}${u.boss?' boss':''}${u.acted&&B.phase===u.side?' done':''}${sel===u||B.dsel===u?' sel':''}${bodyCls(u)?'':' flat'}${tg?' tgt':''}${B.pend===u?' pend':''}`;
     el.dataset.v=`${u.x},${u.y}`;el.style.left=((u.x+0.62)/W*100)+'%';el.style.top=((u.y+0.62)/H*100)+'%';el.style.width=(100/W*(u.boss?1.38:1.16))+'%';el.style.setProperty('--h',hAt(u.x,u.y));
     el._hp.style.width=Math.round(u.hp/u.maxhp*100)+'%';el._st.textContent=u.st.stun?'定':u.st.poison?'毒':'';el._st.style.display=el._st.textContent?'':'none';}
   for(const id in B.spr)if(!alive.has(+id)){const el=B.spr[id];delete B.spr[id];el.classList.add('gone');setTimeout(()=>el.remove(),600);}
@@ -2911,12 +3019,13 @@ function unitCard(u){
 function sidePanel(){
   let top='',act='';const u=B.sel;
   const show=u||B.info;if(show&&show.hp>0)top=unitCard(show);
-  const H2={busy:B.phase==='e'?'敌方行动中……':'行动中……',idle:'点击己方角色行动；点击敌人显示其行动范围；点击空白处打开系统菜单。<br><small>滚轮或双指缩放地图，拖动平移，双击复位。</small>',move:'点亮起的格子移动；点角色本身则原地行动。右键或 Esc 取消。',
+  const H2={deploy:'布阵阶段：点选我方侠士，再点选前两排的格子；点另一名侠士可互换位置。敌军位置已可见，点敌人可查看其属性。安排好后点「出击」。',busy:B.phase==='e'?'敌方行动中……':'行动中……',idle:'点击己方角色行动；点击敌人显示其行动范围；点击空白处打开系统菜单。<br><small>滚轮或双指缩放地图，拖动平移，双击复位。</small>',move:'点亮起的格子移动；点角色本身则原地行动。右键或 Esc 取消。',
     menu:'在角色旁的指令菜单中选择行动。',atk:'点选红色范围内的敌人，确认后出手。',skillpick:'在指令菜单中选择道法。',skill:'点选目标格，确认后施展。'};
   act=`<p class="hint">${B.autoAll?'全自动进行中……可随时停止（快捷键 P）。':H2[B.mode]||''}</p>${B.autoAll?`<div class="acts"><button class="btn sm" data-a="bstopauto">⏸ 停止全自动</button></div>`:B.mode==='idle'?`<div class="acts"><button class="btn sm" data-a="bsys">系统菜单</button></div>`:''}`;
   const log=B.log.slice(-8).reverse().map(l=>`<div class="${l.c}">${esc(l.m)}</div>`).join('');
   return `${top}<div class="card">${act}</div><div class="card log">${log}</div>`;}
 function cmdHTML(){
+  if(B&&B.mode==='deploy')return {a:{dock:'tl'},cls:'wide dock deploy',h:`<div class="ct">布阵</div><div class="dh">${B.dsel?`已选【${esc(B.dsel.name)}】，点前两排空格移动，点其他侠士互换`:'点选我方侠士，再点前两排的格子'}</div><button data-a="bautodeploy"><span>自动布阵</span></button><button data-a="bdeploy"><span>⚔ 出击</span></button>`};
   if(B&&!B.over&&(B.autoAll||B.stopAuto)&&!B.react)return {a:{dock:'tl'},cls:'cmini dock autod',h:`<div class="ct">${B.autoAll?'全自动中':'即将停止…'}</div><button data-a="bstopauto" ${B.autoAll?'':'disabled'}><span>⏸ 停止全自动</span></button>`};
   if(B&&B.react){const {a,d,left}=B.react;const dmg=estPhys(a,d),ch=Math.round(dodgeP(a,d,'dodge')*100),base=Math.round(dodgeP(a,d)*100);
     const can=d.st.stun===0&&inRng(d,d.x,d.y,a);
@@ -2972,6 +3081,11 @@ function flash(sk){
 
 /* ---------- 交互 ---------- */
 function onCell(x,y){
+  if(B&&B.mode==='deploy'){const u=unitAt(x,y);
+    if(u&&u.side==='p'){if(B.dsel&&B.dsel!==u){const a=B.dsel;[a.x,a.y,u.x,u.y]=[u.x,u.y,a.x,a.y];B.dsel=null;sfx('step');}else B.dsel=B.dsel===u?null:u;}
+    else if(B.dsel&&inDeployZone(x,y)&&!u){B.dsel.x=x;B.dsel.y=y;B.dsel=null;sfx('step');}
+    else if(u)B.info=u;
+    render();return;}
   if(!B||B.over||B.phase!=='p'||B.mode==='busy')return;
   const u=unitAt(x,y),s=B.sel;
   if(B.mode==='idle'){
@@ -3016,6 +3130,7 @@ const ACT={
   ending(){VIEW='ending';render();},
   hero(v){MODAL={hero:+v,slot:null};render();},
   tr(v){MODAL={tr:+v};render();},
+  skinfo(v){MODAL={sk:+v};render();},
   slot(v){MODAL.slot=MODAL.slot===v?null:v;render();},
   up(v){const id=MODAL&&MODAL.hero;if(id==null)return;const s=S.heroes[id];s.up=s.up||{};const l=s.up[v]||0,c=upCost(l);if(l>=30||(S.gold||0)<c)return;S.gold-=c;s.up[v]=l+1;saveGame();sfx('lvl');render();},
   eqto(v){const [t,id]=v.split(':').map(Number);const tr=TREASURES[t];if((S.inv[t]||0)-eqCount(t)<=0)return;S.heroes[id].eq[tr.slot]=t;saveGame();sfx('buff');render();},
@@ -3043,6 +3158,10 @@ const ACT={
   codein(){codeDialog('in');},
   codeout(){saveGame();codeDialog('out');},
   bsave(){saveGame();if(B){B.sys=null;render();}codeDialog('out');},
+  bdeploy(){beginBattle();},
+  bautodeploy(){if(!B||B.mode!=='deploy')return;const ps=B.units.filter(u=>u.side==='p').sort((a,b)=>(a.cls==='佛门'||a.cls==='法修')-(b.cls==='佛门'||b.cls==='法修'));
+    const slots=[];for(let y=0;y<H;y++)for(const x of [1,0])slots.push([x,y]);slots.sort((a,b)=>Math.abs(a[1]-(H-1)/2)-Math.abs(b[1]-(H-1)/2)||b[0]-a[0]);
+    ps.forEach((u,i)=>{[u.x,u.y]=slots[i];});B.dsel=null;sfx('step');render();},
   bstopauto(){if(!B)return;B.autoAll=false;if(B.phase==='p'&&B.mode==='busy')B.stopAuto=true;sfx('click');render();},
   bsysx(){B.sys=null;B.rconf=false;render();},
   brestart(){if(!B.rconf){B.rconf=true;render();return;}B.over=true;saveGame();ACT.restart();},
