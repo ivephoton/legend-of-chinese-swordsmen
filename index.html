@@ -845,7 +845,7 @@ const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 function shuf(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(R()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 function seeded(s){return function(){s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
 const CN=(()=>{const d='零一二三四五六七八九十'.split('');const o=[];for(let n=0;n<=60;n++)o.push(n<=10?d[n]:n<20?'十'+d[n-10]:d[Math.floor(n/10)]+'十'+(n%10?d[n%10]:''));return o;})();
-const W=36,H=29,DIRS=[[1,0],[-1,0],[0,1],[0,-1]];
+const W=30,H=24,DIRS=[[1,0],[-1,0],[0,1],[0,-1]];
 const md=(a,b,c,d)=>Math.abs(a-c)+Math.abs(b-d);
 
 /* ================= 五行 ================= */
@@ -1999,7 +1999,27 @@ const INS={
   bell(t,m,v,bus){const ctx=AU.ctx,g=ctx.createGain();env(g,t,0.003,v*0.3,1.4);[1,2.76,5.4].forEach((r,i)=>{const o=ctx.createOscillator();o.type='sine';o.frequency.value=mf(m)*r;const og=ctx.createGain();og.gain.value=[1,0.4,0.15][i];o.connect(og);og.connect(g);o.start(t);o.stop(t+1.5);});outTo(g,bus,0.5);}};
 /* 乐曲：D宫五声（洞府）与 E羽五声（战斗） */
 function degMidi(root,sc,d){const o=Math.floor(d/5),i=((d%5)+5)%5;return root+o*12+sc[i];}
+// 每位侠士的出招曲：按五行定调式与主音，按职业定速度与配器，按人物种子生成旋律
+const MODES={宫:[0,2,4,7,9],商:[0,2,5,7,10],角:[0,3,5,8,10],徵:[0,2,5,7,9],羽:[0,3,5,7,10]};
+function heroTheme(hid){const h=HEROES[hid],rng=seeded(hid*7919+131),ev=[],add=(st,ins,m,v,len)=>{(ev[st]=ev[st]||[]).push({ins,m,v,len});};
+  const mode=MODES[['宫','商','角','徵','羽'][(ELS.indexOf(h.el)+hid)%5]],root={金:64,木:62,水:60,火:67,土:65}[h.el]+(hid%3)-1;
+  const bpm={剑仙:152,法修:122,佛门:100,散仙:134}[h.cls]+Math.round(rng()*16-8),sd=60/bpm/2,len=64;
+  const lead=h.cls==='佛门'?'bell':h.cls==='法修'?(hid%2?'flute':'bell'):HERO_DEF&&false?'flute':(hid%3===0?'pluck':'flute');
+  // 旋律：两小节动机 + 变奏 + 高潮 + 回落
+  let d=5,motif=[];for(let i=0;i<8;i++){const step=[-2,-1,-1,0,1,1,2,3][Math.floor(rng()*8)];d=clamp(d+step,2,10);motif.push([d,[1,1,2,2,1,2][Math.floor(rng()*6)]]);}
+  const phrases=[motif,motif.map(([a,l],i)=>[a+(i>4?1:0),l]),motif.map(([a,l])=>[a+2,l]),motif.map(([a,l],i)=>[Math.max(2,a-(i>5?2:0)),i===7?4:l])];
+  let st=0;for(const ph of phrases){let used=0;for(const [a,l] of ph){if(used+l>16)break;add(st,lead,degMidi(root,mode,a),0.85,l*sd);if(lead!=='flute'&&l>1)add(st+1,lead,degMidi(root,mode,a),0.4,sd);st+=l;used+=l;}st+=16-used;}
+  const tk=[[1,0,0,1,1,0,1,0],[1,0,1,0,1,0,1,1],[1,0,0,0,1,0,0,1],[1,1,0,1,0,1,1,0]][hid%4];
+  const bassP=[[0,0,3,0,4,0,3,2],[0,2,3,2,0,2,4,3],[0,0,0,3,0,0,4,2]][hid%3],prog=[0,0,-1,-2,0,1,-1,0].map(v=>v+(hid%2));
+  prog.forEach((r,b)=>{for(let i=0;i<8;i++){const t=b*8+i;add(t,'pluck',degMidi(root-24,mode,r+bassP[i]),i%2?0.5:0.8);
+      if(tk[i])add(t,'taiko',0,i===0?1:0.6);if(h.cls!=='佛门'&&i%2)add(t,'wood',1700+hid*40,0.3);
+      if(h.cls==='剑仙'&&b%2&&i%2===0)add(t,'pluck',degMidi(root-12,mode,r+5+(i%3)),0.35);}
+    add(b*8,'pad',degMidi(root-24,mode,r),0.8,sd*8.5);if(h.cls==='佛门'&&b%2===0)add(b*8,'gong',0,0.6);if(b===0)add(0,'gong',0,0.7);
+    if(h.cls==='法修'&&b%2)add(b*8+4,'bell',degMidi(root+12,mode,r+4),0.3);});
+  return {ev,len,sd};}
 function buildTrack(kind){
+  if(/^h\d+$/.test(kind))return heroTheme(+kind.slice(1));
+  if(kind==='boss'){const t=buildTrack('battle');const ev=t.ev.map(es=>es&&es.map(e=>Object.assign({},e,{m:e.ins==='taiko'||e.ins==='wood'||e.ins==='gong'?e.m:e.m-3})));for(let b=0;b<8;b++)(ev[b*8]=ev[b*8]||[]).push({ins:'gong',m:0,v:0.7});return {ev,len:t.len,sd:t.sd*0.94};}
   const ev=[];const add=(st,ins,m,v,len)=>{(ev[st]=ev[st]||[]).push({ins,m,v,len});};
   if(kind==='camp'){const R0=62,SC=[0,2,4,7,9],len=64,sd=60/76/2;
     const mel=[[5,2],[4,1],[3,1],[4,2],[2,2],[3,3],[2,1],[1,4],[0,2],[1,1],[2,1],[3,2],[5,2],[4,6],[null,2],
@@ -2019,11 +2039,11 @@ function buildTrack(kind){
     if(b===0||(fin&&b===4))add(b*8,'gong',0,0.8);add(b*8,'pad',degMidi(R0-24,SC,r),0.9,sd*8.5);});
   return {ev,len,sd};}
 const TRACKS={};
-function playTrack(name){
-  AU.want=name;if(!AU.ctx||AU.cur===name)return;const ctx=AU.ctx;
-  if(AU.st){const old=AU.st;old.alive=false;clearInterval(old.timer);old.g.gain.setTargetAtTime(0.0001,ctx.currentTime,0.25);setTimeout(()=>old.g.disconnect(),1500);}
+function playTrack(name,fade){
+  AU.want=name;if(!AU.ctx||AU.cur===name)return;const ctx=AU.ctx;fade=fade||1.2;
+  if(AU.st){const old=AU.st;old.alive=false;clearInterval(old.timer);old.g.gain.setTargetAtTime(0.0001,ctx.currentTime,Math.min(0.25,fade/4));setTimeout(()=>old.g.disconnect(),1500);}
   AU.cur=name;AU.st=null;if(!name)return;
-  const tr=TRACKS[name]||(TRACKS[name]=buildTrack(name));const g=ctx.createGain();g.gain.setValueAtTime(0.0001,ctx.currentTime);g.gain.exponentialRampToValueAtTime(1,ctx.currentTime+1.2);g.connect(AU.mus);
+  const tr=TRACKS[name]||(TRACKS[name]=buildTrack(name));const g=ctx.createGain();g.gain.setValueAtTime(0.0001,ctx.currentTime);g.gain.exponentialRampToValueAtTime(1,ctx.currentTime+fade);g.connect(AU.mus);
   const st={tr,g,step:0,next:ctx.currentTime+0.12,alive:true};
   st.timer=setInterval(()=>{if(!st.alive)return;while(st.next<ctx.currentTime+0.25){const es=tr.ev[st.step];if(es)for(const e of es){try{INS[e.ins](st.next,e.m,e.v,g,e.len);}catch(x){}}
     st.next+=tr.sd;st.step=(st.step+1)%tr.len;}},40);
@@ -2052,7 +2072,7 @@ function sfx(n){
     case 'buff':tone(400,900,0.35,0.2,'sine');INS.bell(t+0.1,86,0.3,b);break;}}catch(e){}}
 function syncMusic(){
   let want=null;
-  if(VIEW==='battle'&&B)want=B.c===30?'final':'battle';else if(VIEW==='result')want=AU.want==='__jingle'?null:null;else want='camp';
+  if(VIEW==='battle'&&B)want=AU.override||(B.c===30?'final':'battle');else if(VIEW==='result')want=AU.want==='__jingle'?null:null;else want='camp';
   if(VIEW==='result')return;
   if(AU.ctx)playTrack(want);else AU.want=want;}
 function auToggle(k){AU.on[k]=!AU.on[k];auSave();if(AU.ctx){const g=k==='music'?AU.mus:AU.sfxG;g.gain.setTargetAtTime(AU.on[k]?(k==='music'?0.42:0.7):0,AU.ctx.currentTime,0.1);}updAuBtns();}
@@ -2341,7 +2361,10 @@ function animOn(a){if(FAST||typeof document==='undefined'||!S)return false;const
 function atkName(u){
   if(u.side==='p'){const t=S.heroes[u.hid].eq.w;if(t!=null)return '飞剑·'+TREASURES[t].name;return {剑仙:'飞剑斩',法修:'掌心雷',佛门:'金刚掌',散仙:'剑气纵横'}[u.cls];}
   return {妖兽:'利爪撕裂',妖禽:'凌空俯冲',邪僧:'禅杖横扫',剑客:'飞剑',妖道:'妖火',魔女:'魔音贯耳',鬼卒:'阴风爪'}[u.cls]||'攻击';}
+function cutTheme(o){const a=o.a,t=o.targets&&o.targets[0]&&o.targets[0].u;
+  if(a&&a.side==='p'&&a.hid!=null)return 'h'+a.hid;if(t&&t.side==='p'&&t.hid!=null)return 'h'+t.hid;return null;}
 async function playCut(o){
+  {const th=cutTheme(o);if(th&&AU.on&&AU.on.music){AU.override=th;if(AU.ctx)playTrack(th,0.25);}}
   const reduce=!!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches);
   let skipRes;const skipP=new Promise(r=>skipRes=r);CUT={skip:false};
   const w=ms=>CUT.skip?Promise.resolve():Promise.race([sleep(ms),skipP]);
@@ -2518,7 +2541,8 @@ async function playCut(o){
     await w(650);
   }catch(e){console.error(e);}
   await A(cut,[{opacity:1},{opacity:0}],220);
-  if(g3)g3.dispose();cut.remove();document.removeEventListener('keydown',kd);CUT=null;}
+  if(g3)g3.dispose();cut.remove();document.removeEventListener('keydown',kd);CUT=null;
+  if(AU.override){AU.override=null;if(AU.ctx&&VIEW==='battle'&&B)playTrack(B.c===30?'final':'battle',0.8);}}
 function askReact(a,d){
   return new Promise(res=>{let done=false;const fin=v=>{if(done)return;done=true;clearInterval(tm);B.react=null;render();res(v);};
     B.react={a,d,left:9,fin};render();
