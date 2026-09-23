@@ -617,7 +617,9 @@ body{background:transparent}
 .bt .side .bar .bb{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.2)}
 .upg{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:12px}
 .upb{display:flex;flex-direction:column;align-items:center;border:1px solid var(--rule);background:var(--panel);padding:5px 2px;cursor:pointer;font:inherit;line-height:1.3}
-.upb b{font-size:14px;color:#1a0a00;font-weight:900}.upb span{color:#1a0a00;font-weight:800;font-size:13px}.upb small{color:#1a0a00;font-weight:800;font-size:12px}
+.upb b{font-size:14px;color:#1a0a00;font-weight:900}
+.upb .lv{color:#6a3a1a;font-size:11px;font-weight:700}
+.upb{user-select:none;-webkit-user-select:none;touch-action:manipulation}.upb span{color:#1a0a00;font-weight:800;font-size:13px}.upb small{color:#1a0a00;font-weight:800;font-size:12px}
 .upb:disabled{opacity:.45;cursor:not-allowed}
 @media(max-width:520px){.upg{grid-template-columns:repeat(2,1fr)}}
 .codeta{width:100%;min-height:120px;font-family:monospace;font-size:12px;padding:8px;border:1px solid var(--rule);background:var(--panel);color:var(--ink);word-break:break-all}
@@ -847,7 +849,7 @@ const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 function shuf(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(R()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 function seeded(s){return function(){s|=0;s=s+0x6D2B79F5|0;let t=Math.imul(s^s>>>15,1|s);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
 const CN=(()=>{const d='零一二三四五六七八九十'.split('');const o=[];for(let n=0;n<=60;n++)o.push(n<=10?d[n]:n<20?'十'+d[n-10]:d[Math.floor(n/10)]+'十'+(n%10?d[n%10]:''));return o;})();
-const W=17,H=13,DIRS=[[1,0],[-1,0],[0,1],[0,-1]];
+const W=12,H=9,DIRS=[[1,0],[-1,0],[0,1],[0,-1]];
 const md=(a,b,c,d)=>Math.abs(a-c)+Math.abs(b-d);
 
 /* ================= 五行 ================= */
@@ -1031,12 +1033,12 @@ function vnoise(seed,cells){const r=seeded(seed),gw=cells+2,gv=[];for(let i=0;i<
     const a=gv[y0*gw+x0],b=gv[y0*gw+x0+1],c=gv[(y0+1)*gw+x0],d=gv[(y0+1)*gw+x0+1];return a+(b-a)*s(fx)+(c-a)*s(fy)+(a-b-c+d)*s(fx)*s(fy);};}
 function carveRivers(m,style,rng){m.bridges=[];if(style==='cave'||style==='temple'){return;}
   for(let y=0;y<H;y++)for(let x=0;x<W;x++)if(m[y][x]===3)m[y][x]=0;
-  const nr=style==='water'?2:1,lo=4,hi=W-5;
+  const nr=1,lo=3,hi=W-4;
   for(let r=0;r<nr;r++){let x=lo+Math.floor(rng()*(hi-lo)),path=[];
     for(let y=0;y<H;y++){m[y][x]=3;path.push([x,y]);const d=rng();const nx=d<0.28&&x>lo?x-1:d>0.72&&x<hi?x+1:x;if(nx!==x){m[y][nx]=3;path.push([nx,y]);x=nx;}}
     const ys=shuf([...Array(H-4).keys()].map(i=>i+2)).slice(0,2);
     for(const by of ys){const row=path.filter(p=>p[1]===by);for(const [bx] of row){m[by][bx]=0;m.bridges.push([bx,by]);}}}}
-function heightMap(m,seed){const n=vnoise(seed,5),r=seeded(seed^0x77),hm=[];
+function heightMap(m,seed){const n=vnoise(seed,4),r=seeded(seed^0x77),hm=[];
   for(let y=0;y<H;y++){const row=[];for(let x=0;x<W;x++){const t=m[y][x];let h=0;
     if(t===2)h=1+(n(x/W,y/H)>0.55?1:0);else if(t===4)h=1;else if(t!==3&&n(x/W,y/H)>0.64&&!(m.bridges||[]).some(b=>b[0]===x&&b[1]===y))h=1;
     row.push(h);}hm.push(row);}
@@ -1147,7 +1149,8 @@ function heroStats(id){
   for(const k of ['w','m','a']){const tid=s.eq[k];if(tid!=null){const t=TREASURES[tid];for(const kk in t.st)st[kk]=(st[kk]||0)+t.st[kk];}}
   const up=s.up||{};for(const k in UPG)if(up[k])st[k]=(st[k]||0)+up[k]*UPG[k].inc;
   return st;}
-const UPG={hp:{n:'气血',inc:14},atk:{n:'剑力',inc:3},def:{n:'护体',inc:3},mag:{n:'法力',inc:3},res:{n:'抗法',inc:3},agi:{n:'身法',inc:1},hit:{n:'命中',inc:1},mp:{n:'真元',inc:6}};
+const UPG={hp:{n:'气血',inc:14,max:30},atk:{n:'剑力',inc:3,max:30},def:{n:'护体',inc:3,max:30},mag:{n:'法力',inc:3,max:30},res:{n:'抗法',inc:3,max:30},agi:{n:'身法',inc:1,max:60},hit:{n:'命中',inc:1,max:30},mp:{n:'真元',inc:6,max:30}};
+const upMax=k=>UPG[k].max||30;
 const upCost=l=>60+l*45;
 function heroSkills(id){
   const h=HEROES[id],s=S.heroes[id],out=h.skills.filter(x=>x.lv<=s.lv).map(x=>x.sid);
@@ -1176,11 +1179,11 @@ function startBattle(c,dep){
   for(let i=pc.length-1;i>=0;i--)if(pc[i][0]>1)pc.splice(i,1);
   pc.sort((a,b)=>Math.abs(a[1]-(H-1)/2)-Math.abs(b[1]-(H-1)/2)||b[0]-a[0]);
   B.chests=[];{const cand=[];for(let y=1;y<H-1;y++)for(let x=3;x<W-3;x++)if(B.map[y][x]!==4)cand.push([x,y]);shuf(cand);
-    const nC=2+(R()<0.5?1:0);for(const [x,y] of cand){if(B.chests.length>=nC)break;if(B.chests.every(q=>md(q.x,q.y,x,y)>=4))B.chests.push({x,y,taken:false});}}
+    const nC=2+(R()<0.5?1:0);for(const [x,y] of cand){if(B.chests.length>=nC)break;if(B.chests.every(q=>md(q.x,q.y,x,y)>=3))B.chests.push({x,y,taken:false});}}
   B.cond=c===30?{win:'boss'}:(CONDS[c]||{});B.start={};dep.forEach(id=>{const h=S.heroes[id];B.start[id]={lv:h.lv,exp:h.exp,st:heroStats(id)};});
   dep.forEach((id,i)=>{const u=makeHeroUnit(id);[u.x,u.y]=pc[i];B.units.push(u);});
   const lv=elv(c)+(c===30?st*2:0);
-  const n=clamp(Math.round(dep.length*1.1)+Math.floor(c/8),4,12)+(c===30?st:0);
+  const n=clamp(Math.round(dep.length*0.9)+Math.floor(c/10),3,9)+(c===30?st:0);
   const used=new Set(),take=(x,y)=>{used.add(y*W+x);return [x,y];};
   const bc=[];for(let y=0;y<H;y++)bc.push([W-1,y]);bc.sort((a,b)=>Math.abs(a[1]-(H-1)/2)-Math.abs(b[1]-(H-1)/2));
   def.boss.forEach((bd,i)=>{const u=makeFoe(bd,lv+2,true);[u.x,u.y]=take(...bc[i]);B.units.push(u);});
@@ -2644,7 +2647,10 @@ function aiPlan(u){
   const guard=u.boss&&u.side==='e'&&B.turn<3&&!threat;
   const RC=reach(u,guard);let best=null;
   const consider=(sc,p)=>{if(!best||sc>best.sc)best=Object.assign({sc},p);};
-  for(const [k] of RC){const x=k%W,y=Math.floor(k/W),terr=(1-TER[B.map[y][x]].d)*18;
+  // 全自动时我方会顺路开宝箱：站上宝箱格有高额加分
+  const chests=(u.side==='p'&&B.chests)?B.chests.filter(q=>!q.taken):[];
+  const chestAt=(x,y)=>chests.some(q=>q.x===x&&q.y===y)?90:0;
+  for(const [k] of RC){const x=k%W,y=Math.floor(k/W),terr=(1-TER[B.map[y][x]].d)*18+chestAt(x,y);
     const pos=o=>o===u?[x,y]:[o.x,o.y];
     for(const f of foes){const d=md(x,y,f.x,f.y);if(d>=u.r[0]&&d<=u.r[1]){const dm=Math.round(estPhys(u,f)*(1-dodgeP(u,f)));consider(Math.min(dm,f.hp)+(dm>=f.hp?60:0)+terr,{x,y,act:'atk',target:f});}}
     for(const sid of u.skills){const sk=SKILLS[sid];if(u.mp<sk.mp)continue;
@@ -2665,8 +2671,14 @@ function aiPlan(u){
         consider(sc-sk.mp*0.35+terr,{x,y,act:'skill',sk:sid,cx:f.x,cy:f.y});}}}
   if(best&&best.sc>6)return best;
   if(guard)return {x:u.x,y:u.y,act:'wait'};
-  const df=distField(foes);let bx=u.x,by=u.y,bv=df[u.y*W+u.x];
-  for(const [k,c] of RC){const v=df[k]+c*0.01;if(v<bv){bv=v;bx=k%W;by=Math.floor(k/W);}}
+  // 站得到宝箱就去开；否则朝最近的宝箱或敌人靠拢
+  if(chests.length){for(const [k] of RC){const x=k%W,y=Math.floor(k/W);if(chestAt(x,y))return {x,y,act:'wait'};}}
+  const df=distField(foes);
+  const dc=chests.length?distField(chests.map(q=>({x:q.x,y:q.y}))):null;
+  const near=chests.length?Math.min(...chests.map(q=>md(u.x,u.y,q.x,q.y))):99;
+  const wantChest=dc&&near<=u.mov*2+2;
+  let bx=u.x,by=u.y,bv=(wantChest?dc:df)[u.y*W+u.x];
+  for(const [k,c] of RC){const v=(wantChest?dc:df)[k]+c*0.01;if(v<bv){bv=v;bx=k%W;by=Math.floor(k/W);}}
   return {x:bx,y:by,act:'wait'};}
 // 镜头跟随：平滑平移，使指定格位于画面中央；已在中央区域内则不动
 function showUnitDetail(u){if(typeof document==='undefined'||FAST||!B)return;document.querySelectorAll('.udet').forEach(e=>e.remove());
@@ -2955,7 +2967,7 @@ function vModal(){
   <div class="slots">${['w','m','a'].map(sl=>{const t=s.eq[sl]!=null?TREASURES[s.eq[sl]]:null;
     return `<button class="slot ${MODAL.slot===sl?'on':''}" data-a="slot" data-v="${sl}"><small class="muted">${SLOTN[sl]}</small><b>${t?t.name:'空'}</b>${t?`<small>${trStat(t)}</small>`:''}</button>`;}).join('')}</div>
   <h3>修炼 <small class="muted">现有金钱 ${S.gold||0}</small></h3><div class="upg">${Object.keys(UPG).map(k=>{const l=(s.up||{})[k]||0,c=upCost(l);
-    return `<button class="upb" data-a="up" data-v="${k}" ${l>=30||(S.gold||0)<c?'disabled':''}><b>${UPG[k].n}</b><span>+${l*UPG[k].inc}</span><small>${l>=30?'已满':c+' 金'}</small></button>`;}).join('')}</div>
+    return `<button class="upb" data-a="up" data-v="${k}" ${l>=upMax(k)||(S.gold||0)<c?'disabled':''}><b>${UPG[k].n}</b><span>+${l*UPG[k].inc} <small class="lv">${l}/${upMax(k)}</small></span><small>${l>=upMax(k)?'已满':c+' 金'}</small></button>`;}).join('')}</div>
   ${pickL}<h3>道法</h3><div class="list skl">${h.skills.map(x=>{const sk=SKILLS[x.sid],ok=x.lv<=s.lv;
     return `<div class="li ${ok?'':'off'}"><span>${eld(sk.el)}<b>${sk.name}</b> <small class="muted">${TYN[sk.type]}</small><br><small>${skDesc(sk)}</small></span><span class="r">${ok?'已领悟':'Lv.'+x.lv}</span></div>`;}).join('')}
   ${sks.filter(i=>!h.skills.some(x=>x.sid===i)).map(i=>{const sk=SKILLS[i];return `<div class="li"><span>${eld(sk.el)}<b>${sk.name}</b> <small class="muted">法宝所授</small><br><small>${skDesc(sk)}</small></span><span class="r">法宝</span></div>`;}).join('')}</div></div></div>`;}
@@ -3018,7 +3030,7 @@ function syncHits(){const box=document.getElementById('hits');if(!box||!B||!B.sp
   box.className='hits'+(B.phase==='p'&&!B.over&&['idle','atk','skill'].includes(B.mode)?' on':'');}
 function chestSprites(){if(!B.chests)return '';const cc=chestCls();return B.chests.filter(q=>!q.taken).map(q=>`<div class="spr tr chest" data-cx="${q.x}" data-cy="${q.y}" style="--h:${hAt(q.x,q.y)};left:${(q.x+0.55)/W*100}%;top:${(q.y+0.55)/H*100}%;width:${100/W*0.9}%">${cc?`<i class="up ${cc}"></i>`:'<i class="up chestf">宝</i>'}</div>`).join('');}
 // 同一模型在一张地图上至多出现 3 次：每类按需生成新造型
-const TCAP=(typeof matchMedia!=='undefined'&&matchMedia('(pointer:coarse)').matches)?{tree:14,mount:8,rock:6,decor:8}:{tree:20,mount:12,rock:10,decor:12};
+const TCAP=(typeof matchMedia!=='undefined'&&matchMedia('(pointer:coarse)').matches)?{tree:10,mount:6,rock:5,decor:6}:{tree:14,mount:8,rock:7,decor:8};
 function terrSprites(){
   if(!TH())return '';const rng=seeded(B.seed^0x2545f491),st=B.def.s;let h='';const tw=100/W;
   const pools={};const take=k=>{const P=pools[k]||(pools[k]={ids:[],cnt:{}});const open=P.ids.filter(i=>P.cnt[i]<3);
@@ -3234,7 +3246,7 @@ const ACT={
   tr(v){MODAL={tr:+v};render();},
   skinfo(v){MODAL={sk:+v};render();},
   slot(v){MODAL.slot=MODAL.slot===v?null:v;render();},
-  up(v){const id=MODAL&&MODAL.hero;if(id==null)return;const s=S.heroes[id];s.up=s.up||{};const l=s.up[v]||0,c=upCost(l);if(l>=30||(S.gold||0)<c)return;S.gold-=c;s.up[v]=l+1;saveGame();sfx('lvl');render();},
+  up(v){const id=MODAL&&MODAL.hero;if(id==null)return false;const s=S.heroes[id];s.up=s.up||{};const l=s.up[v]||0,c=upCost(l);if(l>=upMax(v)||(S.gold||0)<c)return false;S.gold-=c;s.up[v]=l+1;saveGame();sfx('lvl');render();return true;},
   eqto(v){const [t,id]=v.split(':').map(Number);const tr=TREASURES[t];if((S.inv[t]||0)-eqCount(t)<=0)return;S.heroes[id].eq[tr.slot]=t;saveGame();sfx('buff');render();},
   eq(v){const t=+v,s=S.heroes[MODAL.hero];if(S.inv[t]-eqCount(t)<=0)return;s.eq[MODAL.slot]=t;saveGame();render();},
   uneq(){S.heroes[MODAL.hero].eq[MODAL.slot]=null;saveGame();render();},
@@ -3284,6 +3296,12 @@ if(typeof document!=='undefined'){
     const a=el.dataset.a;if(a!=='tip')hideTip();if(a==='noop'){e.stopPropagation();return;}if(B&&B.panSkip){B.panSkip=false;return;}if(a!=='cell')sfx('click');if(ACT[a])ACT[a](el.dataset.v,el,e);});
   const wake=()=>{auInit();if(AU.ctx&&AU.ctx.state==='suspended')AU.ctx.resume();if(AU.ctx&&AU.cur!==AU.want&&AU.want!==undefined)playTrack(AU.want);};
   document.addEventListener('pointerdown',wake);document.addEventListener('keydown',wake);
+  {let hT=null,hN=0,hK=null;
+   const stop=()=>{clearTimeout(hT);hT=null;if(hN>0)setTimeout(()=>{hN=0;},60);hK=null;};
+   const step=()=>{if(!hK)return;if(!ACT.up(hK)){stop();return;}hN++;hT=setTimeout(step,Math.max(45,200-hN*18));};
+   document.addEventListener('pointerdown',e=>{const b=e.target.closest&&e.target.closest('[data-a="up"]');if(!b||b.disabled)return;hK=b.dataset.v;hN=0;hT=setTimeout(step,320);});
+   ['pointerup','pointercancel','pointerleave','blur'].forEach(ev=>document.addEventListener(ev,stop));
+   document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-a="up"]');if(b&&hN>0){e.stopPropagation();e.preventDefault();hN=0;}},true);}
   document.addEventListener('keydown',e=>{if(e.key==='Escape'&&VIEW==='battle'&&!CUT)cmdCancel();if((e.key==='p'||e.key==='P')&&VIEW==='battle'&&B&&B.autoAll)ACT.bstopauto();});
   window.addEventListener('resize',()=>{if(VIEW==='battle'){placeCmd();const t=document.getElementById('tilt'),b=document.getElementById('board');if(t&&b){const tp=b.offsetWidth/W;t.style.setProperty('--hu',(tp*0.42)+'px');t.style.setProperty('--tp',tp+'px');}}});
   document.getElementById('mbtn').addEventListener('click',()=>{auInit();auToggle('music');syncMusic();});
