@@ -2045,8 +2045,13 @@ function buildTrack(kind){
     if(b===0||(fin&&b===4))add(b*8,'gong',0,0.8);add(b*8,'pad',degMidi(R0-24,SC,r),0.9,sd*8.5);});
   return {ev,len,sd};}
 const TRACKS={};
+function stopTrack(){if(!AU.st)return;const st=AU.st;st.alive=false;clearInterval(st.timer);
+  try{st.g.gain.cancelScheduledValues(0);st.g.gain.value=0;st.g.disconnect();}catch(e){}
+  AU.st=null;AU.cur=null;}
 function playTrack(name,fade){
-  AU.want=name;if(!AU.ctx||AU.cur===name)return;const ctx=AU.ctx;fade=fade||1.2;
+  AU.want=name;
+  if(!AU.on.music){stopTrack();return;}           // 静音时根本不产生声音
+  if(!AU.ctx||AU.cur===name)return;const ctx=AU.ctx;fade=fade||1.2;
   if(AU.st){const old=AU.st;old.alive=false;clearInterval(old.timer);old.g.gain.setTargetAtTime(0.0001,ctx.currentTime,Math.min(0.25,fade/4));setTimeout(()=>old.g.disconnect(),1500);}
   AU.cur=name;AU.st=null;if(!name)return;
   const tr=TRACKS[name]||(TRACKS[name]=buildTrack(name));const g=ctx.createGain();g.gain.setValueAtTime(0.0001,ctx.currentTime);g.gain.exponentialRampToValueAtTime(1,ctx.currentTime+fade);g.connect(AU.mus);
@@ -2054,7 +2059,7 @@ function playTrack(name,fade){
   st.timer=setInterval(()=>{if(!st.alive)return;while(st.next<ctx.currentTime+0.25){const es=tr.ev[st.step];if(es)for(const e of es){try{INS[e.ins](st.next,e.m,e.v,g,e.len);}catch(x){}}
     st.next+=tr.sd;st.step=(st.step+1)%tr.len;}},40);
   AU.st=st;}
-function jingle(win){if(!AU.ctx)return;const t=AU.ctx.currentTime+0.05,b=AU.mus;playTrack(null);
+function jingle(win){if(!AU.ctx||!AU.on.music)return;const t=AU.ctx.currentTime+0.05,b=AU.mus;playTrack(null);
   if(win){[62,64,66,69,71,74,78,81].forEach((m,i)=>INS.pluck(t+i*0.09,m,0.8,b));INS.flute(t+0.75,81,0.9,b,1.4);INS.gong(t+0.72,0,0.6,b);}
   else{[69,66,64,62,59].forEach((m,i)=>INS.flute(t+i*0.38,m,0.7,b,0.5));INS.gong(t,0,0.5,b);}}
 function sfx(n){
@@ -2082,10 +2087,14 @@ function syncMusic(){
   if(VIEW==='result')return;
   if(AU.ctx)playTrack(want);else AU.want=want;}
 function auToggle(k){AU.on[k]=!AU.on[k];auSave();
-  if(AU.ctx){const g=k==='music'?AU.mus:AU.sfxG,t=AU.ctx.currentTime,v=k==='music'?0.42:0.7;
-    g.gain.cancelScheduledValues(t);g.gain.setValueAtTime(g.gain.value,t);
-    if(AU.on[k])g.gain.linearRampToValueAtTime(v,t+0.12);
-    else{g.gain.linearRampToValueAtTime(0,t+0.12);g.gain.setValueAtTime(0,t+0.13);}}
+  if(AU.ctx){const ctx=AU.ctx,g=k==='music'?AU.mus:AU.sfxG,t=ctx.currentTime,v=k==='music'?0.42:0.7;
+    try{g.gain.cancelScheduledValues(t);}catch(e){}
+    if(AU.on[k]){g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+0.12);}
+    else{g.gain.setValueAtTime(g.gain.value||v,t);g.gain.linearRampToValueAtTime(0,t+0.1);g.gain.setValueAtTime(0,t+0.11);}
+    if(k==='music'){if(AU.on.music){const w=AU.want;AU.cur=null;playTrack(w);}else stopTrack();}
+    // 两项都关就直接挂起整个音频，Safari 上也能彻底静音
+    const both=!AU.on.music&&!AU.on.sfx;
+    setTimeout(()=>{try{if(both&&!AU.on.music&&!AU.on.sfx)ctx.suspend();else if(ctx.state==='suspended')ctx.resume();}catch(e){}},180);}
   updAuBtns();}
 function updAuBtns(){if(typeof document==='undefined')return;const m=document.getElementById('mbtn'),s=document.getElementById('sbtn');
   if(m){m.classList.toggle('off',!AU.on.music);m.title=AU.on.music?'关闭音乐':'开启音乐';}if(s){s.classList.toggle('off',!AU.on.sfx);s.title=AU.on.sfx?'关闭音效':'开启音效';}}
