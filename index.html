@@ -1376,10 +1376,10 @@ function hum(L){
   // —— 上身：胸腰塑形
   const tp=(fem?[[0.13,1.05],[0.12,1.12],[0.14,1.24],[0.155,1.34],[0.15,1.44],[0.13,1.52],[0.05,1.6]]:[[0.15,1.05],[0.15,1.14],[0.165,1.26],[0.175,1.38],[0.17,1.47],[0.14,1.54],[0.05,1.6]]).map(q=>new THREE.Vector2(q[0]*wide,q[1]));
   const torso=part(new THREE.LatheGeometry(tp,32),MT(coatC),0,0,0,body);torso.scale.set(1.12,1,0.82);
-  if(fem)[-1,1].forEach(s=>part(new THREE.SphereGeometry(0.055,14,10),MT(coatC),s*0.06,1.34,0.1,body,false).scale.set(1,0.9,0.75));
+  if(fem)[-1,1].forEach(s=>part(new THREE.SphereGeometry(0.042,14,10),MT(L.robe),s*0.052,1.33,0.075,body,false).scale.set(1,0.85,0.5));
   // —— 交领：内衬+外领
-  [-1,1].forEach(s=>{const a=part(new THREE.BoxGeometry(0.038,0.26,0.012),MT(inC),s*0.035,1.44,0.12,body,false);a.rotation.set(-0.3,0,s*0.5);
-    const b=part(new THREE.BoxGeometry(0.03,0.3,0.012),GL(L.trim,0.2),s*0.058,1.42,0.125,body,false);b.rotation.set(-0.3,0,s*0.5);});
+  [-1,1].forEach(s=>{const a=part(new THREE.BoxGeometry(0.028,0.2,0.01),MT(inC),s*0.03,1.47,0.115,body,false);a.rotation.set(-0.3,0,s*0.45);
+    const b=part(new THREE.BoxGeometry(0.022,0.23,0.01),GL(L.trim,0.15),s*0.048,1.45,0.12,body,false);b.rotation.set(-0.3,0,s*0.45);});
   // —— 腰封、结、飘带、玉佩
   part(new THREE.CylinderGeometry(0.145*wide,0.15*wide,0.1,28),MT(sashC),0,1.1,0,body).scale.set(1.12,1,0.85);
   part(new THREE.CylinderGeometry(0.152*wide,0.152*wide,0.018,28),GL(L.trim,0.25),0,1.14,0,body,false).scale.set(1.12,1,0.85);
@@ -1400,36 +1400,27 @@ function hum(L){
   // —— 颈与头（瓜子脸、大眼、细眉、小口）
   part(new THREE.CylinderGeometry(0.033,0.04,0.13,12),skinM(),0,1.62,0,body,false);
   const head=new THREE.Group();head.position.y=1.765;head.scale.setScalar(child?0.78:0.56);body.add(head);
-  const fp=[[0.001,-0.24],[0.045,-0.232],[0.095,-0.2],[0.14,-0.14],[0.172,-0.06],[0.188,0.03],[0.186,0.1],[0.165,0.165],[0.115,0.212],[0.001,0.235]].map(q=>new THREE.Vector2(q[0],q[1]));
-  const face=part(new THREE.LatheGeometry(fp,36),skinM(),0,0,0,head);face.scale.set(fem?0.93:1,1,0.95);
+  const fp=[[0.001,-0.215],[0.058,-0.206],[0.112,-0.178],[0.152,-0.12],[0.178,-0.04],[0.19,0.04],[0.186,0.11],[0.163,0.168],[0.112,0.213],[0.001,0.235]].map(q=>new THREE.Vector2(q[0],q[1]));
+  const face=part(new THREE.LatheGeometry(fp,36),skinM(),0,0,0,head);face.scale.set(fem?0.96:1.02,1,0.97);
   [-1,1].forEach(s=>part(new THREE.SphereGeometry(0.036,10,8),MT(mixC(SK,0xff9080,0.15)),s*0.182,-0.01,-0.01,head,false).scale.set(0.45,1,0.8));
-  const nose=part(new THREE.ConeGeometry(0.013,0.042,8),MT(mixC(SK,0xd08070,0.18)),0,-0.05,0.186,head,false);nose.rotation.x=Math.PI/2+0.5;
-  part(new THREE.BoxGeometry(0.01,0.06,0.01),MT(mixC(SK,0xffffff,0.25)),0,-0.015,0.186,head,false);
+  const nose=part(new THREE.ConeGeometry(0.011,0.032,8),MT(mixC(SK,0xd08070,0.12)),0,-0.048,0.184,head,false);nose.rotation.x=Math.PI/2+0.5;
   const eyes=[],IRIS=L.eye||mixC(L.robe,0x1a0c10,0.5),blk=new THREE.MeshBasicMaterial({color:0x120a14}),wht=new THREE.MeshBasicMaterial({color:0xffffff});
-  [-1,1].forEach(s=>{const eg=new THREE.Group();eg.position.set(s*0.066,0.004,0.158);eg.rotation.z=s*(fem?0.12:0.05);eg.rotation.y=s*0.18;head.add(eg);
-    part(new THREE.SphereGeometry(0.04,16,12),new THREE.MeshBasicMaterial({color:0xfbf7f2}),0,0,0,eg,false).scale.set(1.2,fem?0.66:0.55,0.4);
-    part(new THREE.SphereGeometry(0.026,16,12),MT(IRIS,{emissive:IRIS,emissiveIntensity:0.25}),0,-0.003,0.011,eg,false).scale.set(1,1.1,0.45);
-    part(new THREE.SphereGeometry(0.013,10,8),blk,0,-0.003,0.021,eg,false).scale.set(1,1.1,0.5);
-    part(new THREE.SphereGeometry(0.007,6,4),wht,s*0.008+0.007,0.01,0.026,eg,false);part(new THREE.SphereGeometry(0.004,5,4),wht,-0.008,-0.012,0.026,eg,false);
-    const ul=part(new THREE.TorusGeometry(0.046,fem?0.008:0.006,4,18,Math.PI),blk,0,0.002,0.012,eg,false);ul.scale.set(1.08,fem?0.6:0.5,1);
-    if(fem){const wing=part(new THREE.BoxGeometry(0.026,0.007,0.01),blk,s*0.052,0.012,0.012,eg,false);wing.rotation.z=s*0.45;
-      for(let k=0;k<3;k++){const la=part(new THREE.BoxGeometry(0.004,0.014,0.004),blk,s*(0.02+k*0.012),0.03,0.013,eg,false);la.rotation.z=-s*(0.2+k*0.2);}}
-    const cr=part(new THREE.TorusGeometry(0.05,0.0035,3,16,Math.PI*0.8),new THREE.MeshBasicMaterial({color:mixC(SK,0x6a3a3a,0.35)}),0,0.018,0.006,eg,false);cr.rotation.z=Math.PI*0.1;cr.scale.set(1.05,0.55,1);
-    const ir=part(new THREE.TorusGeometry(0.024,0.004,4,18),new THREE.MeshBasicMaterial({color:mixC(IRIS,0x000000,0.55)}),0,-0.003,0.016,eg,false);ir.scale.set(1,1.1,1);
-    part(new THREE.SphereGeometry(0.015,10,8),MT(mixC(IRIS,0xffffff,0.35),{emissive:mixC(IRIS,0xffffff,0.3),emissiveIntensity:0.3}),0,-0.012,0.018,eg,false).scale.set(1,0.5,0.3);
-    if(fem)for(let k=0;k<2;k++){const lw=part(new THREE.BoxGeometry(0.003,0.008,0.003),blk,s*(0.022+k*0.014),-0.022,0.013,eg,false);lw.rotation.z=s*(0.3+k*0.2);}
-    const ll=part(new THREE.TorusGeometry(0.04,0.003,3,14,Math.PI),new THREE.MeshBasicMaterial({color:mixC(SK,0x6a3a3a,0.45)}),0,-0.004,0.01,eg,false);ll.rotation.z=Math.PI;ll.scale.set(1.05,0.4,1);
+  [-1,1].forEach(s=>{const eg=new THREE.Group();eg.position.set(s*0.062,-0.005,0.16);eg.rotation.z=s*(fem?0.08:0.04);eg.rotation.y=s*0.16;head.add(eg);
+    part(new THREE.SphereGeometry(0.036,16,12),new THREE.MeshBasicMaterial({color:0xfbf7f2}),0,0,0,eg,false).scale.set(1.05,fem?0.58:0.5,0.36);
+    part(new THREE.SphereGeometry(0.021,16,12),MT(IRIS,{emissive:IRIS,emissiveIntensity:0.2}),0,-0.002,0.01,eg,false).scale.set(1,1.05,0.42);
+    part(new THREE.SphereGeometry(0.0105,10,8),blk,0,-0.002,0.018,eg,false).scale.set(1,1.05,0.5);
+    part(new THREE.SphereGeometry(0.0055,6,4),wht,s*0.006+0.006,0.008,0.022,eg,false);
+    const ul=part(new THREE.TorusGeometry(0.04,fem?0.0055:0.0045,4,18,Math.PI),blk,0,0.001,0.011,eg,false);ul.scale.set(1.04,fem?0.5:0.42,1);
+    if(fem){const wing=part(new THREE.BoxGeometry(0.018,0.005,0.008),blk,s*0.045,0.009,0.011,eg,false);wing.rotation.z=s*0.4;}
+    part(new THREE.SphereGeometry(0.011,10,8),MT(mixC(IRIS,0xffffff,0.3)),0,-0.008,0.015,eg,false).scale.set(1,0.45,0.3);
     eyes.push(eg);
     const bc=mixC(HC===0xeeeeea||HC===0xf0f0f0||HC===0xd8d8e0||HC===0xe8f0ff?0x9a9a9a:HC,0x000000,0.05);
-    const br=part(new THREE.TorusGeometry(0.06,fem?0.0045:0.008,3,14,Math.PI*0.62),new THREE.MeshBasicMaterial({color:bc}),s*0.07,0.052,0.168,head,false);
+    const br=part(new THREE.TorusGeometry(0.055,fem?0.004:0.0065,3,14,Math.PI*0.6),new THREE.MeshBasicMaterial({color:bc}),s*0.066,0.042,0.172,head,false);
     br.rotation.set(0,s*0.2,Math.PI*0.19+(s<0?0:0));br.scale.set(s,0.35,1);br.rotation.z=s>0?Math.PI*0.19:Math.PI*0.19;
-    if(fem||child){const bl=part(new THREE.SphereGeometry(0.03,10,8),MT(0xff9aa8,{transparent:true,opacity:0.4}),s*0.1,-0.07,0.145,head,false);bl.scale.set(1.1,0.5,0.3);}});
-  [-1,1].forEach(s=>part(new THREE.SphereGeometry(0.007,6,4),new THREE.MeshBasicMaterial({color:mixC(SK,0x5a2a2a,0.6)}),s*0.011,-0.068,0.186,head,false).scale.set(1.3,0.6,0.6));
+    if(fem||child){const bl=part(new THREE.SphereGeometry(0.028,10,8),MT(0xff9aa8,{transparent:true,opacity:0.22}),s*0.098,-0.06,0.15,head,false);bl.scale.set(1.1,0.45,0.25);}});
   const lc=fem?0xd83a5a:0xb86a60;
-  part(new THREE.SphereGeometry(0.02,12,8),MT(lc),0,-0.118,0.168,head,false).scale.set(1.2,0.32,0.5);
-  part(new THREE.SphereGeometry(0.018,12,8),MT(mixC(lc,0xffffff,0.15)),0,-0.132,0.164,head,false).scale.set(1.05,0.36,0.5);
-  part(new THREE.BoxGeometry(0.038,0.0025,0.004),new THREE.MeshBasicMaterial({color:mixC(lc,0x000000,0.55)}),0,-0.125,0.177,head,false);
-  part(new THREE.BoxGeometry(0.006,0.018,0.004),MT(mixC(SK,0xd08070,0.12)),0,-0.1,0.183,head,false);
+  part(new THREE.SphereGeometry(0.017,12,8),MT(mixC(lc,0xffffff,0.12)),0,-0.108,0.166,head,false).scale.set(1.15,0.3,0.45);
+  part(new THREE.SphereGeometry(0.016,12,8),MT(lc),0,-0.12,0.163,head,false).scale.set(1,0.32,0.45);
   // —— 发型（参照原画：中分长直发、鬓发垂胸、高髻金钗、男子高马尾玉冠）
   const hm=MT(HC,{emissive:HC,emissiveIntensity:0.08});let tail=null;
   const cap=c=>{const m=part(new THREE.SphereGeometry(0.228,30,16,0,Math.PI*2,0,Math.PI*0.55),c||hm,0,0.028,-0.01,head);m.rotation.x=-0.26;
@@ -1478,7 +1469,7 @@ function hum(L){
   // —— 护肩
   if(L.guard!=null)[-1,1].forEach(s=>{const sg=part(new THREE.SphereGeometry(0.075,12,8,0,Math.PI*2,0,Math.PI/2),GL(L.guard,0.2),s*0.19*wide,1.52,0,body);sg.scale.set(1.2,0.6,1);sg.rotation.z=-s*0.5;});
   // —— 双臂：上臂、前臂、手、广袖
-  const arms={};
+  const arms={},hands={};
   [-1,1].forEach(s=>{const a=new THREE.Group();a.position.set(s*0.175*wide,1.5,0);a.rotation.z=s*0.2;body.add(a);
     part(new THREE.SphereGeometry(0.05,12,10),MT(coatC),0,0,0,a,false);
     part(new THREE.CylinderGeometry(0.042,0.036,0.3,10),MT(coatC),0,-0.16,0,a,false);
@@ -1491,7 +1482,7 @@ function hum(L){
     part(new THREE.BoxGeometry(0.05,0.07,0.022),MT(SK),0,-0.02,0,hand,false);
     for(let f=0;f<4;f++)part(new THREE.CylinderGeometry(0.007,0.006,0.05,5),MT(SK),-0.018+f*0.012,-0.078,0.004,hand,false);
     const th=part(new THREE.CylinderGeometry(0.008,0.008,0.04,5),MT(SK),-s*0.03,-0.01,0.012,hand,false);th.rotation.z=s*0.7;
-    arms[s<0?'L':'R']=a;});
+    arms[s<0?'L':'R']=a;hands[s<0?'L':'R']=hand;});
   // —— 披帛
   let shawl=null;if(L.pibo!=null){shawl=new THREE.Group();shawl.position.set(0,1.45,0);body.add(shawl);
     ribbon(shawl,[[-0.55,-0.95,0.12],[-0.36,-0.4,0.05],[-0.24,0.02,-0.1],[0,0.08,-0.17],[0.24,0.02,-0.1],[0.36,-0.4,0.05],[0.55,-0.95,0.12]],0.012,L.pibo);}
@@ -1503,7 +1494,7 @@ function hum(L){
   if(L.flag){part(new THREE.CylinderGeometry(0.01,0.01,1.1,6),MT(0x5a3b22),0,-0.4,0.05,arms.R);part(new THREE.BoxGeometry(0.26,0.4,0.008),GL(L.trim,0.3),0.14,-0.05,0.05,arms.R);}
   let spin=null;if(L.ring){spin=part(new THREE.TorusGeometry(0.28,0.024,6,28),GL(0xffd700,0.9),0,0.95,0,g,false);spin.rotation.x=Math.PI/2.4;}
   const sword=L.noSword?null:buildSword(g,L.sws);
-  g.userData={kind:'hum',body,head,arms,sword,spin,shawl,tail,eyes,scale:1,focus:head};return g;}
+  g.userData={kind:'hum',body,head,arms,hands,sword,spin,shawl,tail,eyes,scale:1,focus:head,root:g};return g;}
 
 /* ================= 妖兽 / 妖禽 / 鬼卒：细化脸部与全身 ================= */
 function beast(col){
@@ -1654,8 +1645,17 @@ function animModel(m,pose,t,dt){
     L(u.arms.R.rotation,'x',rx);L(u.arms.R.rotation,'z',rz);L(u.arms.L.rotation,'x',lx);L(u.arms.L.rotation,'z',lz);
     L(u.body.rotation,'x',lean);L(u.body.rotation,'y',tw);L(u.head.rotation,'x',hx);
     u.head.rotation.y=Math.sin(t*0.7)*0.15;u.body.scale.y=u.body.scale.x*(1+Math.sin(t*2.2)*0.012);
-    if(u.sword){const s=u.sword;L(s.position,'x',sp.x);L(s.position,'y',sp.y+(pose==='idle'?Math.sin(t*2)*0.03:0));L(s.position,'z',sp.z);L(s.rotation,'x',sp.rx);
-      if(pose==='cast')s.rotation.y=sp.ry;else L(s.rotation,'y',sp.ry);s.rotation.z=pose==='idle'?Math.sin(t*2)*0.06:0;}
+    if(u.sword){const s=u.sword,hr=u.hands&&u.hands.R,root=u.root||s.parent;
+      const held=hr&&(pose==='windup'||pose==='slash'||pose==='victory'||pose==='guard');
+      if(held){ // 握在右手：剑柄贴着手心，剑身顺着小臂指出去
+        if(s.parent!==hr){hr.add(s);s.position.set(0,-0.52,0.02);s.rotation.set(Math.PI/2,0,0);}
+        L(s.position,'x',0);L(s.position,'y',-0.55);L(s.position,'z',0.03);
+        L(s.rotation,'x',Math.PI/2+(pose==='slash'?-0.22:pose==='victory'?0.08:pose==='guard'?0.5:0.12));
+        L(s.rotation,'y',0);s.rotation.z=0;}
+      else{ // 脱手御剑
+        if(hr&&s.parent===hr&&root){root.add(s);s.position.set(sp.x,sp.y,sp.z);s.rotation.set(sp.rx,sp.ry,0);}
+        L(s.position,'x',sp.x);L(s.position,'y',sp.y+(pose==='idle'?Math.sin(t*2)*0.03:0));L(s.position,'z',sp.z);L(s.rotation,'x',sp.rx);
+        if(pose==='cast')s.rotation.y=sp.ry;else L(s.rotation,'y',sp.ry);s.rotation.z=pose==='idle'?Math.sin(t*2)*0.06:0;}}
     if(u.spin)u.spin.rotation.z+=dt*(pose==='idle'?2.5:9);
     if(u.sword&&u.sword.userData.tassel)u.sword.userData.tassel.rotation.x=Math.sin(t*3.1)*0.35+(pose==='slash'?0.6:0);
     if(u.shawl)u.shawl.rotation.x=Math.sin(t*2.3)*0.08+(pose==='slash'||pose==='point'?-0.15:0);
