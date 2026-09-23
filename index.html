@@ -702,6 +702,7 @@ body{background:transparent}
 .bt .side .card .btn{background:linear-gradient(180deg,#3a1848,#1e0c2e)!important;color:#ffe9a8!important;box-shadow:inset 0 0 0 1.5px #0e0418,inset 0 0 0 4px #4a2060,inset 0 0 0 5px #d8a84a!important}
 .zbtns button{border-radius:0!important;border:none!important;clip-path:polygon(6px 0,calc(100% - 6px) 0,100% 6px,100% calc(100% - 6px),calc(100% - 6px) 100%,6px 100%,0 calc(100% - 6px),0 6px);background:linear-gradient(180deg,#3a1848,#1e0c2e)!important;box-shadow:inset 0 0 0 1px #0e0418,inset 0 0 0 3px #4a2060,inset 0 0 0 4px #d8a84a;color:#ffe9a8!important}
 .upb{border:none!important;clip-path:polygon(6px 0,calc(100% - 6px) 0,100% 6px,100% calc(100% - 6px),calc(100% - 6px) 100%,6px 100%,0 calc(100% - 6px),0 6px);background:linear-gradient(180deg,#f6ead0,#e4cfa4)!important;box-shadow:inset 0 0 0 1px #8a5a2a,inset 0 0 0 3px #f8eed8,inset 0 0 0 4px #b8862a}
+.fbtns button.off{opacity:.55;text-decoration:line-through}
 .fbtns button{border:none!important;background:radial-gradient(circle,#3a1848,#1e0c2e)!important;box-shadow:0 0 0 2px #d8a84a,0 0 0 4px #3a1848,0 3px 8px rgba(0,0,0,.4)!important;color:#ffe9a8}
 .top h1,.disp{letter-spacing:.08em}
 
@@ -837,7 +838,7 @@ body{background:transparent}
 <path d="M0 330 L120 220 L200 280 L320 170 L420 290 L540 200 L640 300 L760 190 L880 290 L1000 210 L1100 280 L1200 230 L1200 500 L0 500Z" fill="url(#sg2)" opacity=".6"/>
 <path d="M0 420 L140 330 L260 390 L400 310 L520 400 L660 330 L800 410 L940 340 L1080 400 L1200 350 L1200 500 L0 500Z" fill="url(#sg3)" opacity=".7"/>
 <g fill="#fff" opacity=".7"><path d="M255 95 L262 90 L270 100 L262 104Z"/><path d="M655 115 L660 110 L668 120 L660 122Z"/><path d="M1055 125 L1060 120 L1068 130 L1060 133Z"/></g></svg></div>
-<div class="fbtns"><button id="mbtn" aria-label="音乐">♪</button><button id="sbtn" aria-label="音效">🔊</button><button class="themebtn" id="themebtn" title="切换日夜" aria-label="切换日夜">☾</button></div>
+<div class="fbtns"><button id="mbtn" aria-label="音乐">♪</button><button id="sbtn" aria-label="音效">🔊</button><button id="abtn" title="全部静音" aria-label="全部静音">🔇</button><button class="themebtn" id="themebtn" title="切换日夜" aria-label="切换日夜">☾</button></div>
 <script>
 'use strict';
 /* ================= 基础工具 ================= */
@@ -1969,9 +1970,9 @@ function auSave(){try{localStorage.setItem('shushan_audio',JSON.stringify(AU.on)
 function auInit(){
   if(AU.ctx||typeof window==='undefined')return;const C=window.AudioContext||window.webkitAudioContext;if(!C)return;
   try{const ctx=new C();AU.ctx=ctx;
-    const master=ctx.createGain();master.gain.value=0.85;const comp=ctx.createDynamicsCompressor();master.connect(comp);comp.connect(ctx.destination);
-    AU.mus=ctx.createGain();AU.mus.gain.value=AU.on.music?0.42:0;AU.mus.connect(master);
-    AU.sfxG=ctx.createGain();AU.sfxG.gain.value=AU.on.sfx?0.7:0;AU.sfxG.connect(master);
+    const master=ctx.createGain();AU.master=master;master.gain.value=0.85;const comp=ctx.createDynamicsCompressor();master.connect(comp);comp.connect(ctx.destination);
+    AU.mus=ctx.createGain();AU.mus.gain.value=AU.on.music?0.42:0;if(AU.on.music)AU.mus.connect(master);
+    AU.sfxG=ctx.createGain();AU.sfxG.gain.value=AU.on.sfx?0.7:0;if(AU.on.sfx)AU.sfxG.connect(master);
     const len=ctx.sampleRate*2.4,ir=ctx.createBuffer(2,len,ctx.sampleRate);
     for(let c=0;c<2;c++){const d=ir.getChannelData(c);for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/len,2.6);}
     AU.rev=ctx.createConvolver();AU.rev.buffer=ir;const rg=ctx.createGain();rg.gain.value=0.35;AU.rev.connect(rg);rg.connect(AU.mus);
@@ -2092,12 +2093,19 @@ function auToggle(k){AU.on[k]=!AU.on[k];auSave();
     if(AU.on[k]){g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+0.12);}
     else{g.gain.setValueAtTime(g.gain.value||v,t);g.gain.linearRampToValueAtTime(0,t+0.1);g.gain.setValueAtTime(0,t+0.11);}
     if(k==='music'){if(AU.on.music){const w=AU.want;AU.cur=null;playTrack(w);}else stopTrack();}
+    // 彻底断开总线连接：Safari 上不依赖音量参数也能静音
+    setTimeout(()=>{try{if(AU.on[k])g.connect(AU.master);else g.disconnect();}catch(e){}},130);
     // 两项都关就直接挂起整个音频，Safari 上也能彻底静音
     const both=!AU.on.music&&!AU.on.sfx;
     setTimeout(()=>{try{if(both&&!AU.on.music&&!AU.on.sfx)ctx.suspend();else if(ctx.state==='suspended')ctx.resume();}catch(e){}},180);}
   updAuBtns();}
-function updAuBtns(){if(typeof document==='undefined')return;const m=document.getElementById('mbtn'),s=document.getElementById('sbtn');
-  if(m){m.classList.toggle('off',!AU.on.music);m.title=AU.on.music?'关闭音乐':'开启音乐';}if(s){s.classList.toggle('off',!AU.on.sfx);s.title=AU.on.sfx?'关闭音效':'开启音效';}}
+function updAuBtns(){if(typeof document==='undefined')return;const m=document.getElementById('mbtn'),s=document.getElementById('sbtn'),a=document.getElementById('abtn');
+  if(m){m.classList.toggle('off',!AU.on.music);m.title=AU.on.music?'关闭音乐':'开启音乐';m.textContent=AU.on.music?'♪':'♪̸';}
+  if(s){s.classList.toggle('off',!AU.on.sfx);s.title=AU.on.sfx?'关闭音效':'开启音效';s.textContent=AU.on.sfx?'🔊':'🔈';}
+  if(a){const off=!AU.on.music&&!AU.on.sfx;a.classList.toggle('off',off);a.title=off?'恢复声音':'全部静音';a.textContent=off?'🔈':'🔇';}}
+function auMuteAll(){const off=!AU.on.music&&!AU.on.sfx;   // 一键全部静音 / 恢复
+  if(off){if(!AU.on.music)auToggle('music');if(!AU.on.sfx)auToggle('sfx');}
+  else{if(AU.on.music)auToggle('music');if(AU.on.sfx)auToggle('sfx');}}
 
 /* ================= 招式演出库：每位角色、每门道法各有专属动画 ================= */
 function fxVars(e,p){e.style.setProperty('--c1',p[0]);e.style.setProperty('--c2',p[1]);e.style.setProperty('--c3',p[2]);return e;}
@@ -3329,6 +3337,7 @@ if(typeof document!=='undefined'){
   window.addEventListener('resize',()=>{if(VIEW==='battle'){placeCmd();const t=document.getElementById('tilt'),b=document.getElementById('board');if(t&&b){const tp=b.offsetWidth/W;t.style.setProperty('--hu',(tp*0.42)+'px');t.style.setProperty('--tp',tp+'px');}}});
   document.getElementById('mbtn').addEventListener('click',()=>{auInit();auToggle('music');syncMusic();});
   document.getElementById('sbtn').addEventListener('click',()=>{auInit();auToggle('sfx');sfx('click');});updAuBtns();
+  const ab=document.getElementById('abtn');if(ab)ab.addEventListener('click',()=>{auInit();auMuteAll();});
   const tb=document.getElementById('themebtn');
   tb.addEventListener('click',()=>{const r=document.documentElement,cur=r.dataset.theme||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
     r.dataset.theme=cur==='dark'?'light':'dark';tb.textContent=r.dataset.theme==='dark'?'☀':'☾';});
