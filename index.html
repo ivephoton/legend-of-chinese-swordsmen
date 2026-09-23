@@ -2650,6 +2650,14 @@ function aiPlan(u){
   // 全自动时我方会顺路开宝箱：站上宝箱格有高额加分
   const chests=(u.side==='p'&&B.chests)?B.chests.filter(q=>!q.taken):[];
   const chestAt=(x,y)=>chests.some(q=>q.x===x&&q.y===y)?90:0;
+  // 宝箱优先：本回合能踏上宝箱格就一定去，站定后若有敌人在攻击范围内再顺手出手
+  if(chests.length){let ct=null;
+    for(const [k] of RC){const x=k%W,y=Math.floor(k/W);if(chestAt(x,y)){if(!ct||md(u.x,u.y,x,y)<md(u.x,u.y,ct[0],ct[1]))ct=[x,y];}}
+    if(ct){const [x,y]=ct;let b2=null;
+      for(const f of foes){const d=md(x,y,f.x,f.y);if(d>=u.r[0]&&d<=u.r[1]){const dm=Math.round(estPhys(u,f)*(1-dodgeP(u,f)));if(!b2||dm>b2.dm)b2={dm,target:f};}}
+      if(!b2)for(const sid of u.skills){const sk=SKILLS[sid];if(u.mp<sk.mp||sk.type==='heal'||sk.type==='buff')continue;
+        for(const f of foes){if(md(x,y,f.x,f.y)<=sk.rng){return {x,y,act:'skill',sk:sid,cx:f.x,cy:f.y};}}}
+      return b2?{x,y,act:'atk',target:b2.target}:{x,y,act:'wait'};}}
   for(const [k] of RC){const x=k%W,y=Math.floor(k/W),terr=(1-TER[B.map[y][x]].d)*18+chestAt(x,y);
     const pos=o=>o===u?[x,y]:[o.x,o.y];
     for(const f of foes){const d=md(x,y,f.x,f.y);if(d>=u.r[0]&&d<=u.r[1]){const dm=Math.round(estPhys(u,f)*(1-dodgeP(u,f)));consider(Math.min(dm,f.hp)+(dm>=f.hp?60:0)+terr,{x,y,act:'atk',target:f});}}
@@ -2676,7 +2684,7 @@ function aiPlan(u){
   const df=distField(foes);
   const dc=chests.length?distField(chests.map(q=>({x:q.x,y:q.y}))):null;
   const near=chests.length?Math.min(...chests.map(q=>md(u.x,u.y,q.x,q.y))):99;
-  const wantChest=dc&&near<=u.mov*2+2;
+  const wantChest=!!dc;void near;
   let bx=u.x,by=u.y,bv=(wantChest?dc:df)[u.y*W+u.x];
   for(const [k,c] of RC){const v=(wantChest?dc:df)[k]+c*0.01;if(v<bv){bv=v;bx=k%W;by=Math.floor(k/W);}}
   return {x:bx,y:by,act:'wait'};}
