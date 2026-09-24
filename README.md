@@ -1,6 +1,6 @@
 # 蜀山剑侠·天劫录 · Legend of Chinese Swordsmen
 
-> 以还珠楼主《蜀山剑侠传》为背景、仿《天地劫》玩法的网页战棋游戏。
+> 以还珠楼主《蜀山剑侠传》为背景、仿《天地劫》与《超级机器人大战》玩法的网页战棋游戏。
 > 单个 HTML 文件，打开即玩，无需安装、无需构建。
 
 **[English summary below](#english)**
@@ -9,12 +9,14 @@
 
 ## 目录
 - [在线游玩](#在线游玩)
-- [游戏特色](#游戏特色)
+- [游戏概览](#游戏概览)
 - [操作说明](#操作说明)
+- [一场战斗的流程](#一场战斗的流程)
 - [核心系统](#核心系统)
 - [角色一览](#角色一览)
 - [章回结构](#章回结构)
 - [存档与进度](#存档与进度)
+- [音乐与音效](#音乐与音效)
 - [技术说明](#技术说明)
 - [部署到 GitHub Pages](#部署到-github-pages)
 - [本地运行](#本地运行)
@@ -31,47 +33,53 @@
 https://<你的用户名>.github.io/legend-of-chinese-swordsmen/
 ```
 
-也可以直接用浏览器打开仓库里的 `index.html`。推荐使用新版 Chrome、Edge、Safari 或 Firefox，手机和电脑均可。
+也可以直接用浏览器打开仓库里的 `index.html`。推荐新版 Chrome、Edge、Safari 或 Firefox，手机和电脑均可。
 
 ---
 
-## 游戏特色
+## 游戏概览
 
 | 类别 | 内容 |
 |---|---|
-| 章回 | 30 回主线，终章为「三次峨眉斗剑」三连战，每回有开场与终章剧情 |
-| 角色 | 20 位可控侠士随剧情登场，各有独立外貌、本命飞剑与专属剑招 |
-| 道法 | 100 种道法（金木水火土各 20），按名称意象配有不同的施法动画 |
+| 章回 | **60 回**主线：前三十回至「三次峨眉斗剑」，后三十回为白阳篇，终于「四九天劫·白阳飞升」 |
+| 剧情 | 每回都有开场与终章演出，共 120 段对白，角色立绘为实时 3D |
+| 角色 | 20 位可控侠士随剧情登场，各有外貌、本命飞剑、专属剑招与专属配乐 |
+| 道法 | 100 种道法（五行各 20），道法录内有逐条介绍与详情 |
 | 法宝 | 100 件法宝（飞剑、法器、护身），击败敌人或开启宝箱获得 |
-| 地图 | 45 度立体沙盘，26×20 格，高低地势、蜿蜒河流、木桥、厚土底座 |
-| 演出 | 机战式战斗画面：切入台词、招式名、飞剑残影、受创 / 闪避 / 防御三种表现 |
-| 音乐 | 洞府与战斗各有配乐（笛、古筝、太鼓），全部实时合成 |
+| 地图 | 45 度立体沙盘，12×9 格，高低地势、河流、木桥、厚土底座 |
+| 战斗演出 | 机战式切入画面：招式名、飞剑残影、受创／闪避／防御三种表现 |
 | 界面 | 古风回纹边框、木牌按钮、楷书字体 |
 
 ---
 
 ## 操作说明
 
-### 战场
 | 操作 | 电脑 | 手机 |
 |---|---|---|
 | 选择角色 / 移动 / 选目标 | 左键点击 | 轻点 |
 | 缩放地图 | 鼠标滚轮 | 双指捏合 |
 | 平移地图 | 拖动 | 单指拖动 |
 | 复位视角 | 双击地图 | 双击地图 |
-| 返回上一步 | 右键 或 Esc | 点菜单中的「返回 / 取消」 |
+| 返回上一步 | 右键 或 Esc | 菜单中的「返回 / 取消」 |
 | 停止全自动 | P 键 或「停止全自动」按钮 | 「停止全自动」按钮 |
+| 连续修炼属性 | 按住属性按钮 | 按住属性按钮 |
 
-### 一次行动的流程
-1. 点击己方角色，亮起的格子为可移动范围。
-2. 点击目标格移动（点角色本身则原地行动）。
-3. 角色身旁弹出指令菜单：**攻击 / 法术 / 待机 / 取消**。
-4. 选定目标后，右上角出现战斗预测（伤害、命中率、能否反击、五行克制），点击「出手」或「施展」确认。
+---
 
-### 其他
-- **点击空白处**：打开系统菜单（结束回合、委托本回合、全自动、战斗画面开关、音乐、保存进度、重新开始本战、撤退）。
-- **点击敌人**：显示其移动范围（粉紫）与攻击范围（红）。
-- **点击属性名**（气血、身法、命中等）：弹出属性说明。
+## 一场战斗的流程
+
+1. **布阵**：开战前先安排位置。点选我方侠士，再点地图最前两排的金色格子；点另一名侠士可互换位置。左上角有「自动布阵」，安排好后点「⚔ 出击」。
+2. **回合开始**：屏幕中央弹出「我方回合 · 第 N 回合」标题。
+3. **指令菜单**：点我方角色，镜头放大并对准他，弹出 **移动 / 攻击 / 法术 / 待机 / 状态 / 取消**。
+4. **移动**：选「移动」后显示可达范围，点目标格落位；移动后菜单里的「返回」可退回原位重选。
+5. **出手**：选攻击或法术后点目标，右上角显示战斗预测（伤害、命中率、能否反击、五行克制），确认后播放战斗画面。
+6. **敌方回合**：镜头自动跟随行动中的敌人。敌人攻击我方时，可在 9 秒内选择**反击 / 防御 / 回避**。
+7. **胜负**：达成胜利条件即获胜；失败时等级、修为、金钱与法宝全部保留，可一键「重新开始本战」。
+
+其他：
+- **点击空白处**打开系统菜单（结束回合、委托本回合、全自动、己方列表、敌方列表、战斗画面开关、音乐、保存进度、重新开始本战、撤退）。
+- **点击敌人**弹出能力画面：3D 立像、属性、所会妖术，以及「若当前角色攻击」的伤害与命中预估。
+- **点击属性名**（气血、身法、命中等）弹出说明。
 
 ---
 
@@ -81,11 +89,10 @@ https://<你的用户名>.github.io/legend-of-chinese-swordsmen/
 金克木、木克土、土克水、水克火、火克金。克制方伤害 +30%，被克方 −20%。
 
 ### 命中与闪避
-- 闪避几率 = 防守方 **身法** − 攻击方 **命中**（范围 0%～80%）。
+- 闪避几率 = 防守方 **身法** − 攻击方 **命中**，范围 0%～80%。
 - 普通攻击与伤害类道法都可以被闪避；被定身者无法闪避。
 
 ### 敌袭应对
-敌人攻击我方时可选择（9 秒倒计时，默认反击）：
 | 选项 | 效果 |
 |---|---|
 | 反击 | 照常受创，随后还以普通攻击 |
@@ -101,21 +108,28 @@ https://<你的用户名>.github.io/legend-of-chinese-swordsmen/
 | 林 | 闪避 +10，木行伤害 +15% |
 | 山 | 命中 +8，受创 −20%，土行伤害 +15% |
 | 水 | 闪避 −10，受创 +10%（水行免疫），水行伤害 +20% |
-| 高地 | 居高临下命中 +6，仰攻高处命中 −6 |
+| 高地 | 居高临下命中 +6，仰攻高处 −6 |
 
-### 境界与成长
+### 境界与修炼
 - 每 100 修为升一级；每 10 级为一重境界：**练气 → 筑基 → 金丹 → 元婴 → 化神 → 渡劫 → 大乘**，每重境界全属性再 +4%。
-- **金钱**：击败敌人（首领 5 倍）、通关、开启宝箱获得。
-- **修炼**：在洞府的侠士详情页花金钱提升气血、剑力、护体、法力、抗法、身法、命中、真元，每项最多 30 级。
+- **金钱**：击败敌人（108 + 等级×27，首领 5 倍）、通关（900 + 回数×360）、宝箱（720 + 回数×225）。
+- **修炼**：在侠士详情页花金钱提升属性，按住按钮可连续升级。
+
+| 属性 | 每级加成 | 上限 |
+|---|---|---|
+| 气血 | +14 | 30 级 |
+| 真元 | +6 | 30 级 |
+| 剑力 | +3 | **60 级** |
+| 法力 | +3 | **60 级** |
+| 护体 / 抗法 | +3 | 30 级 |
+| 身法 | +1 | **80 级** |
+| 命中 | +1 | 30 级 |
 
 ### 胜负条件
-每回各有条件，出阵前与战斗顶栏均会显示，例如：歼灭全部敌人、击败首领、护送指定角色、限定回合内取胜、坚守若干回合。
-
-### 失败不清零
-战斗失败时，本战获得的**等级、修为、金钱与法宝全部保留**，可一键「重新开始本战」。
+每回条件不同，出阵前与战斗顶栏均会显示：歼灭全部敌人、击败首领、护送指定角色、限定回合内取胜、坚守若干回合。
 
 ### 宝箱
-每张地图有 2～3 个宝箱，角色移动到该格即自动开启，屏幕中央提示获得的金钱或法宝。
+每张地图 2～3 个宝箱。角色**移动到宝箱格并完成行动**（攻击、法术或待机）后才会开启，中途按「返回」不会被判定为已取走。屏幕中央会提示获得的金钱或法宝。全自动模式下我方会优先绕路开箱。
 
 ---
 
@@ -148,11 +162,14 @@ https://<你的用户名>.github.io/legend-of-chinese-swordsmen/
 
 ## 章回结构
 
-- **第一回～第二十九回**：莽苍山紫郢出世、慈云寺、青螺峪、百蛮山诛绿袍、峨眉开府、幻波池、紫云宫、大雪山、赤身教、华山烈火祖师、血河大阵、心魔劫……
-- **第三十回 · 三次峨眉斗剑**
-  1. 第一次斗剑 · 慈云余孽
-  2. 第二次斗剑 · 群邪会战
-  3. 第三次斗剑 · 万劫归一
+- **第一～二十九回**：莽苍山紫郢出世、慈云寺、青螺峪、百蛮山诛绿袍、峨眉开府、幻波池、紫云宫、大雪山、赤身教、华山烈火祖师、血河大阵、心魔劫……
+- **第三十回 · 三次峨眉斗剑**（三连战）：慈云余孽 → 群邪会战 → 万劫归一。
+- **第三十一～六十回 · 白阳篇**
+  - 31～35 回：东海紫云宫海眼、鲛宫夺罗、南海截宝、百蛮山残魂、滇南毒瘴林
+  - 36～42 回：白阳山试招、凝碧崖夜袭、嵩山访旧、黄山炼魔台、大雪山冰灵、昆仑断脉、幻波池幻身
+  - 43～50 回：成都护民、青城论剑、雁荡截魔、洞庭借宝、衡山火眼、血神子重现、五台夜火、三仙岛试炼
+  - 51～56 回：破白阳山门、倒悬法坛、绿袍夺舍、极北追魔、天劫之兆、峨眉聚义
+  - 57～60 回：心魔再起、紫青双剑合璧、四九重劫雷池、**四九天劫·白阳飞升**
 
 已通关的章回可随时重打，用来积累修为、金钱和收集法宝。
 
@@ -161,32 +178,38 @@ https://<你的用户名>.github.io/legend-of-chinese-swordsmen/
 ## 存档与进度
 
 - 进度**自动保存**在浏览器的 localStorage 中。
+- **战斗中途也会存档**：布阵完成、每次行动之后、每个我方回合开始时各存一次。页面若被刷新或被系统回收，重新打开会**自动回到那一战**，回合数与人物状态完整保留。
 - **存档码**：洞府的「存档码」按钮或战斗中系统菜单的「保存进度」，会显示一段以 `SS1-` 开头的存档码。
-- **恢复进度**：在标题画面点「输入存档码」，粘贴后即可恢复，可用于换浏览器、换设备或备份。
+- **恢复进度**：标题画面点「输入存档码」，粘贴即可，用于换浏览器、换设备或备份。
 
 > 清空浏览器数据会删除本地进度，重要进度请保存存档码。
+
+---
+
+## 音乐与音效
+
+- 洞府、战场、终章各有配乐，全部由 WebAudio 实时合成，无音频文件。
+- **每位侠士都有专属战斗曲**：战斗画面里出现我方侠士时切到他的曲子，画面结束后淡回战场曲。调式、速度与配器按五行和职业区分，20 首各不相同。
+- 右下角三个按钮：♪ 音乐、🔊 音效、🔇 全部静音。静音时会停止音频生成并断开输出，不只是调低音量。
 
 ---
 
 ## 技术说明
 
 - **单文件**：全部 HTML、CSS、JavaScript 都在 `index.html` 中。
-- **3D 模型**：人物、飞剑、树木、山石、宝箱均由 [three.js](https://threejs.org/)（r128）在运行时用几何体程序化生成，再渲染为立绘与头像；不依赖任何外部模型文件。
-- **地图**：CSS 3D 变换构建 45 度立体沙盘，地面纹理由 Canvas 实时绘制。
-- **音频**：WebAudio 实时合成配乐与音效，无音频文件。
-- **外部依赖**（均通过 CDN 加载）：
-  - three.js r128 — `cdnjs.cloudflare.com`
-  - Google Fonts（Noto Serif SC、ZCOOL XiaoWei、Ma Shan Zheng、Zhi Mang Xing）
-- **字体**：若系统已安装方正盛世楷书、方正榜书行、禹卫书法行书，会优先使用；否则回退到系统楷体或网络字体。
+- **3D 模型**：人物、飞剑、树木、山石、宝箱均由 [three.js](https://threejs.org/)（r128）在运行时用几何体程序化生成，再渲染成立绘与头像；不依赖任何模型文件。同一地形造型在一张地图上最多出现 3 次。
+- **地图**：CSS 3D 变换构建 45 度立体沙盘，地面纹理由 Canvas 实时绘制，高台与断崖按整排合并绘制以节省内存。
+- **外部依赖**（均走 CDN）：three.js r128（cdnjs）、Google Fonts（Noto Serif SC、Ma Shan Zheng、Zhi Mang Xing）。
+- **字体**：若系统装有方正盛世楷书、方正榜书行、禹卫书法行书会优先使用，否则回退到系统楷体或网络字体。
 
 ---
 
 ## 部署到 GitHub Pages
 
-1. 将 `index.html`、`README.md` 推送到仓库的 `main` 分支根目录。
+1. 将 `index.html`、`README.md` 推送到仓库 `main` 分支根目录。
 2. 进入仓库 **Settings → Pages**。
-3. **Source** 选择 *Deploy from a branch*，Branch 选 `main`，目录选 `/ (root)`，点击 **Save**。
-4. 等待一两分钟，访问 `https://<你的用户名>.github.io/<仓库名>/`。
+3. **Source** 选 *Deploy from a branch*，Branch 选 `main`，目录选 `/ (root)`，点 **Save**。
+4. 等一两分钟，访问 `https://<你的用户名>.github.io/<仓库名>/`。
 
 ---
 
@@ -195,7 +218,6 @@ https://<你的用户名>.github.io/legend-of-chinese-swordsmen/
 直接双击 `index.html` 即可。如需本地服务器：
 
 ```bash
-# Python 3
 python -m http.server 8000
 # 然后访问 http://localhost:8000
 ```
@@ -204,10 +226,10 @@ python -m http.server 8000
 
 ## 已知限制
 
-- 首次进入某种风格的地图时需要现场生成地形与人物模型，会有短暂的「布阵中」等待，之后同类地图会复用。
-- 人物为程序化生成的低多边形风格，无法达到专业建模加贴图的写实程度。
-- 浏览器要求用户先点击一次页面后才能播放声音。
-- 需要浏览器支持 WebGL；不支持时会自动退回二维棋子与印章头像。
+- 首次进入某种风格的地图时要现场生成地形与人物模型，会有短暂的「布阵中」等待，之后同类地图会复用。
+- 人物为程序化生成的低多边形风格，达不到专业建模加贴图的写实程度。
+- 浏览器要求用户先点击一次页面才能播放声音。
+- 需要浏览器支持 WebGL；不支持时会退回二维棋子与印章头像。
 
 ---
 
@@ -222,13 +244,11 @@ python -m http.server 8000
 <a id="english"></a>
 ## English Summary
 
-**Legend of Chinese Swordsmen** (蜀山剑侠·天劫录) is a browser-based tactical RPG inspired by the *Tiandijie* series, set in the world of Huanzhu Louzhu's classic wuxia novel *Legend of the Swordsmen of the Mountains of Shu*.
+**Legend of Chinese Swordsmen** (蜀山剑侠·天劫录) is a browser tactical RPG set in the world of Huanzhu Louzhu's classic wuxia novel *Legend of the Swordsmen of the Mountains of Shu*.
 
-- **Single HTML file**: open `index.html` and play, with no install and no build step.
-- **Content**: 30 chapters (the finale is the three Emei Sword Duels), 20 playable heroes each with a unique flying sword and signature attack, 100 spells, 100 treasures.
-- **Map**: 45° isometric diorama (26×20 tiles) with elevation, rivers, bridges and treasure chests.
-- **Combat**: Super Robot Wars–style command menus and battle cut-ins, five-element counters, agility-vs-accuracy dodge, and a counter / guard / evade choice when enemies attack.
-- **Progression**: cultivation realms, gold-based stat training, per-chapter win/lose conditions. Levels, gold and items are kept on defeat.
-- **Controls**: click or tap to act, mouse wheel or pinch to zoom, drag to pan, double-click to reset the view. Press P to stop auto-battle.
-- **Saves**: automatic local save, plus exportable save codes (`SS1-…`) you can paste on the title screen to restore progress on any device.
-- **Tech**: vanilla JS, three.js r128 for procedurally generated models, CSS 3D for the board, Canvas for terrain painting, WebAudio for synthesized music.
+- **Single HTML file**: open `index.html` and play. No install, no build step.
+- **60 chapters** with opening and closing story scenes, ending in the Four-Nine Heavenly Tribulation. 20 playable heroes, each with a named flying sword, a signature attack and their own battle theme. 100 spells and 100 treasures.
+- **Battles**: 45° isometric diorama maps with elevation and rivers, a pre-battle deployment phase, Super Robot Wars–style command menus and cut-ins, five-element counters, agility-vs-accuracy dodging, and a counter / guard / evade choice when enemies attack.
+- **Progression**: cultivation realms, gold-funded stat training (hold a button to level it repeatedly), per-chapter win and lose conditions. Levels, gold and items are kept on defeat.
+- **Saves**: automatic local saves including mid-battle state, so a refresh returns you to the fight in progress; plus exportable `SS1-…` save codes for moving between devices.
+- **Tech**: vanilla JS, three.js r128 for procedurally generated models, CSS 3D for the board, Canvas for terrain, WebAudio for synthesized music.
