@@ -44,9 +44,9 @@ https://<你的用户名>.github.io/legend-of-chinese-swordsmen/
 | 章回 | **60 回**主线：前三十回至「三次峨眉斗剑」，后三十回为白阳篇，终于「四九天劫·白阳飞升」 |
 | 剧情 | 每回都有开场与终章演出，共 120 段对白，角色立绘为实时 3D |
 | 角色 | 20 位可控侠士随剧情登场，各有外貌、本命飞剑、专属剑招与专属配乐 |
-| 道法 | 100 种道法（五行各 20），道法录内有逐条介绍与详情 |
-| 法宝 | 100 件法宝（飞剑、法器、护身），击败敌人或开启宝箱获得 |
-| 地图 | 45 度立体沙盘，12×9 格，高低地势、河流、木桥、厚土底座 |
+| 道法 | **130 种道法**（五行各 26），道法录内有逐条介绍与详情 |
+| 法宝 | **130 件法宝**（飞剑、法器、护身），击败敌人或开启宝箱获得；后 30 件各传授一种新道法 |
+| 地图 | 45 度立体沙盘，12×9 格，简洁地貌，配河流、木桥与厚土底座 |
 | 战斗演出 | 机战式切入画面：招式名、飞剑残影、受创／闪避／防御三种表现 |
 | 界面 | 古风回纹边框、木牌按钮、楷书字体 |
 
@@ -119,8 +119,8 @@ https://<你的用户名>.github.io/legend-of-chinese-swordsmen/
 |---|---|---|
 | 气血 | +14 | 30 级 |
 | 真元 | +6 | 30 级 |
-| 剑力 | +3 | **60 级** |
-| 法力 | +3 | **60 级** |
+| 剑力 | +3 | **90 级** |
+| 法力 | +3 | **90 级** |
 | 护体 / 抗法 | +3 | 30 级 |
 | 身法 | +1 | **80 级** |
 | 命中 | +1 | 30 级 |
@@ -179,6 +179,7 @@ https://<你的用户名>.github.io/legend-of-chinese-swordsmen/
 
 - 进度**自动保存**在浏览器的 localStorage 中。
 - **战斗中途也会存档**：布阵完成、每次行动之后、每个我方回合开始时各存一次。页面若被刷新或被系统回收，重新打开会**自动回到那一战**，回合数与人物状态完整保留。
+- 游戏版本更新导致地图尺寸变化时，旧的战斗存档会自动作废（避免人物落到地图之外），洞府进度与存档码不受影响。
 - **存档码**：洞府的「存档码」按钮或战斗中系统菜单的「保存进度」，会显示一段以 `SS1-` 开头的存档码。
 - **恢复进度**：标题画面点「输入存档码」，粘贴即可，用于换浏览器、换设备或备份。
 
@@ -190,7 +191,7 @@ https://<你的用户名>.github.io/legend-of-chinese-swordsmen/
 
 - 洞府、战场、终章各有配乐，全部由 WebAudio 实时合成，无音频文件。
 - **每位侠士都有专属战斗曲**：战斗画面里出现我方侠士时切到他的曲子，画面结束后淡回战场曲。调式、速度与配器按五行和职业区分，20 首各不相同。
-- 右下角三个按钮：♪ 音乐、🔊 音效、🔇 全部静音。静音时会停止音频生成并断开输出，不只是调低音量。
+- 右下角一个 🔊 按钮统一开关声音。关闭时会停止音乐生成、断开输出并挂起音频，不只是调低音量。
 
 ---
 
@@ -247,7 +248,7 @@ python -m http.server 8000
 **Legend of Chinese Swordsmen** (蜀山剑侠·天劫录) is a browser tactical RPG set in the world of Huanzhu Louzhu's classic wuxia novel *Legend of the Swordsmen of the Mountains of Shu*.
 
 - **Single HTML file**: open `index.html` and play. No install, no build step.
-- **60 chapters** with opening and closing story scenes, ending in the Four-Nine Heavenly Tribulation. 20 playable heroes, each with a named flying sword, a signature attack and their own battle theme. 100 spells and 100 treasures.
+- **60 chapters** with opening and closing story scenes, ending in the Four-Nine Heavenly Tribulation. 20 playable heroes, each with a named flying sword, a signature attack and their own battle theme. 130 spells and 130 treasures; the 30 newest treasures each teach one of the new spells.
 - **Battles**: 45° isometric diorama maps with elevation and rivers, a pre-battle deployment phase, Super Robot Wars–style command menus and cut-ins, five-element counters, agility-vs-accuracy dodging, and a counter / guard / evade choice when enemies attack.
 - **Progression**: cultivation realms, gold-funded stat training (hold a button to level it repeatedly), per-chapter win and lose conditions. Levels, gold and items are kept on defeat.
 - **Saves**: automatic local saves including mid-battle state, so a refresh returns you to the fight in progress; plus exportable `SS1-…` save codes for moving between devices.

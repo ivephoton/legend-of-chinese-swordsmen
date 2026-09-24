@@ -838,7 +838,7 @@ body{background:transparent}
 <path d="M0 330 L120 220 L200 280 L320 170 L420 290 L540 200 L640 300 L760 190 L880 290 L1000 210 L1100 280 L1200 230 L1200 500 L0 500Z" fill="url(#sg2)" opacity=".6"/>
 <path d="M0 420 L140 330 L260 390 L400 310 L520 400 L660 330 L800 410 L940 340 L1080 400 L1200 350 L1200 500 L0 500Z" fill="url(#sg3)" opacity=".7"/>
 <g fill="#fff" opacity=".7"><path d="M255 95 L262 90 L270 100 L262 104Z"/><path d="M655 115 L660 110 L668 120 L660 122Z"/><path d="M1055 125 L1060 120 L1068 130 L1060 133Z"/></g></svg></div>
-<div class="fbtns"><button id="mbtn" aria-label="音乐">♪</button><button id="sbtn" aria-label="音效">🔊</button><button id="abtn" title="全部静音" aria-label="全部静音">🔇</button><button class="themebtn" id="themebtn" title="切换日夜" aria-label="切换日夜">☾</button></div>
+<div class="fbtns"><button id="abtn" title="声音开关" aria-label="声音开关">🔊</button><button class="themebtn" id="themebtn" title="切换日夜" aria-label="切换日夜">☾</button></div>
 <script>
 'use strict';
 /* ================= 基础工具 ================= */
@@ -957,6 +957,32 @@ const TREASURES=[];
   if(i>=L.length-3){if(slot==='w')st.mag=2*t;if(slot==='m')st.res=2*t;if(slot==='a')st.mov=1;}
   const skn=TR_SK[n];const sk=skn?SKILLS.find(s=>s.name===skn):null;
   TREASURES.push({id:TREASURES.length,name:n,slot,tier:t,st,sk:sk?sk.id:null});});});
+/* ================= 新增：30 种道法 + 30 件法宝（各自相授） ================= */
+// [名称, 五行, 类型, 阶, 范围, 射程, 增益属性]
+const SKN_NEW=[
+['太清剑罡','金','atk',5,0,4],['白虹贯日','金','atk',4,0,4],['天河剑雨','金','atk',6,2,5],['庚金锁','金','status',5,0,3],['罡风截脉','金','debuff',4,0,3],['金阙护法','金','buff',5,0,0,'def'],
+['春雷惊蛰','木','atk',4,0,3],['万藤缚','木','status',4,1,3],['九叶灵芝','木','heal',6,2,3],['青囊续命','木','heal',5,1,3],['蚀骨瘴','木','debuff',5,1,3],['木灵化身','木','buff',5,0,0,'atk'],
+['玄水化龙','水','atk',5,0,4],['归墟漩涡','水','atk',6,2,4],['沧溟怒潮','水','atk',5,1,4],['寒渊锁灵','水','status',5,0,3],['润物无声','水','heal',4,0,3],['冰镜反照','水','buff',5,0,0,'def'],
+['赤霄焚天','火','atk',6,2,4],['流火陨星','火','atk',5,0,5],['焚魂咒','火','status',5,0,3],['烈阳回春','火','heal',5,1,3],['炎华护体','火','buff',4,0,0,'def'],['离火淬剑','火','buff',5,0,0,'atk'],
+['山河镇狱','土','atk',6,2,4],['神禹镇山印','土','atk',6,0,4],['砂海无涯','土','atk',5,1,4],['黄泉锁足','土','status',4,0,3],['厚土滋元','土','heal',4,1,3],['磐石之心','土','buff',6,0,0,'def']];
+SKN_NEW.forEach(p=>{const [n,e,ty,tier,area,rng,stat]=p;
+  SKILLS.push({id:SKILLS.length,name:n,el:e,type:ty,tier,area,rng,stat:stat||null,
+    pow:ty==='atk'?(1.1+0.3*(tier-1))*(area?0.78:1):ty==='heal'?(0.9+0.3*(tier-1))*(area?0.75:1):ty==='debuff'?0.8:ty==='status'?0.7:0,
+    mp:5+tier*5+area*4, st:ty==='status'?((e==='木'||e==='火')?'poison':'stun'):null});});
+// [名称, 部位, 阶, 所授道法]
+const TR_NEW=[
+['太清剑','w',7,'太清剑罡'],['白虹贯日剑','w',5,'白虹贯日'],['天河剑','w',9,'天河剑雨'],['庚金锁剑','w',6,'庚金锁'],['青冥剑','w',6,'春雷惊蛰'],
+['玄水龙剑','w',7,'玄水化龙'],['赤霄剑','w',9,'赤霄焚天'],['流火剑','w',7,'流火陨星'],['断岳剑','w',8,'砂海无涯'],['神禹剑','w',10,'神禹镇山印'],
+['罡风符','m',5,'罡风截脉'],['寒渊镜','m',7,'寒渊锁灵'],['九叶灵芝盒','m',9,'九叶灵芝'],['青囊玉盒','m',6,'青囊续命'],['蚀骨瘴囊','m',7,'蚀骨瘴'],
+['离火淬剑炉','m',7,'离火淬剑'],['流火陨星盘','m',8,'烈阳回春'],['黄泉锁','m',5,'黄泉锁足'],['归墟螺','m',9,'归墟漩涡'],['山河社稷图','m',10,'山河镇狱'],
+['金阙法衣','a',7,'金阙护法'],['木灵藤甲','a',6,'木灵化身'],['冰镜锦','a',7,'冰镜反照'],['炎华宝铠','a',5,'炎华护体'],['磐石玉','a',9,'磐石之心'],
+['润物云纱','a',5,'润物无声'],['神禹玉符','a',8,'厚土滋元'],['太清罡衣','a',8,'沧溟怒潮'],['赤霄火羽','a',6,'焚魂咒'],['厚土玄甲','a',10,'万藤缚']];
+TR_NEW.forEach(([n,slot,t,skn])=>{
+  const st=slot==='w'?{atk:4+4*t,mag:2*t}:slot==='m'?{mag:4+4*t,mp:4*t,res:2*t}:{def:3+3*t,res:3+3*t,hp:12*t};
+  if(t>=9)st[slot==='a'?'mov':'hp']=(slot==='a'?1:10*t);
+  const sk=SKILLS.find(s=>s.name===skn);
+  TREASURES.push({id:TREASURES.length,name:n,slot,tier:t,st,sk:sk?sk.id:null});});
+
 const trStat=t=>Object.entries(t.st).map(([k,v])=>STN[k]+'+'+v).join('　');
 
 /* ================= 敌人 ================= */
@@ -1071,7 +1097,7 @@ function carveRivers(m,style,rng){m.bridges=[];if(style==='cave'||style==='templ
     for(const by of ys){const row=path.filter(p=>p[1]===by);for(const [bx] of row){m[by][bx]=0;m.bridges.push([bx,by]);}}}}
 function heightMap(m,seed){const n=vnoise(seed,4),r=seeded(seed^0x77),hm=[];
   for(let y=0;y<H;y++){const row=[];for(let x=0;x<W;x++){const t=m[y][x];let h=0;
-    if(t===2)h=1;else if(t===4)h=1;else if(t!==3&&n(x/W,y/H)>0.8&&!(m.bridges||[]).some(b=>b[0]===x&&b[1]===y))h=1;
+    if(t===2)h=1;else if(t===4)h=1;else if(t!==3&&n(x/W,y/H)>0.92&&!(m.bridges||[]).some(b=>b[0]===x&&b[1]===y))h=1;
     row.push(h);}hm.push(row);}
   return hm;}
 const GP={plain:[[110,176,52],[160,214,82],[78,138,40]],forest:[[74,150,48],[120,190,70],[50,112,36]],mount:[[124,168,64],[168,204,96],[92,134,52]],
@@ -1082,17 +1108,17 @@ function paintMap2(m,style,seed,hm){
   const col=(k,l)=>{const a=P[0],b=P[1],d=P[2];const t=k;const base=t<0.5?a.map((v,i)=>d[i]+(v-d[i])*t*2):a.map((v,i)=>v+(b[i]-v)*(t-0.5)*2);return `rgb(${base.map(v=>Math.round(v*l)).join(',')})`;};
   // 地面：多层噪声色斑
   const S=8;for(let y=0;y<c.height;y+=S)for(let x=0;x<c.width;x+=S){const u=x/c.width,v=y/c.height;const k=clamp(n1(u,v)*0.7+n2(u,v)*0.3,0,1);g.fillStyle=col(k,0.92+rng()*0.12);g.fillRect(x,y,S,S);}
-  g.globalAlpha=0.3;for(let i=0;i<300;i++){const x=rr(0,c.width),y=rr(0,c.height),r2=rr(6,26);const k=n1(x/c.width,y/c.height);g.fillStyle=col(clamp(k+rr(-0.25,0.25),0,1),1);g.beginPath();g.ellipse(x,y,r2,r2*0.6,rr(0,3),0,7);g.fill();}g.globalAlpha=1;
+  g.globalAlpha=0.25;for(let i=0;i<150;i++){const x=rr(0,c.width),y=rr(0,c.height),r2=rr(6,26);const k=n1(x/c.width,y/c.height);g.fillStyle=col(clamp(k+rr(-0.25,0.25),0,1),1);g.beginPath();g.ellipse(x,y,r2,r2*0.6,rr(0,3),0,7);g.fill();}g.globalAlpha=1;
   if(style==='temple')for(let y=0;y<H;y++)for(let x=0;x<W;x++){g.strokeStyle='rgba(110,86,50,.35)';g.lineWidth=1.5;const hT=T/2;for(let j=0;j<2;j++)for(let i=0;i<2;i++)g.strokeRect(x*T+i*hT+1+(j%2)*hT*0.3,y*T+j*hT+1,hT-2,hT-2);}
   // 细草
-  if(style!=='temple'&&style!=='cave'){for(let i=0;i<9000;i++){const x=rr(0,c.width),y=rr(0,c.height),k=n1(x/c.width,y/c.height);const lt=rng()<0.5;
+  if(style!=='temple'&&style!=='cave'){for(let i=0;i<4000;i++){const x=rr(0,c.width),y=rr(0,c.height),k=n1(x/c.width,y/c.height);const lt=rng()<0.5;
       g.strokeStyle=style==='snow'?(lt?'rgba(255,255,255,.7)':'rgba(170,190,215,.55)'):(lt?`rgba(${190+rng()*40|0},${225+rng()*25|0},${110+rng()*40|0},.55)`:`rgba(${30+k*30|0},${80+k*40|0},${20+k*20|0},.55)`);
       g.lineWidth=rr(0.7,1.5);g.beginPath();g.moveTo(x,y);g.lineTo(x+rr(-2.5,2.5),y-rr(3,9));g.stroke();}}
-  if(style==='cave')for(let i=0;i<800;i++){g.fillStyle=rng()<0.5?'rgba(40,30,60,.5)':'rgba(150,120,190,.35)';g.beginPath();g.arc(rr(0,c.width),rr(0,c.height),rr(0.8,3),0,7);g.fill();}
+  if(style==='cave')for(let i=0;i<300;i++){g.fillStyle=rng()<0.5?'rgba(40,30,60,.5)':'rgba(150,120,190,.35)';g.beginPath();g.arc(rr(0,c.width),rr(0,c.height),rr(0.8,3),0,7);g.fill();}
   // 花、碎石
   const fl=style==='snow'?['#bfe3ff','#ffffff']:style==='cave'?['#b58cff','#7ae0ff','#ff9fe0']:['#ff6f91','#ffd23f','#ffffff','#b28dff','#ff9a3a'];
-  for(let i=0;i<45;i++){const x=rr(0,c.width),y=rr(0,c.height);if(m[Math.min(H-1,y/T|0)][Math.min(W-1,x/T|0)]===3)continue;g.fillStyle=pick(fl);g.beginPath();g.arc(x,y,rr(1.4,2.8),0,7);g.fill();}
-  for(let i=0;i<30;i++){const x=rr(0,c.width),y=rr(0,c.height),r2=rr(2,6);const gr=g.createRadialGradient(x-r2*0.3,y-r2*0.4,0.5,x,y,r2);gr.addColorStop(0,'#e8e4dc');gr.addColorStop(1,'#7a766a');g.fillStyle=gr;g.beginPath();g.ellipse(x,y,r2,r2*0.7,0,0,7);g.fill();}
+  for(let i=0;i<18;i++){const x=rr(0,c.width),y=rr(0,c.height);if(m[Math.min(H-1,y/T|0)][Math.min(W-1,x/T|0)]===3)continue;g.fillStyle=pick(fl);g.beginPath();g.arc(x,y,rr(1.4,2.8),0,7);g.fill();}
+  for(let i=0;i<12;i++){const x=rr(0,c.width),y=rr(0,c.height),r2=rr(2,6);const gr=g.createRadialGradient(x-r2*0.3,y-r2*0.4,0.5,x,y,r2);gr.addColorStop(0,'#e8e4dc');gr.addColorStop(1,'#7a766a');g.fillStyle=gr;g.beginPath();g.ellipse(x,y,r2,r2*0.7,0,0,7);g.fill();}
   // 高地投影（光自左上）
   for(let y=0;y<H;y++)for(let x=0;x<W;x++){const h=hm[y][x];for(const [dx,dy] of [[1,0],[0,1]]){const nx=x+dx,ny=y+dy;if(nx>=W||ny>=H)continue;const d=h-hm[ny][nx];if(d<=0)continue;
     const X=nx*T,Y=ny*T,gr=dx?g.createLinearGradient(X,0,X+T*0.55,0):g.createLinearGradient(0,Y,0,Y+T*0.55);gr.addColorStop(0,`rgba(10,20,10,${0.28+0.1*d})`);gr.addColorStop(1,'rgba(10,20,10,0)');g.fillStyle=gr;g.fillRect(X,Y,T,T);}}
@@ -1153,12 +1179,20 @@ function codeDialog(mode){document.querySelectorAll('.codeov').forEach(e=>e.remo
     if(k==='load'){try{S=importCode(ta.value);saveGame();o.remove();VIEW='camp';TAB='ch';render();}catch(x){msg.textContent='存档码无效：'+x.message;}}});}
 const BKEY='shushan_battle_v1';
 function saveBattle(){if(!B||B.over||FAST||typeof localStorage==='undefined'||B.mode==='deploy')return;
-  try{const o={v:1,c:B.c,st:B.st,map:B.map,bridges:B.map.bridges||[],hmap:B.hmap,seed:B.seed,units:B.units,turn:B.turn,chests:B.chests,drops:B.drops,expLog:B.expLog,lvLog:B.lvLog,start:B.start,cond:B.cond,heroIds:B.heroIds,newSk:B.newSk,gold:B.gold||0,log:B.log.slice(-8),uidN:B.uidN,z:B.z,px:B.px,py:B.py,t:Date.now()};
+  try{const o={v:2,W,H,c:B.c,st:B.st,map:B.map,bridges:B.map.bridges||[],hmap:B.hmap,seed:B.seed,units:B.units,turn:B.turn,chests:B.chests,drops:B.drops,expLog:B.expLog,lvLog:B.lvLog,start:B.start,cond:B.cond,heroIds:B.heroIds,newSk:B.newSk,gold:B.gold||0,log:B.log.slice(-8),uidN:B.uidN,z:B.z,px:B.px,py:B.py,t:Date.now()};
     localStorage.setItem(BKEY,JSON.stringify(o));saveGame();}catch(e){}}
 function clearBattle(){try{localStorage.removeItem(BKEY);}catch(e){}}
-function savedBattle(){try{const o=JSON.parse(localStorage.getItem(BKEY)||'null');return o&&o.v===1?o:null;}catch(e){return null;}}
+function savedBattle(){try{const o=JSON.parse(localStorage.getItem(BKEY)||'null');
+  if(!o)return null;
+  if(o.v!==2||o.W!==W||o.H!==H||!o.map||o.map.length!==H||o.map[0].length!==W){clearBattle();return null;}
+  return o;}catch(e){clearBattle();return null;}}
 function resumeBattle(){const o=savedBattle();if(!o)return;const def=stageDef(o.c,o.st);
   B={c:o.c,st:o.st,def,map:o.map,units:o.units,turn:o.turn,phase:'p',mode:'idle',sel:null,info:null,pend:null,center:null,skill:null,log:o.log||[],drops:o.drops||[],expLog:o.expLog||{},lvLog:o.lvLog||{},over:false,autoAll:false,uidN:o.uidN,heroIds:o.heroIds,newSk:o.newSk||[]};
+  B.units.forEach(u=>{u.x=clamp(u.x|0,0,W-1);u.y=clamp(u.y|0,0,H-1);});
+  {const seen=new Set();for(const u of B.units){let k=u.y*W+u.x;
+    if(seen.has(k)){outer:for(let r=1;r<Math.max(W,H);r++)for(let dy=-r;dy<=r;dy++)for(let dx=-r;dx<=r;dx++){const nx=clamp(u.x+dx,0,W-1),ny=clamp(u.y+dy,0,H-1),nk=ny*W+nx;
+      if(!seen.has(nk)){u.x=nx;u.y=ny;k=nk;break outer;}}}
+    seen.add(k);}}
   B.map.bridges=o.bridges;B.hmap=o.hmap;B.seed=o.seed;B.chests=o.chests||[];B.cond=o.cond||{};B.start=o.start;B.gold=o.gold;B.z=o.z;B.px=o.px;B.py=o.py;
   try{B.paint=TH()?paintMap2(B.map,def.s,B.seed,B.hmap):paintMap(B.map,def.s,B.seed,true);}catch(e){B.paint=null;}
   logL(`战斗已恢复：第${CN[B.turn]||B.turn}回合，我方行动。`);VIEW='battle';app.innerHTML='';render();}
@@ -1180,7 +1214,7 @@ function heroStats(id){
   for(const k of ['w','m','a']){const tid=s.eq[k];if(tid!=null){const t=TREASURES[tid];for(const kk in t.st)st[kk]=(st[kk]||0)+t.st[kk];}}
   const up=s.up||{};for(const k in UPG)if(up[k])st[k]=(st[k]||0)+up[k]*UPG[k].inc;
   return st;}
-const UPG={hp:{n:'气血',inc:14,max:30},atk:{n:'剑力',inc:3,max:60},def:{n:'护体',inc:3,max:30},mag:{n:'法力',inc:3,max:60},res:{n:'抗法',inc:3,max:30},agi:{n:'身法',inc:1,max:80},hit:{n:'命中',inc:1,max:30},mp:{n:'真元',inc:6,max:30}};
+const UPG={hp:{n:'气血',inc:14,max:30},atk:{n:'剑力',inc:3,max:90},def:{n:'护体',inc:3,max:30},mag:{n:'法力',inc:3,max:90},res:{n:'抗法',inc:3,max:30},agi:{n:'身法',inc:1,max:80},hit:{n:'命中',inc:1,max:30},mp:{n:'真元',inc:6,max:30}};
 const upMax=k=>UPG[k].max||30;
 const upCost=l=>60+l*45;
 function heroSkills(id){
@@ -2129,10 +2163,8 @@ function auToggle(k){AU.on[k]=!AU.on[k];auSave();
     const both=!AU.on.music&&!AU.on.sfx;
     setTimeout(()=>{try{if(both&&!AU.on.music&&!AU.on.sfx)ctx.suspend();else if(ctx.state==='suspended')ctx.resume();}catch(e){}},180);}
   updAuBtns();}
-function updAuBtns(){if(typeof document==='undefined')return;const m=document.getElementById('mbtn'),s=document.getElementById('sbtn'),a=document.getElementById('abtn');
-  if(m){m.classList.toggle('off',!AU.on.music);m.title=AU.on.music?'关闭音乐':'开启音乐';m.textContent=AU.on.music?'♪':'♪̸';}
-  if(s){s.classList.toggle('off',!AU.on.sfx);s.title=AU.on.sfx?'关闭音效':'开启音效';s.textContent=AU.on.sfx?'🔊':'🔈';}
-  if(a){const off=!AU.on.music&&!AU.on.sfx;a.classList.toggle('off',off);a.title=off?'恢复声音':'全部静音';a.textContent=off?'🔈':'🔇';}}
+function updAuBtns(){if(typeof document==='undefined')return;const a=document.getElementById('abtn');
+  if(a){const off=!AU.on.music&&!AU.on.sfx;a.classList.toggle('off',off);a.title=off?'开启声音':'关闭声音';a.textContent=off?'🔇':'🔊';}}
 function auMuteAll(){const off=!AU.on.music&&!AU.on.sfx;   // 一键全部静音 / 恢复
   if(off){if(!AU.on.music)auToggle('music');if(!AU.on.sfx)auToggle('sfx');}
   else{if(AU.on.music)auToggle('music');if(AU.on.sfx)auToggle('sfx');}}
@@ -2291,6 +2323,8 @@ const FOE_ATK={
    await X.w(420);await X.impact(it);}};
 /* ---------- 一百门道法：按名称意象组合出专属动画 ---------- */
 function skillRecipe(sk){const K=s=>sk.name.includes(s);
+  if(K('剑雨'))return 'swordRain';if(K('白虹')||K('贯日'))return 'rainbow';if(K('剑罡'))return 'swordFan';
+  if(K('漩涡')||K('怒潮'))return 'wave';if(K('陨星'))return 'orbs';if(K('镇狱')||K('镇山'))return 'quake';
   if(K('两仪')||K('微尘'))return 'taiji';if(K('剑阵')||K('合璧'))return 'swordCircle';if(K('朝宗')||K('百剑'))return 'swordRain';
   if(K('分化')||K('分光'))return 'swordFan';if(K('长虹')||K('飞虹')||K('穿云'))return 'rainbow';if(K('双剑'))return 'crossSwords';
   if(K('雷'))return 'lightning';if(K('禁制')||K('定身')||K('锁'))return 'chains';if(K('神光')||K('寒光')||K('元磁'))return 'beam';
@@ -3054,7 +3088,7 @@ function vCamp(){
     body='<p class="muted" style="font-size:13px">亮起的是已领悟的道法。点击任一道法查看详细介绍。</p>'+ELS.map(e=>`<h3>${eld(e)}${e}行道法</h3><div class="skcards">${SKILLS.filter(s=>s.el===e).map(s=>{
       return `<button class="skc ${learned.has(s.id)?'have':'no'}" data-a="skinfo" data-v="${s.id}"><b>${s.name}</b><span class="skm">${TYN[s.type]} · ${CN[s.tier]}阶 · 真元 ${s.mp}</span><span class="ski">${skIntro(s)}</span></button>`;}).join('')}</div>`).join('');}
   return `<div class="wrap"><div class="top"><h1 class="disp">峨眉·凝碧洞府</h1>
-  <div class="tally"><span>${tp('gold','金钱')} <b>${S.gold||0}</b></span><span>群侠 <b>${recruited().length}</b>/20</span><span>法宝 <b>${own}</b>/100</span><span>道法 <b>${learned.size}</b>/100</span></div></div>
+  <div class="tally"><span>${tp('gold','金钱')} <b>${S.gold||0}</b></span><span>群侠 <b>${recruited().length}</b>/20</span><span>法宝 <b>${own}</b>/100</span><span>道法 <b>${learned.size}</b>/130</span></div></div>
   <div class="tabs">${[['ch','章回'],['hero','群侠'],['tr','法宝录'],['sk','道法录']].map(([k,n])=>`<button class="tab ${TAB===k?'on':''}" data-a="tab" data-v="${k}">${n}</button>`).join('')}
   ${savedBattle()?`<button class="tab resumet" data-a="resume">▶ 继续战斗（第${CN[savedBattle().c]}回 第${savedBattle().turn}回合）</button>`:''}<button class="tab" data-a="codeout" style="margin-left:auto">存档码</button><button class="tab" data-a="totitle">回标题</button></div>${body}</div>${MODAL?vModal():''}`;}
 function vModal(){
@@ -3154,7 +3188,7 @@ function syncHits(){const box=document.getElementById('hits');if(!box||!B||!B.sp
   box.className='hits'+(B.phase==='p'&&!B.over&&['idle','atk','skill'].includes(B.mode)?' on':'');}
 function chestSprites(){if(!B.chests)return '';const cc=chestCls();return B.chests.filter(q=>!q.taken).map(q=>`<div class="spr tr chest" data-cx="${q.x}" data-cy="${q.y}" style="--h:${hAt(q.x,q.y)};left:${(q.x+0.55)/W*100}%;top:${(q.y+0.55)/H*100}%;width:${100/W*0.9}%">${cc?`<i class="up ${cc}"></i>`:'<i class="up chestf">宝</i>'}</div>`).join('');}
 // 同一模型在一张地图上至多出现 3 次：每类按需生成新造型
-const TCAP=(typeof matchMedia!=='undefined'&&matchMedia('(pointer:coarse)').matches)?{tree:7,mount:4,rock:4,decor:3}:{tree:9,mount:5,rock:5,decor:4};
+const TCAP=(typeof matchMedia!=='undefined'&&matchMedia('(pointer:coarse)').matches)?{tree:5,mount:3,rock:3,decor:2}:{tree:6,mount:4,rock:3,decor:2};
 function terrSprites(){
   if(!TH())return '';const rng=seeded(B.seed^0x2545f491),st=B.def.s;let h='';const tw=100/W;
   const pools={};const take=k=>{const P=pools[k]||(pools[k]={ids:[],cnt:{}});const open=P.ids.filter(i=>P.cnt[i]<3);
@@ -3165,10 +3199,10 @@ function terrSprites(){
   const put=(k,x,y,px,py,sc)=>{const v=take(k);if(v==null)return false;const cls=terrCls(st,k,v);if(!cls)return false;const flip=rng()<0.5?' fl':'';
     h+=`<div class="spr tr tr-${k}${flip}" data-tx="${x}" data-ty="${y}" data-k="${k}" style="--h:${hAt(x,y)};left:${px/W*100}%;top:${py/H*100}%;width:${tw*sc}%"><i class="up ${cls}"></i></div>`;return true;};
   for(const [x,y] of tiles){const t=B.map[y][x];
-    if(t===1){const n=1;for(let i=0;i<n;i++)put('tree',x,y,x+(n===1?0.55:0.3+i*0.45)+(rng()-.5)*0.12,y+(n===1?0.55:0.75-i*0.4)+(rng()-.5)*0.12,0.9+rng()*0.35);}
+    if(t===1&&rng()<0.8){const n=1;for(let i=0;i<n;i++)put('tree',x,y,x+(n===1?0.55:0.3+i*0.45)+(rng()-.5)*0.12,y+(n===1?0.55:0.75-i*0.4)+(rng()-.5)*0.12,0.9+rng()*0.35);}
     else if(t===2){if(rng()<0.8)put('mount',x,y,x+0.62,y+0.62,1.4+rng()*0.35);}
-    else if(t===4&&rng()<0.7)put('rock',x,y,x+0.4+(rng()-.5)*0.2,y+0.55+(rng()-.5)*0.2,0.62+rng()*0.25);
-    else if(t===0&&!occ.has(y*W+x)&&x>2&&x<W-4&&rng()<0.05)put('decor',x,y,x+0.3+rng()*0.4,y+0.3+rng()*0.4,0.45+rng()*0.25);}
+    else if(t===4&&rng()<0.5)put('rock',x,y,x+0.4+(rng()-.5)*0.2,y+0.55+(rng()-.5)*0.2,0.62+rng()*0.25);
+    else if(t===0&&!occ.has(y*W+x)&&x>2&&x<W-4&&rng()<0.03)put('decor',x,y,x+0.3+rng()*0.4,y+0.3+rng()*0.4,0.45+rng()*0.25);}
   B.tvar=Object.fromEntries(Object.entries(pools).map(([k,P])=>[k,{models:P.ids.length,maxUse:Math.max(0,...Object.values(P.cnt))}]));
   return h;}
 function renderBattle(){
@@ -3316,6 +3350,7 @@ function flash(sk){
 
 /* ---------- 交互 ---------- */
 function onCell(x,y){
+  if(x<0||y<0||x>=W||y>=H)return;   // 越界保护
   if(B&&B.mode==='deploy'){const u=unitAt(x,y);
     if(u&&u.side==='p'){if(B.dsel&&B.dsel!==u){const a=B.dsel;[a.x,a.y,u.x,u.y]=[u.x,u.y,a.x,a.y];B.dsel=null;sfx('step');}else B.dsel=B.dsel===u?null:u;}
     else if(B.dsel&&inDeployZone(x,y)&&!u){B.dsel.x=x;B.dsel.y=y;B.dsel=null;sfx('step');}
@@ -3428,8 +3463,7 @@ if(typeof document!=='undefined'){
    document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('[data-a="up"]');if(b&&hN>0){e.stopPropagation();e.preventDefault();hN=0;}},true);}
   document.addEventListener('keydown',e=>{if(e.key==='Escape'&&VIEW==='battle'&&!CUT)cmdCancel();if((e.key==='p'||e.key==='P')&&VIEW==='battle'&&B&&B.autoAll)ACT.bstopauto();});
   window.addEventListener('resize',()=>{if(VIEW==='battle'){placeCmd();const t=document.getElementById('tilt'),b=document.getElementById('board');if(t&&b){const tp=b.offsetWidth/W;t.style.setProperty('--hu',(tp*0.42)+'px');t.style.setProperty('--tp',tp+'px');}}});
-  document.getElementById('mbtn').addEventListener('click',()=>{auInit();auToggle('music');syncMusic();});
-  document.getElementById('sbtn').addEventListener('click',()=>{auInit();auToggle('sfx');sfx('click');});updAuBtns();
+  updAuBtns();
   const ab=document.getElementById('abtn');if(ab)ab.addEventListener('click',()=>{auInit();auMuteAll();});
   const tb=document.getElementById('themebtn');
   tb.addEventListener('click',()=>{const r=document.documentElement,cur=r.dataset.theme||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
