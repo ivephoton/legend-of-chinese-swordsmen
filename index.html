@@ -792,7 +792,9 @@ body{background:transparent}
 
 .skcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:6px;margin-bottom:16px}
 .skc{display:flex;flex-direction:column;gap:2px;text-align:left;padding:8px 10px;cursor:pointer;font:inherit;font-family:var(--f-menu);border:10px solid transparent;border-image:var(--fr-brown) 18 stretch;background:var(--panel);background-clip:padding-box;color:var(--ink)}
-.skc b{font-size:16px;color:#1a0a00}.skc .skm{font-size:12px;color:#6a3a1a;font-weight:700}.skc .ski{font-size:12.5px;line-height:1.55;color:#2a1a10}
+.skc b{font-size:16px;color:#1a0a00}
+.dualt{display:inline-block;margin-left:6px;font-style:normal;font-size:11px;color:#6a3a1a;border:1px solid rgba(120,80,30,.4);border-radius:8px;padding:0 6px;vertical-align:middle}
+.dualt .eld{width:7px;height:7px;margin-right:2px}.skc .skm{font-size:12px;color:#6a3a1a;font-weight:700}.skc .ski{font-size:12.5px;line-height:1.55;color:#2a1a10}
 .skc.no{opacity:.55}.skc.have{box-shadow:inset 0 0 0 1px rgba(15,163,122,.5)}
 .skc:hover{background:linear-gradient(180deg,#fff8e4,#f0e4c4);background-clip:padding-box}
 .skintro{font-size:15px;line-height:1.9;border-left:3px solid var(--gold);padding:4px 10px;margin:6px 0 10px}
@@ -885,13 +887,16 @@ const SK_FLAVOR={taiji:'以两仪之理布下微尘大阵，阴阳流转，将�
  vines:'催动草木生机，藤蔓破土缠绞',wave:'引动水脉掀起巨浪，席卷一线',iceSpikes:'寒气凝冰，冰刺自地下破土而出',quake:'震动地脉，山石崩裂',rocks:'飞沙走石，漫天砸落',
  fire:'真火离手，烈焰焚身',swordVolley:'御剑连环疾刺，一气呵成'};
 const SK_ELP={金:'庚金锐气',木:'乙木生机',水:'玄水寒气',火:'离火真阳',土:'戊土厚重'};
-const SK_TIER=['','入门小术，胜在灵便','寻常道法，攻守相宜','已具火候，可独当一面','上乘法门，非苦修不能得','镇派秘传，一出手便定胜负','镇派绝学，威能惊天，须耗极大真元'];
+const SK_TIER=['','入门小术，胜在灵便','寻常道法，攻守相宜','已具火候，可独当一面','上乘法门，非苦修不能得','镇派秘传，一出手便定胜负','镇派绝学，威能惊天，须耗极大真元','','','','',
+ '人仙之法，已脱凡流，凡俗道法不可同日而语','地仙之法，借一方地脉为引，声势撼动山川','天仙之法，引九天罡气入术，举手之间天象为之变色','金仙之法，两仪同流、五行归一，非渡劫之身不能施展'];
 function skIntro(s){let f;
   if(s.type==='heal'){f=/水|甘露|春风/.test(s.name)?'甘霖普降，伤势随雨而愈':/涅槃|凤凰/.test(s.name)?'凤火涅槃，于烈焰中重焕生机':'莲台升起，佛光护体，气血渐复';}
   else if(s.type==='buff'){f=/护|甲|罩|明王|须弥/.test(s.name)?'护体罡气化作光罩，刀剑难伤':/剑|合一/.test(s.name)?'飞剑环身护法，攻守兼备':'真气灌注经脉，力量陡增';}
   else f=SK_FLAVOR[skillRecipe(s)]||SK_FLAVOR.swordVolley;
   const st=s.type==='status'?(s.st==='stun'?'，中者往往当场定身':'，中者毒气攻心，持续受创'):s.type==='debuff'?'，更能破其护体，令后续攻势事半功倍':'';
-  return `「${s.name}」乃${SK_ELP[s.el]}所化：${f}${st}。${SK_TIER[s.tier]}。`;}
+  const du=s.el2?`「${s.name}」以${SK_ELP[s.el]}为体、${SK_ELP[s.el2]}为用，两气交感而成：`:`「${s.name}」乃${SK_ELP[s.el]}所化：`;
+  const dt=s.el2?`此术兼具${s.el}、${s.el2}两行之性，取其中克制更利者结算，术成之时两般法相次第显化。`:'';
+  return `${du}${f}${st}。${SK_TIER[s.tier]||''}。${dt}`;}
 function skDesc(s){
   let d='';
   if(s.type==='atk')d=`法术伤害，威力${Math.round(s.pow*100)}%`;
@@ -949,6 +954,10 @@ m:['五雷符','神火针','摄魂铃','迷魂幡','金刚杵','降魔杵','紫�
 a:['布衲道袍','青云袍','护心镜','辟邪符','避火衣','避水珠','金丝软甲','玄冰甲','碧玉簪','云霞帔','灵犀玉佩','玄武甲','霓裳羽衣','紫绶仙衣','金刚罩','佛光舍利','七宝袈裟','太清玉符','天孙锦','须弥芥子','如意宝衣','神禹令','雪魂珠','弥尘幡','兜率宝伞','紫云仙纱','太乙青灵铠','金莲宝座','大须弥障','两仪微尘阵图']};
 const TR_SK={'紫郢剑':'紫郢飞虹','青虹剑':'青索分光','南明离火剑':'南明焚天','阴霹雳剑':'霹雳双剑','阳霹雳剑':'霹雳双剑','玄龟剑':'玄龟剑气','七修剑':'七修剑光','碧蜈钩':'碧蜈钩','百毒金蚕':'金蚕蛊','太乙神雷符':'太乙神雷','九天元阳尺':'元阳尺','乾天火灵珠':'乾天火灵','天璇神砂':'天璇神砂','元磁神针':'元磁神光','两仪微尘阵图':'两仪微尘阵','冰魄神光剑':'冰魄飞剑','雪魂珠':'冰魄寒光','佛光舍利':'佛光普照','天遁镜':'剑气长虹','火龙钗':'火龙卷'};
 const SLOTN={w:'飞剑',m:'法器',a:'护身'};
+/* 十阶之上另立仙阶：人仙 → 地仙 → 天仙 → 金仙 */
+const XIAN=['人仙','地仙','天仙','金仙'];
+const tierT=t=>t>=11?XIAN[Math.min(3,t-11)]:CN[t]+'重';
+const tierS=t=>t>=11?XIAN[Math.min(3,t-11)]+'阶':CN[t]+'阶';
 const STN={hp:'气血',mp:'真元',atk:'剑力',def:'护体',mag:'法力',res:'抗法',mov:'身法'};
 const TREASURES=[];
 ['w','m','a'].forEach(slot=>{const L=TR_NAMES[slot];L.forEach((n,i)=>{
@@ -959,16 +968,23 @@ const TREASURES=[];
   TREASURES.push({id:TREASURES.length,name:n,slot,tier:t,st,sk:sk?sk.id:null});});});
 /* ================= 新增：30 种道法 + 30 件法宝（各自相授） ================= */
 // [名称, 五行, 类型, 阶, 范围, 射程, 增益属性]
+// [名称, 主属性, 副属性, 类型, 阶(11-14 仙阶), 范围, 射程, 增益属性]
 const SKN_NEW=[
-['太清剑罡','金','atk',5,0,4],['白虹贯日','金','atk',4,0,4],['天河剑雨','金','atk',6,2,5],['庚金锁','金','status',5,0,3],['罡风截脉','金','debuff',4,0,3],['金阙护法','金','buff',5,0,0,'def'],
-['春雷惊蛰','木','atk',4,0,3],['万藤缚','木','status',4,1,3],['九叶灵芝','木','heal',6,2,3],['青囊续命','木','heal',5,1,3],['蚀骨瘴','木','debuff',5,1,3],['木灵化身','木','buff',5,0,0,'atk'],
-['玄水化龙','水','atk',5,0,4],['归墟漩涡','水','atk',6,2,4],['沧溟怒潮','水','atk',5,1,4],['寒渊锁灵','水','status',5,0,3],['润物无声','水','heal',4,0,3],['冰镜反照','水','buff',5,0,0,'def'],
-['赤霄焚天','火','atk',6,2,4],['流火陨星','火','atk',5,0,5],['焚魂咒','火','status',5,0,3],['烈阳回春','火','heal',5,1,3],['炎华护体','火','buff',4,0,0,'def'],['离火淬剑','火','buff',5,0,0,'atk'],
-['山河镇狱','土','atk',6,2,4],['神禹镇山印','土','atk',6,0,4],['砂海无涯','土','atk',5,1,4],['黄泉锁足','土','status',4,0,3],['厚土滋元','土','heal',4,1,3],['磐石之心','土','buff',6,0,0,'def']];
-SKN_NEW.forEach(p=>{const [n,e,ty,tier,area,rng,stat]=p;
-  SKILLS.push({id:SKILLS.length,name:n,el:e,type:ty,tier,area,rng,stat:stat||null,
-    pow:ty==='atk'?(1.1+0.3*(tier-1))*(area?0.78:1):ty==='heal'?(0.9+0.3*(tier-1))*(area?0.75:1):ty==='debuff'?0.8:ty==='status'?0.7:0,
-    mp:5+tier*5+area*4, st:ty==='status'?((e==='木'||e==='火')?'poison':'stun'):null});});
+['太清剑罡','金','火','atk',12,0,4],['白虹贯日','金','火','atk',11,0,4],['天河剑雨','金','水','atk',14,2,5],
+['庚金锁','金','土','status',11,0,3],['罡风截脉','金','木','debuff',11,0,3],['金阙护法','金','土','buff',12,0,0,'def'],
+['春雷惊蛰','木','金','atk',11,0,3],['万藤缚','木','土','status',12,1,3],['九叶灵芝','木','水','heal',14,2,3],
+['青囊续命','木','水','heal',12,1,3],['蚀骨瘴','木','水','debuff',12,1,3],['木灵化身','木','土','buff',11,0,0,'atk'],
+['玄水化龙','水','金','atk',12,0,4],['归墟漩涡','水','土','atk',14,2,4],['沧溟怒潮','水','木','atk',13,1,4],
+['寒渊锁灵','水','金','status',12,0,3],['润物无声','水','木','heal',11,0,3],['冰镜反照','水','金','buff',12,0,0,'def'],
+['赤霄焚天','火','金','atk',14,2,4],['流火陨星','火','土','atk',13,0,5],['焚魂咒','火','木','status',12,0,3],
+['烈阳回春','火','木','heal',13,1,3],['炎华护体','火','土','buff',11,0,0,'def'],['离火淬剑','火','金','buff',13,0,0,'atk'],
+['山河镇狱','土','水','atk',14,2,4],['神禹镇山印','土','金','atk',14,0,4],['砂海无涯','土','火','atk',13,1,4],
+['黄泉锁足','土','水','status',11,0,3],['厚土滋元','土','木','heal',11,1,3],['磐石之心','土','金','buff',13,0,0,'def']];
+SKN_NEW.forEach(p=>{const [n,e,e2,ty,tier,area,rng,stat]=p;
+  const ab=2.6+0.24*(tier-6),hb=2.4+0.2*(tier-6);
+  SKILLS.push({id:SKILLS.length,name:n,el:e,el2:e2,type:ty,tier,area,rng,stat:stat||null,
+    pow:ty==='atk'?ab*(area?0.78:1):ty==='heal'?hb*(area?0.75:1):ty==='debuff'?0.9:ty==='status'?0.8:0,
+    mp:20+tier*4+area*4, st:ty==='status'?((e==='木'||e==='火')?'poison':'stun'):null});});
 // [名称, 部位, 阶, 所授道法]
 const TR_NEW=[
 ['太清剑','w',7,'太清剑罡'],['白虹贯日剑','w',5,'白虹贯日'],['天河剑','w',9,'天河剑雨'],['庚金锁剑','w',6,'庚金锁'],['青冥剑','w',6,'春雷惊蛰'],
@@ -977,10 +993,10 @@ const TR_NEW=[
 ['离火淬剑炉','m',7,'离火淬剑'],['流火陨星盘','m',8,'烈阳回春'],['黄泉锁','m',5,'黄泉锁足'],['归墟螺','m',9,'归墟漩涡'],['山河社稷图','m',10,'山河镇狱'],
 ['金阙法衣','a',7,'金阙护法'],['木灵藤甲','a',6,'木灵化身'],['冰镜锦','a',7,'冰镜反照'],['炎华宝铠','a',5,'炎华护体'],['磐石玉','a',9,'磐石之心'],
 ['润物云纱','a',5,'润物无声'],['神禹玉符','a',8,'厚土滋元'],['太清罡衣','a',8,'沧溟怒潮'],['赤霄火羽','a',6,'焚魂咒'],['厚土玄甲','a',10,'万藤缚']];
-TR_NEW.forEach(([n,slot,t,skn])=>{
-  const st=slot==='w'?{atk:4+4*t,mag:2*t}:slot==='m'?{mag:4+4*t,mp:4*t,res:2*t}:{def:3+3*t,res:3+3*t,hp:12*t};
-  if(t>=9)st[slot==='a'?'mov':'hp']=(slot==='a'?1:10*t);
-  const sk=SKILLS.find(s=>s.name===skn);
+TR_NEW.forEach(([n,slot,t0,skn])=>{
+  const sk=SKILLS.find(s=>s.name===skn),t=sk?sk.tier:Math.max(11,t0);   // 阶数与所授道法一致（仙阶）
+  const st=slot==='w'?{atk:4+4*t,mag:3*t}:slot==='m'?{mag:4+4*t,mp:5*t,res:3*t}:{def:3+3*t,res:3+3*t,hp:14*t};
+  if(t>=13)st[slot==='a'?'mov':'hp']=(slot==='a'?1:12*t);
   TREASURES.push({id:TREASURES.length,name:n,slot,tier:t,st,sk:sk?sk.id:null});});
 
 const trStat=t=>Object.entries(t.st).map(([k,v])=>STN[k]+'+'+v).join('　');
@@ -1280,12 +1296,14 @@ const eAtk=u=>u.atk*(u.b.atkUp?1.25:1), eMag=u=>u.mag*(u.b.atkUp?1.25:1);
 const eDef=u=>u.def*(u.b.defUp?1.3:1)*(u.b.defDown?0.7:1), eRes=u=>u.res*(u.b.defUp?1.3:1)*(u.b.defDown?0.7:1);
 const tmul=u=>{const t=B.map[u.y][u.x];return t===3&&u.el==='水'?1:TER[t].d;};
 const TERFX=['平地：金、火行伤害 +8%','林：闪避 +10，木行伤害 +15%','山：命中 +8，受创 -20%，土行伤害 +15%','水：闪避 -10，受创 +10%（水行免疫），水行伤害 +20%','岩：乱石嶙峋'];
+const elMulS=(sk,d)=>sk.el2?Math.max(elMul(sk.el,d.el),elMul(sk.el2,d.el)):elMul(sk.el,d.el);
+const terrAtkS=(a,sk)=>sk.el2?Math.max(terrAtk(a,sk.el),terrAtk(a,sk.el2)):terrAtk(a,sk.el);
 function terrAtk(u,el){const t=B.map[u.y][u.x],e=el||u.el;if(t===1&&e==='木')return 1.15;if(t===2&&e==='土')return 1.15;if(t===3&&e==='水')return 1.2;if(t===0&&(e==='金'||e==='火'))return 1.08;return 1;}
 function dodgeP(a,d,react){if(d.st&&d.st.stun)return 0;const ta=B.map[a.y][a.x],td=B.map[d.y][d.x];
   const hd=hAt(a.x,a.y)-hAt(d.x,d.y);
   let v=(d.agi||0)-(a.hit||0)+(td===1?10:0)-(td===3?10:0)-(ta===2?8:0)-(hd>0?6:0)+(hd<0?6:0)+(react==='dodge'?25:0);return clamp(v,0,80)/100;}
 function estPhys(a,d,m){return Math.max(1,Math.round(Math.max(eAtk(a)*1.4-eDef(d)*0.7,eAtk(a)*0.2)*elMul(a.el,d.el)*tmul(d)*terrAtk(a)*(m||1)));}
-function estMag(a,d,sk,pw){const p=pw||sk.pow;return Math.max(1,Math.round(Math.max(eMag(a)*p*1.4*(a.side==='e'&&!a.boss?0.88:1)-eRes(d)*0.7,eMag(a)*p*0.2)*elMul(sk.el,d.el)*tmul(d)*terrAtk(a,sk.el)));}
+function estMag(a,d,sk,pw){const p=pw||sk.pow;return Math.max(1,Math.round(Math.max(eMag(a)*p*1.4*(a.side==='e'&&!a.boss?0.88:1)-eRes(d)*0.7,eMag(a)*p*0.2)*elMulS(sk,d)*tmul(d)*terrAtkS(a,sk)));}
 const healAmt=(a,sk)=>Math.round(eMag(a)*sk.pow*1.2+8);
 function roll(v){const crit=R()<0.08;return {dmg:Math.max(1,Math.round(v*(0.92+R()*0.16)*(crit?1.5:1))),crit};}
 const inRng=(u,x,y,t)=>{const d=md(x,y,t.x,t.y);return d>=u.r[0]&&d<=u.r[1];};
@@ -1305,12 +1323,12 @@ function kill(a,d){
   else logL(`${d.name} 重伤退场`);}
 function rollDrop(d,x,y){
   if(R()>(d.boss?1:0.3))return;
-  const T=Math.min(10,1+Math.floor((B.c-1)/3));
-  const t=clamp(T+pick([-2,-1,-1,0,0,0,1])+(d.boss?1:0),1,10);
+  const T=Math.min(14,1+Math.floor((B.c-1)/3));
+  const t=clamp(T+pick([-2,-1,-1,0,0,0,1])+(d.boss?1:0),1,14);
   const pool=TREASURES.filter(z=>z.tier===t);let tr=pick(pool);
   if(S.inv[tr.id]){const un=pool.filter(z=>!S.inv[z.id]);if(un.length&&R()<0.6)tr=pick(un);}
   S.inv[tr.id]=(S.inv[tr.id]||0)+1;B.drops.push(tr.id);sfx('drop');
-  float(x,y,'得 '+tr.name,'g');logL(`获得法宝【${tr.name}】（${CN[tr.tier]}重）`,'drop');}
+  float(x,y,'得 '+tr.name,'g');logL(`获得法宝【${tr.name}】（${tierT(tr.tier)}）`,'drop');}
 let QUIET=false;
 function hit(a,d,dmg,crit){
   if(!QUIET)sfx(crit?'crit':'hit');sprFx(d,'hurt');
@@ -2334,12 +2352,19 @@ function skillRecipe(sk){const K=s=>sk.name.includes(s);
   if(K('冰')||K('寒'))return 'iceSpikes';if(K('泰山')||K('山崩')||K('地裂')||K('陷地'))return 'quake';if(K('沙')||K('砂')||K('石')||K('穿山'))return 'rocks';
   if(K('火')||K('焰')||K('焚')||K('丙')||K('离')||K('阳')||K('针'))return 'fire';if(K('剑'))return 'swordVolley';
   return {金:'swordVolley',木:'petals',水:'wave',火:'fire',土:'rocks'}[sk.el];}
+const EL_REC={金:'lightning',木:'petals',水:'iceSpikes',火:'fire',土:'rocks'};
 async function skillAnim(X,sk,a,it){
-  const p=X.pal,n=2+sk.tier,[cx,cy]=tgc(it),seed=sk.id*7;
+  await skillAnim1(X,sk,a,it,null);
+  if(!sk.el2)return;
+  const X2=Object.assign({},X,{pal:EPAL[sk.el2]||X.pal});
+  await X.w(140);
+  await skillAnim1(X2,Object.assign({},sk,{tier:Math.min(5,sk.tier)}),a,it,EL_REC[sk.el2]);}
+async function skillAnim1(X,sk,a,it,recOv){
+  const p=X.pal,n=2+Math.min(6,sk.tier),[cx,cy]=tgc(it),seed=sk.id*7;
   if(sk.tier>=6){X.sfx('gong');const dk=X.mk('darken',null,null,null);await X.A(dk,[{opacity:0},{opacity:.75}],300);
     await fxAt(X,'sigil big',cx,cy+10,[{transform:'translate(-50%,-50%) rotateX(70deg) scale(.2) rotate(0deg)',opacity:0},{transform:'translate(-50%,-50%) rotateX(70deg) scale(1.3) rotate(200deg)',opacity:1}],600,{html:`<b>${esc(sk.name[0])}</b>`,keep:0});
     setTimeout(()=>X.A(dk,[{opacity:.75},{opacity:0}],400).then(()=>dk.remove()),900);}
-  const rec=skillRecipe(sk),all=async pr=>{await Promise.all(pr);};
+  const rec=recOv||skillRecipe(sk),all=async pr=>{await Promise.all(pr);};
   const each=(fn)=>it.map(({f},i)=>fn(f,i));
   switch(rec){
    case 'taiji':{await all(each(f=>fxAt(X,'taiji',f.x,f.y+6,[{transform:'translate(-50%,-50%) rotateX(60deg) scale(.1) rotate(0deg)',opacity:0},{transform:'translate(-50%,-50%) rotateX(60deg) scale(1) rotate(360deg)',opacity:1,offset:.6},{transform:'translate(-50%,-50%) rotateX(60deg) scale(1.2) rotate(540deg)',opacity:0}],1000)));
@@ -2464,10 +2489,10 @@ async function playCut(o){
     try{an=el.animate(kf,Object.assign({duration:d,fill:'forwards',easing:'ease-out'},ex||{}));}catch(e){return Promise.resolve();}
     return Promise.race([an.finished.catch(()=>{}),skipP]);};
   const a=o.a,ally=o.kind==='heal'||o.kind==='buff',aS=a.side==='p'?'R':'L',tS=aS==='R'?'L':'R';
-  const pal=EPAL[o.el]||EPAL['金'],col=pal[1];
+  const pal=EPAL[o.el]||EPAL['金'],pal2=o.el2?EPAL[o.el2]:null,palX=pal2?[pal[0],pal[1],pal2[1]]:pal,col=pal[1];
   const rev=aS==='R'?' rev':'';
   const cut=document.createElement('div');cut.className='cut';cut.setAttribute('role','dialog');cut.setAttribute('aria-label','战斗画面，点击跳过');
-  cut.style.setProperty('--c1',pal[0]);cut.style.setProperty('--c2',pal[1]);cut.style.setProperty('--c3',pal[2]);
+  cut.style.setProperty('--c1',palX[0]);cut.style.setProperty('--c2',palX[1]);cut.style.setProperty('--c3',palX[2]);
   cut.innerHTML=`<div class="stage"><div class="cbg e${ELI[o.el]}"><div class="sun"></div><div class="cloud c1"></div><div class="cloud c2"></div><div class="mt far${rev}"></div><div class="mt mid${rev}"></div><div class="mt near${rev}"></div></div><div class="stks"></div><div class="figs"></div><div class="fxc"></div><div class="cflash"></div><div class="skiph">点击跳过 · <b data-k="off">关闭战斗画面</b>${B&&B.autoAll?' · <b data-k="stopauto">停止全自动</b>':''}</div></div>`;
   document.body.appendChild(cut);
   const stage=cut.querySelector('.stage'),figsEl=cut.querySelector('.figs'),fxc=cut.querySelector('.fxc'),fl=cut.querySelector('.cflash'),stks=cut.querySelector('.stks');
@@ -2620,9 +2645,11 @@ async function playCut(o){
   try{
     await Promise.all(figs.map(f=>A(f.el,[{transform:`translateX(${f.side==='R'?260:-260}%)`,opacity:0},{transform:'none',opacity:1}],420)));
     await band(a,cutLine(a));
-    await sname(o.name,col,!o.skill,pal);
+    await sname(o.name,col,!o.skill,palX);
     const SK=o.sk!=null?SKILLS[o.sk]:null;
-    if(ally&&SK){af.pose='cast';await supportAnim(X,SK,af,list);af.pose='idle';}
+    if(ally&&SK){af.pose='cast';await supportAnim(X,SK,af,list);
+      if(SK.el2){const X2=Object.assign({},X,{pal:EPAL[SK.el2]||pal});await w(140);await skillAnim1(X2,Object.assign({},SK,{tier:4,type:'atk'}),af,list,EL_REC[SK.el2]);}
+      af.pose='idle';}
     else if(SK){af.pose='cast';sfx('magic');const sg=mk('sigil',af.x,af.y+12,`<b>${esc(SK.name[0])}</b>`,pal[1]);
       A(sg,[{transform:'translate(-50%,-50%) rotateX(65deg) scale(.2) rotate(0deg)',opacity:0},{transform:'translate(-50%,-50%) rotateX(65deg) scale(1) rotate(120deg)',opacity:1,offset:.5},{transform:'translate(-50%,-50%) rotateX(65deg) scale(1.2) rotate(240deg)',opacity:0}],1000).then(()=>sg.remove());
       await w(420);await skillAnim(X,SK,af,list);af.pose='idle';}
@@ -2646,7 +2673,7 @@ function showLoot(u,kind,val){if(typeof document==='undefined'||FAST)return;
   if(kind==='gold')body=`<div class="lico coin">金</div><div class="linfo"><b class="disp">金钱 ×${val}</b><p>现有金钱 ${S.gold||0}，可在洞府中修炼属性。</p></div>`;
   else{const t=TREASURES[val],n=S.inv[t.id]||1,stars='★'.repeat(Math.min(5,Math.ceil(t.tier/2)));
     const ico=t.slot==='w'?`<div class="lico sw">${swordSVG({n:t.name,b:['#ffffff',ELC[['金','木','水','火','土'][t.tier%5]],'#3a2a4a'],g:'wing',gc:'#ffd23f',h:'#3a2a1a',p:'ring',t:'#ff5f8f',w:1},'loot'+t.id,true)}</div>`:`<div class="lico ${t.slot}">${t.slot==='m'?'器':'甲'}</div>`;
-    body=`${ico}<div class="linfo"><b class="disp">${t.name}</b><div class="lmeta">${SLOTN[t.slot]} · ${CN[t.tier]}重 <span class="lstar">${stars}</span>${n>1?`　持有 ×${n}`:'　<em>新获得</em>'}</div>
+    body=`${ico}<div class="linfo"><b class="disp">${t.name}</b><div class="lmeta">${SLOTN[t.slot]} · ${tierT(t.tier)} <span class="lstar">${stars}</span>${n>1?`　持有 ×${n}`:'　<em>新获得</em>'}</div>
       <p>${trStat(t)}</p>${t.sk!=null?`<p>附带道法【${SKILLS[t.sk].name}】</p>`:''}<p class="muted">可在洞府「法宝录」中点选此宝，装备给任意侠士。</p></div>`;}
   const o=document.createElement('div');o.className='loot';o.setAttribute('role','status');
   o.innerHTML=`<div class="lbox"><div class="lrays"></div><div class="lhead">开启宝箱 · ${esc(u.name)}</div><div class="lrow">${body}</div><div class="lhint">点击继续</div></div>`;
@@ -2654,7 +2681,7 @@ function showLoot(u,kind,val){if(typeof document==='undefined'||FAST)return;
   o.addEventListener('click',close);setTimeout(()=>{if(o.isConnected)close();},B&&B.phase==='e'||B&&B.autoAll?1800:4500);}
 function openChest(u){if(!B||!B.chests||u.side!=='p')return;const q=B.chests.find(q=>!q.taken&&q.x===u.x&&q.y===u.y);if(!q)return;q.taken=true;
   if(R()<0.55){const g=720+B.c*225+rnd(0,360);addGold(g);float(u.x,u.y,'宝箱 +'+g+' 金','g');logL(`${u.name} 打开宝箱，获得 ${g} 金`,'drop');showLoot(u,'gold',g);}
-  else{const T=Math.min(10,1+Math.floor((B.c-1)/3)),t=clamp(T+pick([0,0,1]),1,10);const pool=TREASURES.filter(z=>z.tier===t);let tr=pick(pool);const un=pool.filter(z=>!S.inv[z.id]);if(un.length&&R()<0.7)tr=pick(un);
+  else{const T=Math.min(14,1+Math.floor((B.c-1)/3)),t=clamp(T+pick([0,0,1]),1,14);const pool=TREASURES.filter(z=>z.tier===t);let tr=pick(pool);const un=pool.filter(z=>!S.inv[z.id]);if(un.length&&R()<0.7)tr=pick(un);
     S.inv[tr.id]=(S.inv[tr.id]||0)+1;B.drops.push(tr.id);float(u.x,u.y,'宝箱 · '+tr.name,'g');logL(`${u.name} 打开宝箱，获得法宝【${tr.name}】`,'drop');showLoot(u,'item',tr.id);}
   sfx('drop');saveGame();const el=document.querySelector(`.spr.chest[data-cx="${q.x}"][data-cy="${q.y}"]`);if(el){el.classList.add('open');setTimeout(()=>el.remove(),700);}}
 function sprFx(u,cls){const el=B&&B.spr&&B.spr[u.uid];if(!el)return;el.classList.remove(cls);void el.offsetWidth;el.classList.add(cls);setTimeout(()=>el.classList.remove(cls),700);
@@ -2689,7 +2716,7 @@ async function actSkill(a,sk,cx,cy){
     if(sk.type==='buff')return {u:t,tag:sk.stat==='atk'?'攻↑':'防↑'};
     if(sk.type==='debuff'){const r=roll(estMag(a,t,sk,0.8));return {u:t,dmg:r.dmg,crit:r.crit,tag:'防↓'};}
     const r=roll(estMag(a,t,sk,0.7));return {u:t,dmg:r.dmg,crit:r.crit,tag:sk.st==='poison'?'中毒':(R()<(t.boss?0.4:0.75)?'定身':'抵抗')};});
-  if(animOn(a))await playCut({a,kind:ally?sk.type:'mag',name:sk.name,el:sk.el,targets:res,area:sk.area,skill:true,sk:sk.id});
+  if(animOn(a))await playCut({a,kind:ally?sk.type:'mag',name:sk.name,el:sk.el,el2:sk.el2,targets:res,area:sk.area,skill:true,sk:sk.id});
   else{flash(sk);sfx(ally?(sk.type==='heal'?'heal':'buff'):'magic');render();await sleep(520);}
   QUIET=animOn(a);let gained=0;
   for(const r of res){const t=r.u;
@@ -3083,10 +3110,10 @@ function vCamp(){
       return `<button class="hc" data-a="hero" data-v="${h.id}"><span class="gl">${pimg({side:'p',hid:h.id,glyph:h.glyph})}</span><div><b>${h.name}</b><br><small>${eld(h.el)}${h.el}·${h.cls}　Lv.${s.lv}</small><br>${realmTag(s.lv)}${xbar(s.exp)}</div></button>`;}).join('')}</div>`;}
   else if(TAB==='tr'){
     body=['w','m','a'].map(sl=>`<h3>${SLOTN[sl]}</h3><div class="grid100">${TREASURES.filter(t=>t.slot===sl).map(t=>{const n=S.inv[t.id]||0;
-      return n?`<button class="ti have" data-a="tr" data-v="${t.id}">${t.name}<div class="tr">${CN[t.tier]}重${n>1?' ×'+n:''}</div></button>`:`<div class="ti no">？<div class="tr">${CN[t.tier]}重</div></div>`;}).join('')}</div>`).join('');}
+      return n?`<button class="ti have" data-a="tr" data-v="${t.id}">${t.name}<div class="tr">${tierT(t.tier)}${n>1?' ×'+n:''}</div></button>`:`<div class="ti no">？<div class="tr">${tierT(t.tier)}</div></div>`;}).join('')}</div>`).join('');}
   else{
     body='<p class="muted" style="font-size:13px">亮起的是已领悟的道法。点击任一道法查看详细介绍。</p>'+ELS.map(e=>`<h3>${eld(e)}${e}行道法</h3><div class="skcards">${SKILLS.filter(s=>s.el===e).map(s=>{
-      return `<button class="skc ${learned.has(s.id)?'have':'no'}" data-a="skinfo" data-v="${s.id}"><b>${s.name}</b><span class="skm">${TYN[s.type]} · ${CN[s.tier]}阶 · 真元 ${s.mp}</span><span class="ski">${skIntro(s)}</span></button>`;}).join('')}</div>`).join('');}
+      return `<button class="skc ${learned.has(s.id)?'have':'no'}" data-a="skinfo" data-v="${s.id}"><b>${s.name}${s.el2?`<i class="dualt">${eld(s.el)}${eld(s.el2)}${s.el}·${s.el2}</i>`:''}</b><span class="skm">${TYN[s.type]} · ${tierS(s.tier)} · 真元 ${s.mp}</span><span class="ski">${skIntro(s)}</span></button>`;}).join('')}</div>`).join('');}
   return `<div class="wrap"><div class="top"><h1 class="disp">峨眉·凝碧洞府</h1>
   <div class="tally"><span>${tp('gold','金钱')} <b>${S.gold||0}</b></span><span>群侠 <b>${recruited().length}</b>/20</span><span>法宝 <b>${own}</b>/100</span><span>道法 <b>${learned.size}</b>/130</span></div></div>
   <div class="tabs">${[['ch','章回'],['hero','群侠'],['tr','法宝录'],['sk','道法录']].map(([k,n])=>`<button class="tab ${TAB===k?'on':''}" data-a="tab" data-v="${k}">${n}</button>`).join('')}
@@ -3096,16 +3123,16 @@ function vModal(){
     const trs=TREASURES.filter(t=>t.sk===sk.id).map(t=>t.name).join('、');
     const tgt=sk.rng===0?(sk.area?'自身周围':'自身'):`射程 ${sk.rng} 格`,rec=sk.type==='heal'||sk.type==='buff'?'我方':'敌方';
     return `<div class="ov" data-a="close"><div class="modal" data-a="noop"><button class="btn sm x" data-a="close">关闭</button>
-    <h3 class="disp" style="font-size:28px">${eld(sk.el)}${sk.name}</h3>
-    <p class="skmeta">${sk.el}行 · ${TYN[sk.type]} · ${CN[sk.tier]}阶</p>
+    <h3 class="disp" style="font-size:28px">${eld(sk.el)}${sk.el2?eld(sk.el2):''}${sk.name}</h3>
+    <p class="skmeta">${sk.el2?`${sk.el}·${sk.el2} 双行`:`${sk.el}行`} · ${TYN[sk.type]} · ${tierS(sk.tier)}</p>
     <p class="skintro">${skIntro(sk)}</p>
-    <div class="statg"><span>威力 ${sk.pow?Math.round(sk.pow*100)+'%':'—'}</span><span>真元 ${sk.mp}</span><span>${tgt}</span><span>范围 ${sk.area?sk.area+' 格':'单体'}</span><span>作用 ${rec}</span><span>五行 ${sk.el}</span></div>
+    <div class="statg"><span>威力 ${sk.pow?Math.round(sk.pow*100)+'%':'—'}</span><span>真元 ${sk.mp}</span><span>${tgt}</span><span>范围 ${sk.area?sk.area+' 格':'单体'}</span><span>作用 ${rec}</span><span>五行 ${sk.el2?sk.el+'·'+sk.el2:sk.el}</span></div>
     <p><b>效果：</b>${skDesc(sk)}</p>
-    <p><b>克制：</b>${sk.el}克${KE[sk.el]}，对${KE[sk.el]}行目标伤害 +30%；对克制${sk.el}的${ELS.find(e=>KE[e]===sk.el)}行目标伤害 −20%。</p>
+    <p><b>克制：</b>${[sk.el,sk.el2].filter(Boolean).map(e=>`${e}克${KE[e]}（+30%），被${ELS.find(x=>KE[x]===e)}克（−20%）`).join('；')}${sk.el2?'。双行道法取两者中更有利的一项结算。':'。'}</p>
     <p><b>习得：</b>${who||'—'}</p>${trs?`<p><b>法宝所授：</b>装备「${trs}」即可施展</p>`:''}</div></div>`;}
   if(MODAL.tr!=null){const t=TREASURES[MODAL.tr];
     return `<div class="ov" data-a="close"><div class="modal" data-a="noop"><button class="btn sm x" data-a="close">关闭</button>
-    <h3 class="disp" style="font-size:26px">${t.name}</h3><p>${SLOTN[t.slot]}　${CN[t.tier]}重　持有 ${S.inv[t.id]||0}（已装备 ${eqCount(t.id)}）</p>
+    <h3 class="disp" style="font-size:26px">${t.name}</h3><p>${SLOTN[t.slot]}　${tierT(t.tier)}　持有 ${S.inv[t.id]||0}（已装备 ${eqCount(t.id)}）</p>
     <p>${trStat(t)}</p>${t.sk!=null?`<p>附带道法【${SKILLS[t.sk].name}】：${skDesc(SKILLS[t.sk])}</p>`:''}
     <h3>装备给</h3><div class="list">${recruited().map(id=>{const cur=S.heroes[id].eq[t.slot],free=(S.inv[t.id]||0)-eqCount(t.id);
       return `<button class="li" data-a="eqto" data-v="${t.id}:${id}" ${cur===t.id||free<=0?'disabled':''}><span class="gl" style="width:30px;height:30px">${pimg({side:'p',hid:id,glyph:HEROES[id].glyph})}</span><span style="flex:1">${HEROES[id].name} <small class="muted">Lv.${S.heroes[id].lv}</small></span><span class="r">${cur!=null?(cur===t.id?'已装备':'现：'+TREASURES[cur].name):'该位空缺'}</span></button>`;}).join('')||'<p class="muted">尚无可装备的侠士。</p>'}</div></div></div>`;}
@@ -3115,7 +3142,7 @@ function vModal(){
     const L=TREASURES.filter(t=>t.slot===sl&&S.inv[t.id]).sort((a,b)=>b.tier-a.tier);
     pickL=`<div class="list">${cur!=null?`<button class="li" data-a="uneq"><span>卸下【${TREASURES[cur].name}】</span></button>`:''}
     ${L.length?L.map(t=>{const free=S.inv[t.id]-eqCount(t.id);const on=cur===t.id;
-      return `<button class="li" data-a="eq" data-v="${t.id}" ${free<=0||on?'disabled':''}><span><b>${t.name}</b> <small class="muted">${CN[t.tier]}重</small>${t.sk!=null?` <small>授【${SKILLS[t.sk].name}】</small>`:''}</span><span class="r">${trStat(t)}<br>可用 ${Math.max(0,free)}</span></button>`;}).join(''):`<p class="muted">还没有${SLOTN[sl]}类法宝。击败敌人即有机会获得。</p>`}</div>`;}
+      return `<button class="li" data-a="eq" data-v="${t.id}" ${free<=0||on?'disabled':''}><span><b>${t.name}</b> <small class="muted">${tierT(t.tier)}</small>${t.sk!=null?` <small>授【${SKILLS[t.sk].name}】</small>`:''}</span><span class="r">${trStat(t)}<br>可用 ${Math.max(0,free)}</span></button>`;}).join(''):`<p class="muted">还没有${SLOTN[sl]}类法宝。击败敌人即有机会获得。</p>`}</div>`;}
   return `<div class="ov" data-a="close"><div class="modal" data-a="noop"><button class="btn sm x" data-a="close">关闭</button>
   <div class="mh"><div class="viewer" id="viewer"><span class="gl big">${h.glyph}</span><span class="vh">拖动旋转</span></div><div><h3 class="disp" style="font-size:26px;margin:0">${h.name}</h3>
   <div>${eld(h.el)}${h.el}行·${h.cls}　Lv.${s.lv}　${realmTag(s.lv)}</div><div style="display:flex;align-items:center;gap:6px;font-size:12px"><span class="muted">修为 ${s.exp}/100</span><span style="flex:1;min-width:80px">${xbar(s.exp)}</span></div></div></div>
@@ -3310,7 +3337,7 @@ function cmdHTML(){
   if(B.mode==='move')return {a:{dock:'tl'},cls:'cmini dock',h:`<div class="ct">${esc(u.name)}　移动</div>${it('bcancel','取消')}`};
   if(B.mode==='menu'){const canA=B.units.some(o=>o.side==='e'&&inRng(u,u.x,u.y,o));
     return {a:{u},h:`<div class="ct">${esc(u.name)}</div>${B.moved?'':it('bmove','移动')}${it('batk','攻击',null,!canA)}${it('bskill','法术',null,!u.skills.length)}${it('bwait','待机')}${it('bstat','状态')}${it('bcancel',B.moved?'返回':'取消')}`};}
-  if(B.mode==='skillpick')return {a:{u},cls:'wide',h:`<div class="ct">${esc(u.name)}　真元 ${u.mp}/${u.maxmp}</div><div class="cscr">${u.skills.map(i=>{const s=SKILLS[i];return `<button data-a="bsk" data-v="${i}" ${u.mp<s.mp?'disabled':''} title="${esc(skDesc(s))}"><span>${eld(s.el)}${s.name}<small>${TYN[s.type]}${s.area?'·范围'+s.area:''}</small></span><i>${s.mp}</i></button>`;}).join('')}</div>${it('bback','返回')}`};
+  if(B.mode==='skillpick')return {a:{u},cls:'wide',h:`<div class="ct">${esc(u.name)}　真元 ${u.mp}/${u.maxmp}</div><div class="cscr">${u.skills.map(i=>{const s=SKILLS[i];return `<button data-a="bsk" data-v="${i}" ${u.mp<s.mp?'disabled':''} title="${esc(skDesc(s))}"><span>${eld(s.el)}${s.el2?eld(s.el2):''}${s.name}<small>${TYN[s.type]}${s.area?'·范围'+s.area:''}</small></span><i>${s.mp}</i></button>`;}).join('')}</div>${it('bback','返回')}`};
   if(B.mode==='atk'){if(B.pend){const t=B.pend,d=estPhys(u,t),cnt=inRng(t,t.x,t.y,u)&&d<t.hp&&!t.st.stun?estPhys(t,u,0.7):0,em=elMul(u.el,t.el);
       return {a:{dock:'tr'},cls:'wide fc2 dock',h:`<div class="ct">战斗预测</div><div class="pv"><div><b>${esc(u.name)}</b><span>伤害 <em>${d}</em>${d>=t.hp?' <u>击破</u>':''}</span><span>命中 ${Math.round(100-dodgeP(u,t)*100)}%</span></div><div class="vs">VS</div><div><b>${esc(t.name)}</b><span>${cnt?`反击 <em>${cnt}</em>`:'无法反击'}</span>${cnt?`<span>命中 ${Math.round(100-dodgeP(t,u)*100)}%</span>`:''}</div></div>${em!==1?`<div class="ke">${em>1?'五行克制 ▲':'五行被克 ▼'}</div>`:''}${it('bconfirm','出手')}${it('bback','返回')}`};}
     return {a:{dock:'tl'},cls:'cmini dock',h:`<div class="ct">选择目标</div>${it('bback','返回')}`};}

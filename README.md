@@ -44,8 +44,8 @@ https://<你的用户名>.github.io/legend-of-chinese-swordsmen/
 | 章回 | **60 回**主线：前三十回至「三次峨眉斗剑」，后三十回为白阳篇，终于「四九天劫·白阳飞升」 |
 | 剧情 | 每回都有开场与终章演出，共 120 段对白，角色立绘为实时 3D |
 | 角色 | 20 位可控侠士随剧情登场，各有外貌、本命飞剑、专属剑招与专属配乐 |
-| 道法 | **130 种道法**（五行各 26），道法录内有逐条介绍与详情 |
-| 法宝 | **130 件法宝**（飞剑、法器、护身），击败敌人或开启宝箱获得；后 30 件各传授一种新道法 |
+| 道法 | **130 种道法**：100 种单行道法 + **30 种双行道法**（兼具两种五行），道法录内有逐条介绍与详情 |
+| 法宝 | **130 件法宝**（飞剑、法器、护身），击败敌人或开启宝箱获得；其中 30 件为**仙阶**（十阶之上），各传授一种双行道法 |
 | 地图 | 45 度立体沙盘，12×9 格，简洁地貌，配河流、木桥与厚土底座 |
 | 战斗演出 | 机战式切入画面：招式名、飞剑残影、受创／闪避／防御三种表现 |
 | 界面 | 古风回纹边框、木牌按钮、楷书字体 |
@@ -87,6 +87,26 @@ https://<你的用户名>.github.io/legend-of-chinese-swordsmen/
 
 ### 五行相克
 金克木、木克土、土克水、水克火、火克金。克制方伤害 +30%，被克方 −20%。
+
+### 双行道法
+30 种新道法各兼两种五行（如「天河剑雨」金·水、「赤霄焚天」火·金）：
+- **克制结算**取两行中更有利的一项，因此几乎不会被克，遇到任一行的克制目标即可打出 +30%。
+- **地形加成**同样取两行中更有利的一项。
+- **演出**分两段：先按主属性显示本门法相，再接一段副属性的法相（金为雷、木为花叶、水为冰棱、火为烈焰、土为飞石）；战斗画面的配色也同时带上两行颜色。
+- 道法录与战斗菜单中，双行道法会标出两个五行圆点与「某·某」字样。
+
+### 法宝阶数
+法宝分十重普通阶数，其上另立**仙阶**四等：
+
+| 阶 | 说明 |
+|---|---|
+| 一重～十重 | 寻常法宝，随章回逐步出现 |
+| **人仙** | 第三十一回之后开始出现 |
+| **地仙** | 中期白阳篇 |
+| **天仙** | 后期 |
+| **金仙** | 最高阶，仅在末期章回掉落 |
+
+仙阶法宝的属性明显高于十重法宝，并且每件都附带一种双行道法，装备即可施展，不必等角色升级领悟。
 
 ### 命中与闪避
 - 闪避几率 = 防守方 **身法** − 攻击方 **命中**，范围 0%～80%。
@@ -248,7 +268,7 @@ python -m http.server 8000
 **Legend of Chinese Swordsmen** (蜀山剑侠·天劫录) is a browser tactical RPG set in the world of Huanzhu Louzhu's classic wuxia novel *Legend of the Swordsmen of the Mountains of Shu*.
 
 - **Single HTML file**: open `index.html` and play. No install, no build step.
-- **60 chapters** with opening and closing story scenes, ending in the Four-Nine Heavenly Tribulation. 20 playable heroes, each with a named flying sword, a signature attack and their own battle theme. 130 spells and 130 treasures; the 30 newest treasures each teach one of the new spells.
+- **60 chapters** with opening and closing story scenes, ending in the Four-Nine Heavenly Tribulation. 20 playable heroes, each with a named flying sword, a signature attack and their own battle theme. 130 spells and 130 treasures. The 30 newest spells are dual-element (they take whichever element matchup favours them, and their cut-in plays both elements in turn), and the 30 newest treasures sit above tier 10 on a separate immortal scale — 人仙 / 地仙 / 天仙 / 金仙 — each teaching one of those dual-element spells.
 - **Battles**: 45° isometric diorama maps with elevation and rivers, a pre-battle deployment phase, Super Robot Wars–style command menus and cut-ins, five-element counters, agility-vs-accuracy dodging, and a counter / guard / evade choice when enemies attack.
 - **Progression**: cultivation realms, gold-funded stat training (hold a button to level it repeatedly), per-chapter win and lose conditions. Levels, gold and items are kept on defeat.
 - **Saves**: automatic local saves including mid-battle state, so a refresh returns you to the fight in progress; plus exportable `SS1-…` save codes for moving between devices.
